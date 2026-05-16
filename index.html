@@ -37,8 +37,11 @@
   --max-width: 900px;
   --serif: 'Frank Ruhl Libre', Georgia, serif;
 }
-html, body {
-  background: rgba(255, 248, 243, 0.88);
+html {
+  background: var(--bg);
+}
+body {
+  background: transparent;
   color: var(--text);
   font-family: 'Heebo', system-ui, -apple-system, sans-serif;
   line-height: 1.7;
@@ -49,6 +52,8 @@ html, body {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 0 16px 60px;
+  position: relative;
+  z-index: 2;
 }
 header {
   text-align: center;
@@ -715,19 +720,26 @@ header .divider {
   .attraction-card { break-inside: avoid; }
 }
 
-/* רקע עיר */
+/* רקע עיר - שכבות מסודרות */
 #city-bg {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   background-size: cover;
   background-position: center;
-  filter: blur(14px) brightness(0.45);
+  filter: blur(14px) brightness(0.55);
   transform: scale(1.05);
   transition: opacity 0.7s ease;
   opacity: 0;
 }
 #city-bg.visible { opacity: 1; }
+#city-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: rgba(255, 248, 243, 0.78);
+  pointer-events: none;
+}
 
 /* מסך פתיחה */
 #splash-screen {
@@ -892,6 +904,7 @@ header .divider {
 </div>
 
 <div id="city-bg"></div>
+<div id="city-overlay"></div>
 
 <div class="container">
 
