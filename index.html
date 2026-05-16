@@ -1,0 +1,3023 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#5c3a2e">
+<title>חוברת המסלול - מונדיאל 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&family=Frank+Ruhl+Libre:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #fff8f3;
+  --bg-paper: #fdf4e8;
+  --surface: #ffffff;
+  --surface-2: #f5e6d3;
+  --border: #e8c8a0;
+  --border-strong: #d4a574;
+  --text: #3d2817;
+  --text-muted: #8a6747;
+  --text-light: #b89878;
+  --accent: #5c3a2e;
+  --accent-2: #d4632a;
+  --accent-light: #6c4f3a;
+  --info-bg: #f5e6d3;
+  --info-text: #5c3a2e;
+  --warn-bg: #fde7c8;
+  --warn-text: #8a4a00;
+  --success: #4a7030;
+  --rating-gold: #b8860b;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --max-width: 900px;
+  --serif: 'Frank Ruhl Libre', Georgia, serif;
+}
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Heebo', system-ui, -apple-system, sans-serif;
+  line-height: 1.7;
+  font-size: 15px;
+  min-height: 100vh;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(212, 99, 42, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(92, 58, 46, 0.03) 0%, transparent 50%);
+}
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 16px 60px;
+}
+header {
+  text-align: center;
+  padding: 36px 16px 28px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 24px;
+  position: relative;
+}
+header::before {
+  content: '✦ ✦ ✦';
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--accent-2);
+  font-size: 10px;
+  letter-spacing: 8px;
+}
+header .pretitle {
+  font-size: 11px;
+  color: var(--accent-2);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+header h1 {
+  font-family: var(--serif);
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+}
+header .subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+header .divider {
+  width: 60px;
+  height: 1px;
+  background: var(--border-strong);
+  margin: 12px auto 0;
+}
+.city-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  padding: 10px 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--border);
+}
+.tab-btn {
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  color: var(--accent);
+  cursor: pointer;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.tab-btn:hover { 
+  background: var(--surface-2);
+  border-color: var(--accent-2);
+}
+.tab-btn.active {
+  background: var(--accent);
+  color: var(--bg-paper);
+  border-color: var(--accent);
+  box-shadow: 0 2px 6px rgba(92, 58, 46, 0.2);
+}
+.day-tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed var(--border);
+}
+.day-tab {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  cursor: pointer;
+  padding: 6px 11px;
+  font-size: 12px;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.day-tab:hover { 
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
+.day-tab.active {
+  background: var(--accent-2);
+  color: white;
+  border-color: var(--accent-2);
+}
+.day-header {
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--border);
+}
+.day-header h2 {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--accent);
+}
+.day-header .day-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.summary-box {
+  background: var(--bg-paper);
+  border-right: 3px solid var(--accent-2);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--accent-light);
+}
+.map-container {
+  background: var(--bg-paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(92, 58, 46, 0.05);
+}
+.day-map {
+  width: 100%;
+  height: 280px;
+  border-radius: var(--radius-md);
+  z-index: 1;
+}
+.map-link-row {
+  margin-top: 8px;
+  padding: 0 6px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.map-link {
+  color: var(--accent-2);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.map-link:hover { text-decoration: underline; }
+.section-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  font-style: italic;
+}
+.attraction-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(92, 58, 46, 0.04);
+}
+.attraction-card:hover {
+  border-color: var(--accent-2);
+  box-shadow: 0 2px 6px rgba(212, 99, 42, 0.08);
+}
+.attraction-card.expanded {
+  border-color: var(--accent-2);
+  background: var(--bg-paper);
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+.card-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.card-title {
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--accent);
+}
+.rating-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--bg-paper);
+  border: 1px solid var(--border);
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.rating-pill .star {
+  color: var(--rating-gold);
+}
+.rating-pill .count {
+  color: var(--text-light);
+  font-size: 10px;
+}
+.tag-pill {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 9px;
+  border-radius: 10px;
+  margin-left: 4px;
+  margin-bottom: 3px;
+  font-weight: 400;
+}
+.card-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.toggle-icon {
+  font-size: 18px;
+  color: var(--text-light);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.attraction-card.expanded .toggle-icon {
+  transform: rotate(180deg);
+  color: var(--accent-2);
+}
+.card-details {
+  display: none;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
+}
+.attraction-card.expanded .card-details {
+  display: block;
+}
+/* תמונת כרטיס אטרקציה */
+.card-img-wrap {
+  margin: -14px -18px 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s ease, margin-bottom 0.35s ease;
+}
+.card-img-wrap.loaded {
+  max-height: 160px;
+  margin-bottom: 14px;
+}
+.card-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+.image-search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 70px;
+  background: var(--bg-paper);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--accent-2);
+  font-size: 13px;
+  gap: 6px;
+  margin-bottom: 14px;
+  border: 1px dashed var(--border-strong);
+  transition: all 0.2s;
+  font-weight: 500;
+}
+.image-search-btn:hover {
+  background: var(--surface-2);
+  border-color: var(--accent-2);
+  border-style: solid;
+}
+.desc-text {
+  font-size: 14px;
+  line-height: 1.85;
+  color: var(--accent-light);
+  margin-bottom: 14px;
+}
+.desc-text strong {
+  color: var(--accent);
+  font-weight: 500;
+}
+.info-section {
+  background: var(--bg-paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.info-section-title {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.must-see-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.must-see-list li {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--accent-light);
+  padding: 4px 0 4px 22px;
+  position: relative;
+}
+.must-see-list li::before {
+  content: '✦';
+  position: absolute;
+  right: 4px;
+  color: var(--accent-2);
+  font-size: 11px;
+  top: 7px;
+}
+.hours-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  font-size: 12px;
+}
+.hours-day {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.hours-time {
+  color: var(--accent-light);
+}
+.hours-closed {
+  color: #a04030;
+  font-style: italic;
+}
+.hours-today {
+  background: var(--surface-2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin: -2px -6px;
+}
+.action-links {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-top: 6px;
+}
+.action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent-2);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+}
+.action-link:hover { text-decoration: underline; }
+.match-day-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  margin-bottom: 12px;
+}
+.match-day-card.our-match {
+  border: 2px solid var(--accent-2);
+  background: var(--bg-paper);
+}
+.match-day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+.match-day-date {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.match-day-day {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-right: 6px;
+  font-style: italic;
+}
+.match-day-location {
+  font-size: 11px;
+  color: var(--accent-light);
+  background: var(--surface-2);
+  padding: 3px 10px;
+  border-radius: 10px;
+  white-space: nowrap;
+  border: 0.5px solid var(--border);
+}
+.match-day-note {
+  font-size: 12px;
+  color: var(--info-text);
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: var(--info-bg);
+  border-radius: var(--radius-md);
+  border-right: 2px solid var(--accent-2);
+}
+.match-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.match-row:last-child { border-bottom: none; }
+.match-row.ours {
+  background: var(--surface-2);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border-bottom: none;
+  margin: 4px 0;
+  border-right: 3px solid var(--accent-2);
+}
+.match-time {
+  font-weight: 500;
+  font-size: 12px;
+  white-space: nowrap;
+  min-width: 75px;
+  color: var(--accent-2);
+}
+.match-teams-block { flex: 1; min-width: 0; }
+.match-teams-name { font-weight: 500; font-size: 14px; }
+.match-venue { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-style: italic; }
+.bar-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  margin-bottom: 10px;
+}
+.bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.bar-name { 
+  font-weight: 500; 
+  font-size: 15px; 
+  color: var(--accent);
+}
+.bar-rec-badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: var(--warn-bg);
+  color: var(--warn-text);
+  font-weight: 500;
+}
+.bar-tags {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  font-style: italic;
+}
+.bar-desc {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--accent-light);
+}
+.city-section-header {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 24px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border);
+  color: var(--accent);
+}
+.legend {
+  font-size: 12px;
+  color: var(--accent-light);
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: var(--bg-paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.legend > div { margin-bottom: 4px; }
+.legend > div:last-child { margin-bottom: 0; }
+.footer-note {
+  margin-top: 32px;
+  padding: 18px;
+  background: var(--bg-paper);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.8;
+  font-style: italic;
+}
+.footer-note::before {
+  content: '~ ~ ~';
+  display: block;
+  color: var(--accent-2);
+  letter-spacing: 6px;
+  margin-bottom: 8px;
+  font-style: normal;
+}
+.leaflet-popup-content {
+  font-family: 'Heebo', sans-serif;
+  font-size: 13px;
+  direction: rtl;
+}
+.leaflet-popup-content strong {
+  color: var(--accent);
+  font-size: 14px;
+}
+.hotel-banner {
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  color: var(--bg-paper);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 6px rgba(92, 58, 46, 0.15);
+}
+.hotel-banner > i { font-size: 24px; color: var(--bg-paper); flex-shrink: 0; }
+.hotel-banner > div { flex: 1; font-size: 14px; line-height: 1.5; }
+.hotel-banner strong { color: var(--bg-paper); font-weight: 600; }
+.hotel-banner .hotel-link {
+  background: var(--bg-paper);
+  color: var(--accent);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.map-fallback {
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--bg-paper);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.nightlife-section {
+  margin-top: 28px;
+  background: var(--bg-paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+}
+.nightlife-header {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.nightlife-header > i { color: var(--accent-2); font-size: 20px; }
+.nightlife-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  font-style: italic;
+}
+.bar-mini-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin-bottom: 8px;
+}
+.bar-mini-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+.bar-mini-name { font-weight: 500; font-size: 14px; color: var(--accent); }
+.bar-mini-rec {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--warn-bg);
+  color: var(--warn-text);
+  font-weight: 500;
+}
+.bar-mini-tags {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  font-style: italic;
+}
+.bar-mini-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--accent-light);
+  margin-bottom: 6px;
+}
+@media (max-width: 600px) {
+  body { font-size: 14px; }
+  header h1 { font-size: 28px; }
+  .container { padding: 0 12px 40px; }
+  .day-map { height: 240px; }
+  .image-search-btn { min-height: 60px; }
+  .tab-btn { padding: 7px 13px; font-size: 12px; }
+  .day-header h2 { font-size: 20px; }
+  .city-section-header { font-size: 17px; }
+}
+@media print {
+  .city-tabs, .day-tabs, .toggle-icon { display: none; }
+  .card-details { display: block !important; }
+  .attraction-card { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+  <div class="pretitle">מונדיאל 2026 · ארצות הברית</div>
+  <h1>חוברת המסלול שלכם</h1>
+  <div class="subtitle">25 ביוני – 5 ביולי 2026 · יוסטון → אטלנטה → וושינגטון → ניו יורק</div>
+  <div class="divider"></div>
+</header>
+
+<div style="text-align: center; margin-bottom: 16px;">
+  <button id="geoBtn" onclick="findNearMe()" style="background: var(--accent-2); color: white; border: none; padding: 10px 22px; border-radius: 24px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; box-shadow: 0 2px 6px rgba(212, 99, 42, 0.3); display: inline-flex; align-items: center; gap: 8px;">
+    <i class="ti ti-current-location" style="font-size: 18px;"></i>
+    מה קרוב אליי?
+  </button>
+</div>
+
+<div id="nearMeResults" style="display:none; background: var(--bg-paper); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 20px;"></div>
+
+<div class="city-tabs" id="cityTabs">
+  <button class="tab-btn active" data-city="houston">יוסטון</button>
+  <button class="tab-btn" data-city="drive">לאטלנטה</button>
+  <button class="tab-btn" data-city="atlanta">אטלנטה</button>
+  <button class="tab-btn" data-city="dc">וושינגטון</button>
+  <button class="tab-btn" data-city="matches">משחקים וברים</button>
+</div>
+
+<div id="day-tabs-container" class="day-tabs"></div>
+
+<div id="content"></div>
+
+<div class="footer-note">
+החוברת נבנתה במיוחד עבורכם לטיול<br>
+ניתן להוסיף לסימניות, להדפיס, או לשלוח לחברים<br>
+שעות פתיחה ודירוגים נכון לזמן הכנת החוברת - מומלץ לאמת לפני הביקור
+</div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const cityNightlife = {
+  houston: [
+    { name: 'Pitch 25', tags: 'EaDo · 4.4⭐', lat: 29.7497, lng: -95.3458, rec: 'הכי מומלץ', desc: 'בבעלות שחקן הכדורגל לשעבר Brian Ching. מגרש כדורגל במקום, 50+ בירות, מסכי ענק.', mapsQuery: 'Pitch 25 EaDo Houston' },
+    { name: 'Phoenix on Westheimer', tags: 'Westheimer · 4.5⭐', lat: 29.7424, lng: -95.4123, rec: 'פאב בריטי', desc: 'פאב בריטי קטן ושמח, האווירה הכי "פאב כדורגל אירופי" ביוסטון.', mapsQuery: 'Phoenix on Westheimer Houston' },
+    { name: 'Social Beer Garden HTX', tags: 'Midtown · גן בירה', lat: 29.7430, lng: -95.3760, rec: 'אווירה משפחתית', desc: 'גן בירה גדול עם המון מסכים, ספסלים, אוכל מפודטראקים.', mapsQuery: 'Social Beer Garden HTX Midtown Houston' },
+    { name: 'Discovery Green - FIFA Fan Fest', tags: 'Downtown · חינמי', lat: 29.7530669, lng: -95.359608, rec: 'אירוע הרשמי', desc: 'ה-Fan Festival הרשמי של פיפ"א. מסך ענק חיצוני, מוזיקה חיה, אוהדים מכל העולם.', mapsQuery: 'Discovery Green Houston' }
+  ],
+  atlanta: [
+    { name: 'The Brewhouse Cafe', tags: 'Little Five Points · 4.3⭐', lat: 33.7651, lng: -84.3489, rec: 'הכי מומלץ', desc: 'הבר הכדורגלני המוביל באטלנטה. אווירת פאב, fish and chips מעולים.', mapsQuery: 'The Brewhouse Cafe Atlanta' },
+    { name: 'Wicked Wolf Atlanta', tags: 'Midtown · 4.6⭐', lat: 33.7806, lng: -84.3829, rec: 'תוסס', desc: 'בר ספורט גדול במידטאון, מסכים בכל פינה, אווירה צעירה.', mapsQuery: 'Wicked Wolf Atlanta Midtown' },
+    { name: 'Sports & Social Atlanta', tags: 'The Battery · 4.0⭐', lat: 33.8910, lng: -84.4682, rec: 'מסך ענק', desc: 'בר ספורט עם מסך רצפה-לתקרה. ליד אצטדיון הבייסבול.', mapsQuery: 'Sports Social Atlanta Battery' },
+    { name: 'Centennial Olympic Park - FIFA Fan Fest', tags: 'Downtown · חינמי', lat: 33.760463, lng: -84.3930831, rec: 'אירוע הרשמי', desc: 'ה-FIFA Fan Festival הרשמי באטלנטה. מסכי ענק, מוזיקה חיה, אוכל בינלאומי.', mapsQuery: 'Centennial Olympic Park Atlanta' }
+  ],
+  dc: [
+    { name: 'Tom\'s Watch Bar - Navy Yard', tags: 'Navy Yard · 4.8⭐', lat: 38.8754, lng: -77.0073, rec: 'הכי מומלץ', desc: 'דירוג מטורף 4.8 מ-2,700+ ביקורות. מסכי ענק בכל פינה.', mapsQuery: 'Toms Watch Bar Navy Yard DC' },
+    { name: 'BUDDY\'S DC', tags: 'Columbia Heights · 4.5⭐', lat: 38.9290, lng: -77.0322, rec: 'מקומי אותנטי', desc: 'בר ספורט קטן יותר ואותנטי. אווירה משפחתית, אוכל דרומי.', mapsQuery: 'BUDDYS DC Columbia Heights' },
+    { name: 'Public Bar Live', tags: 'Dupont Circle · 4.0⭐', lat: 38.9094, lng: -77.0427, rec: '3 קומות', desc: '3 קומות כל אחת עם וייב שונה. מסכים בכל מקום.', mapsQuery: 'Public Bar Live Dupont Circle' },
+    { name: 'Penn Quarter Sports Tavern', tags: 'Penn Quarter · 4.3⭐', lat: 38.8973, lng: -77.0227, rec: 'מרכזי', desc: 'בלב הדאון טאון, ליד הנשיונל מול.', mapsQuery: 'Penn Quarter Sports Tavern DC' }
+  ]
+};
+
+// המלון שלך ביוסטון
+const hotelHouston = {
+  name: 'Pool House with Hot Tub',
+  area: 'Heights, Houston',
+  lat: 29.7902,
+  lng: -95.3988,
+  checkin: '25/06',
+  checkout: '29/06',
+  bookingUrl: 'https://www.booking.com/hotel/us/pool-house-with-hot-tub.he.html'
+};
+
+// פונקציית חישוב מרחק בקילומטרים (Haversine)
+function distanceKm(lat1, lng1, lat2, lng2) {
+  if (!lat1 || !lat2) return null;
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLng/2) * Math.sin(dLng/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+function formatDistanceFromHotel(lat, lng) {
+  if (!lat || !lng) return '';
+  const km = distanceKm(hotelHouston.lat, hotelHouston.lng, lat, lng);
+  if (km === null) return '';
+  const mins = Math.round(km / 30 * 60);
+  return `<i class="ti ti-home"></i> ${km.toFixed(1)} ק"מ מהמלון · כ-${mins} דק' נסיעה`;
+}
+
+function findNearMe() {
+  const btn = document.getElementById('geoBtn');
+  const resultsDiv = document.getElementById('nearMeResults');
+  
+  if (!navigator.geolocation) {
+    resultsDiv.style.display = 'block';
+    resultsDiv.innerHTML = '<div style="color:#a04030;">הדפדפן לא תומך בגיאו-לוקציה</div>';
+    return;
+  }
+  
+  btn.innerHTML = '<i class="ti ti-loader-2"></i> מאתר אותך...';
+  btn.disabled = true;
+  
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const myLat = position.coords.latitude;
+      const myLng = position.coords.longitude;
+      
+      const allPlaces = [];
+      Object.keys(data).forEach(cityKey => {
+        data[cityKey].days.forEach(day => {
+          day.attractions.forEach(a => {
+            if (a.lat && a.lng) {
+              const exists = allPlaces.find(p => p.name === a.name);
+              if (!exists) {
+                allPlaces.push({
+                  name: a.name, lat: a.lat, lng: a.lng,
+                  city: data[cityKey].label, type: 'אטרקציה',
+                  rating: a.rating, tags: a.tags
+                });
+              }
+            }
+          });
+        });
+      });
+      
+      Object.keys(cityNightlife).forEach(cityKey => {
+        cityNightlife[cityKey].forEach(bar => {
+          if (bar.lat && bar.lng) {
+            allPlaces.push({
+              name: bar.name, lat: bar.lat, lng: bar.lng,
+              city: data[cityKey].label, type: 'בר',
+              tags: [bar.tags], mapsQuery: bar.mapsQuery
+            });
+          }
+        });
+      });
+      
+      allPlaces.forEach(p => {
+        p.distance = distanceKm(myLat, myLng, p.lat, p.lng);
+      });
+      allPlaces.sort((a, b) => a.distance - b.distance);
+      
+      const nearest = allPlaces.slice(0, 10);
+      
+      btn.innerHTML = '<i class="ti ti-current-location"></i> מה קרוב אליי?';
+      btn.disabled = false;
+      
+      resultsDiv.style.display = 'block';
+      resultsDiv.innerHTML = `
+        <div style="font-family: var(--serif); font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <i class="ti ti-map-pin" style="color: var(--accent-2);"></i>
+          המקומות הקרובים אליך
+        </div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+          ממוין מהקרוב ביותר. זמני נסיעה משוערים.
+        </div>
+        ${nearest.map(p => {
+          const km = p.distance.toFixed(1);
+          const walkMin = Math.round(p.distance / 5 * 60);
+          const driveMin = Math.round(p.distance / 40 * 60);
+          const icon = p.type === 'בר' ? '🍺' : '📍';
+          const timeText = p.distance < 2 ? 
+            `🚶 ${walkMin} דק' הליכה` : 
+            `🚗 ${driveMin} דק' נסיעה`;
+          return `
+            <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-weight: 500; font-size: 14px; color: var(--accent);">
+                    ${icon} ${p.name}
+                  </div>
+                  <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                    ${p.city} · ${p.type}${p.rating > 0 ? ' · ★ ' + p.rating : ''}
+                  </div>
+                  <div style="font-size: 12px; color: var(--accent-2); margin-top: 4px; font-weight: 500;">
+                    ${km} ק"מ · ${timeText}
+                  </div>
+                </div>
+                <a href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank" style="background: var(--accent-2); color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; white-space: nowrap;">
+                  ניווט
+                </a>
+              </div>
+            </div>
+          `;
+        }).join('')}
+        <button onclick="document.getElementById('nearMeResults').style.display='none'" style="margin-top: 8px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 12px;">
+          סגור
+        </button>
+      `;
+      
+      resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+    (error) => {
+      btn.innerHTML = '<i class="ti ti-current-location"></i> מה קרוב אליי?';
+      btn.disabled = false;
+      resultsDiv.style.display = 'block';
+      let msg = 'לא הצלחנו לאתר את המיקום שלך.';
+      if (error.code === 1) msg = 'אישור גישה למיקום נדחה. כדי להשתמש - אפשר גישה למיקום בהגדרות הדפדפן.';
+      if (error.code === 2) msg = 'המיקום שלך לא זמין כרגע.';
+      if (error.code === 3) msg = 'תם הזמן לקבלת המיקום.';
+      resultsDiv.innerHTML = `<div style="color:#a04030; padding: 10px;">${msg}</div>`;
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+  );
+}
+
+const data = {
+  houston: {
+    label: 'יוסטון',
+    days: [
+      {
+        id: 'h1',
+        title: 'יום 1 · חמישי 25/06',
+        subtitle: 'יום הנחיתה',
+        summary: 'אחרי טיסת לילה כדאי להוריד הילוך, לטעום BBQ טקסני קלאסי ולעשות סיבוב קליל. אל תעמיסו - הג\'ט לג ידחוף אתכם לישון מוקדם.',
+        center: [29.7604, -95.3698],
+        zoom: 11,
+        attractions: [
+          { 
+            name: 'Pinkerton\'s Barbecue', 
+            tags: ['BBQ', 'אוכל'], 
+            time: '1.5 שעות',
+            lat: 29.7322553, lng: -95.4116624,
+            rating: 4.5, ratingCount: 186,
+            placeId: 'ChIJtz_udADBQIYR1s-EYSJXUbw',
+            website: 'https://pinkertonsbarbecue.com/',
+            hours: {
+              'ראשון': '11:00-21:00', 'שני': 'סגור', 'שלישי': '11:00-21:00',
+              'רביעי': '11:00-21:00', 'חמישי': '11:00-21:00', 'שישי': '11:00-22:00', 'שבת': '11:00-22:00'
+            },
+            mustSee: [
+              'Beef rib ענק - הצלעה המפורסמת שמדברים עליה',
+              'Brisket עם שכבת bark מלוחה-פלפלית מושלמת',
+              'Glazed pork ribs - הצלעות המזוגגות שמומלצות בביקורות'
+            ],
+            imgQuery: 'Pinkerton\'s Barbecue Houston Texas',
+            desc: 'אחד מ-50 הברביקיו הטובים בטקסס לפי Texas Monthly. ידוע במנות גדולות וטעמים מעוצמים. הקופאי חותך לך את הבשר מולך אישית, אווירה ידידותית, סופר נקי. תורים יכולים להיות ארוכים בעמדות שיא.' 
+          },
+          { 
+            name: 'Truth BBQ', 
+            tags: ['BBQ', 'אוכל'], 
+            time: '1.5 שעות',
+            lat: 29.7690777, lng: -95.3976086,
+            rating: 4.5, ratingCount: 3984,
+            placeId: 'ChIJUfA6wszBQIYRmrSeublM3zY',
+            website: 'https://truthbbq.com/',
+            hours: {
+              'ראשון': '11:00-16:00', 'שני': 'סגור', 'שלישי': '11:00-15:00, 17:00-20:00',
+              'רביעי': '11:00-15:00, 17:00-20:00', 'חמישי': '11:00-15:00, 17:00-20:00', 
+              'שישי': '11:00-15:00, 17:00-20:00', 'שבת': '11:00-20:00'
+            },
+            mustSee: [
+              'Pork ribs - הצלעות שמומלצות הכי הרבה בביקורות',
+              'Banana caramel slice cake - הקינוח המפורסם שלהם',
+              'אווירת ה-Heights - שכונה מעוצבת סביב המקום'
+            ],
+            imgQuery: 'Truth BBQ Houston Heights',
+            desc: '3,984 ביקורות עם דירוג 4.5. מומלץ להגיע 15 דק\' לפני הפתיחה לעמדות שיא. first-come first-served. המקום בלב The Heights השכונה ההיפסטרית.' 
+          },
+          { 
+            name: 'The Pit Room', 
+            tags: ['BBQ', 'אוכל'], 
+            time: '1.5 שעות',
+            lat: 29.7342056, lng: -95.3940574,
+            rating: 4.5, ratingCount: 7599,
+            placeId: 'ChIJgcrcf4LAQIYREwyikgKgLco',
+            website: 'https://thepitroombbq.com/',
+            hours: {
+              'ראשון': '07:00-10:30, 11:00-21:00', 'שני': '07:00-10:30, 11:00-21:00', 'שלישי': '07:00-10:30, 11:00-21:00',
+              'רביעי': '07:00-10:30, 11:00-21:00', 'חמישי': '07:00-10:30, 11:00-21:00',
+              'שישי': '07:00-10:30, 11:00-21:00', 'שבת': '07:00-10:30, 11:00-21:00'
+            },
+            mustSee: [
+              'Wagyu ribs - הצלעות הפרימיום שמייחדות את המקום',
+              'Venison sausage - נקניקיות אייל ייחודיות',
+              'הבר הצמוד עם קרוול\'ש (Crawfish) - אווירה תוססת'
+            ],
+            imgQuery: 'The Pit Room barbecue Montrose Houston',
+            desc: 'הברביקיו עם הנגיעות המקסיקניות - טאקו וסינטה מפולפלת. 7,599 ביקורות - המקום הכי פופולרי בעיר. פתוח כל יום כולל שני, מצוין לימי הנחיתה. בלב Montrose.' 
+          },
+          { 
+            name: 'Buffalo Bayou Park', 
+            tags: ['פארק', 'טבע'], 
+            time: '1.5 שעות',
+            lat: 29.763078, lng: -95.3761455,
+            rating: 4.7, ratingCount: 6237,
+            placeId: 'ChIJ-zLaJqjAQIYRfnCkjD5AWhA',
+            website: 'https://buffalobayou.org/',
+            hours: { 'כל יום': '06:00-23:00' },
+            mustSee: [
+              'נוף לקו הרקיע של יוסטון - הכי יפה בשקיעה',
+              'גשרי הליכה מודרניים על הנהר - תמונות מטורפות',
+              'Cistern - בור מים תת-קרקעי היסטורי (סיורים מודרכים)'
+            ],
+            imgQuery: 'Buffalo Bayou Park Houston skyline',
+            desc: 'דירוג 4.7 - אחד הפארקים האהובים בעיר. חניה זולה (~1.20$ לשעה) ב-Allen Parkway, יש גם שירותים ציבוריים. שבילי הליכה ואופניים לאורך הנהר, אזורי פיקניק.' 
+          },
+          { 
+            name: 'Discovery Green', 
+            tags: ['פארק', 'מרכז העיר'], 
+            time: '1-2 שעות',
+            lat: 29.7530669, lng: -95.359608,
+            rating: 4.7, ratingCount: 22071,
+            placeId: 'ChIJJUo2UyK_QIYRI_nLX1af7Qg',
+            website: 'https://www.discoverygreen.com/',
+            hours: { 'כל יום': '06:00-23:00' },
+            mustSee: [
+              'FIFA Fan Festival - מסך ענק לכל משחקי המונדיאל',
+              'אגם עם סירות פדל וסירות מתנגשות (בתשלום)',
+              'אירועים יומיים - יוגה, קונצרטים, שווקים'
+            ],
+            imgQuery: 'Discovery Green park Houston downtown',
+            desc: '22,071 ביקורות עם 4.7 - פארק מאוד פעיל. כניסה חופשית. בזמן המונדיאל הוא משמש כ-FIFA Fan Festival הרשמי. בלב הדאון טאון, ליד מרכז הכנסים והאצטדיון.' 
+          },
+          { 
+            name: 'Market Square Park + Downtown Walk', 
+            tags: ['מרכז העיר', 'פארק'], 
+            time: '1-2 שעות',
+            lat: 29.7626, lng: -95.3604,
+            rating: 4.5, ratingCount: 1200,
+            placeId: '',
+            website: 'https://www.houstondowntown.com/',
+            hours: { 'כל יום': 'פתוח 24/7' },
+            mustSee: [
+              'פסל סטיוון אוסטין במרכז הפארק',
+              'ציורי קיר ענקיים ברחובות הסביבה',
+              'מסעדות וברים בערב באזור'
+            ],
+            imgQuery: 'Market Square Park Houston downtown',
+            desc: 'פארק קטן בלב העיר ההיסטורית. הליכה רגלית של 30-60 דק\' באזור. גורדי שחקים, פסלי רחוב, תחושה אורבנית.' 
+          },
+          { 
+            name: 'Downtown Aquarium', 
+            tags: ['מרכז העיר'], 
+            time: '2 שעות',
+            lat: 29.7626, lng: -95.3702,
+            rating: 4.2, ratingCount: 8500,
+            placeId: '',
+            website: 'https://www.aquariumrestaurants.com/downtownaquariumhouston/',
+            hours: {
+              'ראשון': '10:00-21:00', 'שני': '11:00-20:00', 'שלישי': '11:00-20:00',
+              'רביעי': '11:00-20:00', 'חמישי': '11:00-20:00', 'שישי': '10:00-22:00', 'שבת': '10:00-22:00'
+            },
+            mustSee: [
+              'מנהרת כרישים',
+              'גלגל פריס מעל המתחם',
+              'מסעדה עם אקווריום מעל השולחנות'
+            ],
+            imgQuery: 'Downtown Aquarium Houston',
+            desc: 'אקווריום עירוני קטן יחסית. נחמד למשפחות עם ילדים, אבל לא יוצא דופן. אופציה לערב פנימי ביום הנחיתה.' 
+          }
+        ]
+      },
+      {
+        id: 'h2',
+        title: 'יום 2 · שישי 26/06',
+        subtitle: 'NASA ומרכז העיר',
+        summary: 'מומלץ להקדיש את היום ל-NASA - חוויה שדורשת זמן. בערב כדאי לשלב משחק מונדיאל בבר שווה - יש משחק קבוצות ב-NRG Stadium היום!',
+        center: [29.6, -95.20],
+        zoom: 10,
+        attractions: [
+          { 
+            name: 'Space Center Houston', 
+            tags: ['מוזיאון', 'חוויה ייחודית', 'היסטוריה'], 
+            time: '5-6 שעות',
+            lat: 29.551832, lng: -95.0981044,
+            rating: 4.6, ratingCount: 53089,
+            placeId: 'ChIJLZlhwACdQIYRFvnVL8mq8BM',
+            website: 'https://spacecenter.org/',
+            hours: {
+              'ראשון': '10:00-18:00', 'שני': '10:00-17:00', 'שלישי': '10:00-17:00',
+              'רביעי': '10:00-17:00', 'חמישי': '10:00-17:00', 
+              'שישי': '10:00-17:00', 'שבת': '10:00-18:00'
+            },
+            mustSee: [
+              'סיור הטראם למרכז הבקרה ההיסטורי של אפולו',
+              'אגף Independence Plaza - שאטל אמיתי על נושאת מטוסים',
+              'Apollo Rocket Park - טיל סטורן V המקורי'
+            ],
+            imgQuery: 'Space Center Houston NASA',
+            desc: 'דירוג 4.6 מ-53,089 ביקורות. מחיר כניסה ~50$ למבוגר. חניה 11$ נוספים. מומלץ להגיע פתיחה כדי לתפוס סיור טראם מוקדם (התורים מתארכים). אוכל מוגבל - שווה להביא משלכם.' 
+          },
+          { 
+            name: 'NRG Stadium - משחק Cape Verde vs Saudi Arabia', 
+            tags: ['משחק כדורגל', 'חוויה ייחודית'], 
+            time: '3-4 שעות',
+            lat: 29.6847219, lng: -95.4107074,
+            rating: 4.6, ratingCount: 28540,
+            placeId: 'ChIJrWtASxnAQIYRV52aOcJuDxs',
+            website: 'https://www.nrgpark.com/',
+            hours: { 'תלוי באירוע': 'משחק ב-19:00' },
+            mustSee: [
+              'האצטדיון עם הגג הניתן לפתיחה',
+              'מועדוני הצדדים עם נוף ישיר למגרש',
+              'הפודי קורט המגוון - אוכל טקסני אמיתי'
+            ],
+            imgQuery: 'NRG Stadium Houston',
+            desc: '⚽ משחק קבוצות הערב ב-19:00 מקומי. אופציה לרכוש כרטיסים נוספים - חוויית אצטדיון מונדיאל אמיתית. רכבת METRORail Red Line עוצרת ישירות בתחנת NRG Park.' 
+          },
+          { 
+            name: 'Buffalo Bayou Park (שקיעה)', 
+            tags: ['פארק', 'טבע'], 
+            time: '1.5 שעות',
+            lat: 29.763078, lng: -95.3761455,
+            rating: 4.7, ratingCount: 6237,
+            placeId: 'ChIJ-zLaJqjAQIYRfnCkjD5AWhA',
+            website: 'https://buffalobayou.org/',
+            hours: { 'כל יום': '06:00-23:00' },
+            mustSee: [
+              'קו הרקיע של יוסטון מואר - הזמן הכי יפה',
+              'הליכה בגשרים על הנהר עם תאורת לילה',
+              'Lost Lake - אגם קטן עם מסעדה ובאר'
+            ],
+            imgQuery: 'Buffalo Bayou Park Houston sunset',
+            desc: 'הזמן הכי יפה לבקר - אחרי השקיעה. הקו רקיע של יוסטון מואר באורות. שיא יוסטוני אגדי.' 
+          },
+          { 
+            name: 'Pitch 25', 
+            tags: ['בר ספורט', 'משחק כדורגל'], 
+            time: '2-3 שעות',
+            lat: 29.7497, lng: -95.3458,
+            rating: 4.4, ratingCount: 850,
+            placeId: '',
+            website: 'https://www.pitch25.com/',
+            hours: {
+              'ראשון': '11:00-00:00', 'שני': '11:00-00:00', 'שלישי': '11:00-00:00',
+              'רביעי': '11:00-00:00', 'חמישי': '11:00-02:00', 'שישי': '11:00-02:00', 'שבת': '11:00-02:00'
+            },
+            mustSee: [
+              'המגרש כדורגל בתוך המקום',
+              '50+ בירות בלחיצה',
+              'אזור הגינה החיצוני - נוף לאצטדיון Shell Energy'
+            ],
+            imgQuery: 'Pitch 25 Houston soccer bar',
+            desc: 'הבר הכי שווה לכדורגל ביוסטון, בבעלות שחקן הכדורגל לשעבר Brian Ching. במונדיאל זה הופך למקדש.' 
+          },
+          { 
+            name: 'Phoenix on Westheimer', 
+            tags: ['בר ספורט', 'משחק כדורגל'], 
+            time: '2 שעות',
+            lat: 29.7424, lng: -95.4123,
+            rating: 4.5, ratingCount: 350,
+            placeId: '',
+            website: '',
+            hours: {
+              'ראשון': '12:00-00:00', 'שני': '16:00-00:00', 'שלישי': '16:00-00:00',
+              'רביעי': '16:00-00:00', 'חמישי': '16:00-02:00', 'שישי': '16:00-02:00', 'שבת': '12:00-02:00'
+            },
+            mustSee: [
+              'אווירת פאב בריטי אותנטית',
+              'תפריט בריטי - fish and chips, מיט פיי',
+              'אוהדי הקבוצות האירופאיות שמתאספים שם'
+            ],
+            imgQuery: 'Phoenix Westheimer Houston pub',
+            desc: 'פאב בריטי קטן ושמח, האווירה הכי "פאב כדורגל אירופי" ביוסטון. במשחק גדול - שירים, צעקות, אוהדים אמיתיים.' 
+          },
+          { 
+            name: 'Discovery Green - Fan Fest', 
+            tags: ['מרכז העיר', 'משחק כדורגל'], 
+            time: '2-3 שעות',
+            lat: 29.7530669, lng: -95.359608,
+            rating: 4.7, ratingCount: 22071,
+            placeId: 'ChIJJUo2UyK_QIYRI_nLX1af7Qg',
+            website: 'https://www.discoverygreen.com/',
+            hours: { 'כל יום': '06:00-23:00' },
+            mustSee: [
+              'מסך ענק חיצוני לצפייה במשחקים',
+              'מוזיקה חיה ו-DJ\'s בערב',
+              'אוכל בינלאומי מפודטראקים'
+            ],
+            imgQuery: 'FIFA Fan Festival Houston Discovery Green',
+            desc: 'ה-Fan Festival הרשמי של פיפ"א. כניסה חופשית. אווירת חגיגה אמיתית בלב הדאון טאון.' 
+          }
+        ]
+      },
+      {
+        id: 'h3',
+        title: 'יום 3 · שבת 27/06',
+        subtitle: 'מרכז העיר וההיסטוריה',
+        summary: 'יום בלב יוסטון. הצירוף הקלאסי: מוזיאון בבוקר, BBQ בצהריים, סיבוב במרכז בערב.',
+        center: [29.7220, -95.3890],
+        zoom: 12,
+        attractions: [
+          { 
+            name: 'Houston Museum of Natural Science', 
+            tags: ['מוזיאון', 'היסטוריה'], 
+            time: '3-4 שעות',
+            lat: 29.7220625, lng: -95.3895625,
+            rating: 4.8, ratingCount: 30397,
+            placeId: 'ChIJqzEuToa_QIYRetkd7kIw47s',
+            website: 'https://www.hmns.org/',
+            hours: {
+              'ראשון': '09:00-17:30', 'שני': '09:00-16:30', 'שלישי': '09:00-19:30',
+              'רביעי': '09:00-16:30', 'חמישי': '09:00-16:30', 'שישי': '09:00-17:30', 'שבת': '09:00-17:30'
+            },
+            mustSee: [
+              'Butterfly Center - גן פרפרים חי עם אלפי פרפרים (15$ נוסף)',
+              'אגף הדינוזאורים עם שלדים מקוריים',
+              'תערוכת מצרים העתיקה עם מומיות אמיתיות'
+            ],
+            imgQuery: 'Houston Museum Natural Science dinosaurs',
+            desc: 'דירוג 4.8 מ-30,397 ביקורות - מהמוזיאונים הטובים בארה"ב. כניסה רגילה ~25$, תערוכות מיוחדות בתוספת. כדאי להגיע פתיחה - אין תורים ארוכים בבוקר.' 
+          },
+          { 
+            name: 'Holocaust Museum Houston', 
+            tags: ['מוזיאון', 'היסטוריה'], 
+            time: '2-3 שעות',
+            lat: 29.7280, lng: -95.3839,
+            rating: 4.8, ratingCount: 1800,
+            placeId: '',
+            website: 'https://hmh.org/',
+            hours: {
+              'ראשון': '12:00-17:00', 'שני': 'סגור', 'שלישי': '10:00-17:00',
+              'רביעי': '10:00-17:00', 'חמישי': '10:00-20:00', 'שישי': '10:00-17:00', 'שבת': '10:00-17:00'
+            },
+            mustSee: [
+              'תערוכת הקבע "Bearing Witness"',
+              'תערוכת "Human Rights" - מאבקי זכויות אדם עכשוויים',
+              'הגן ההנצחה עם הפסל "And Still I Rise"'
+            ],
+            imgQuery: 'Holocaust Museum Houston',
+            desc: 'מוזיאון השואה השלישי בגודלו בארה"ב. כניסה ~19$. כבד אבל חשוב ומרגש. סגור ביום שני.' 
+          },
+          { 
+            name: 'Buffalo Soldiers National Museum', 
+            tags: ['מוזיאון', 'היסטוריה'], 
+            time: '1.5-2 שעות',
+            lat: 29.7373, lng: -95.3814,
+            rating: 4.7, ratingCount: 900,
+            placeId: '',
+            website: 'https://buffalosoldiersmuseum.com/',
+            hours: {
+              'ראשון': 'סגור', 'שני': '10:00-17:00', 'שלישי': '10:00-17:00',
+              'רביעי': '10:00-17:00', 'חמישי': '10:00-17:00', 'שישי': '10:00-17:00', 'שבת': '10:00-17:00'
+            },
+            mustSee: [
+              'מדים מקוריים של חיילים שחורים מהמלחמה האזרחית',
+              'תערוכת חיילי באפלו בעידן הוויטנאם',
+              'סרט תיעודי על תפקיד החיילים השחורים'
+            ],
+            imgQuery: 'Buffalo Soldiers National Museum Houston',
+            desc: 'מוזיאון מיוחד שמספר את סיפור החיילים האפרו-אמריקאים בצבא ארה"ב מאז 1860. ייחודי, כניסה ~10$.' 
+          },
+          { 
+            name: 'Sam Houston Park', 
+            tags: ['היסטוריה', 'פארק'], 
+            time: '1-2 שעות',
+            lat: 29.7589, lng: -95.3727,
+            rating: 4.5, ratingCount: 1100,
+            placeId: '',
+            website: 'https://heritagesociety.org/',
+            hours: {
+              'ראשון': 'סגור', 'שני': 'סגור', 'שלישי': '10:00-16:00',
+              'רביעי': '10:00-16:00', 'חמישי': '10:00-16:00', 'שישי': '10:00-16:00', 'שבת': '10:00-16:00'
+            },
+            mustSee: [
+              'Kellum-Noble House - הבית הוויקטוריאני הכי ישן ביוסטון',
+              'St. John\'s Church - כנסיית עץ מ-1891',
+              'Pillot House - בית בעלים עשירים מהמאה ה-19'
+            ],
+            imgQuery: 'Sam Houston Park historic homes',
+            desc: 'פארק היסטורי עם 8 בתים משומרים מהמאה ה-19. כניסה לפארק חינם, סיורים מודרכים בבתים בתשלום נמוך.' 
+          },
+          { 
+            name: 'The Pit Room', 
+            tags: ['BBQ', 'אוכל'], 
+            time: '1.5 שעות',
+            lat: 29.7342056, lng: -95.3940574,
+            rating: 4.5, ratingCount: 7599,
+            placeId: 'ChIJgcrcf4LAQIYREwyikgKgLco',
+            website: 'https://thepitroombbq.com/',
+            hours: { 'כל יום': '07:00-21:00 (הפסקת בוקר 10:30-11:00)' },
+            mustSee: [
+              'Wagyu ribs - הצלעות הפרימיום',
+              'Venison sausage - נקניקיות אייל',
+              'הבר הצמוד עם קרוול\'ש'
+            ],
+            imgQuery: 'The Pit Room barbecue Montrose Houston',
+            desc: 'BBQ עם נגיעות מקסיקניות. 7,599 ביקורות. בלב Montrose. פתוח כל יום.' 
+          },
+          { 
+            name: 'Truth BBQ', 
+            tags: ['BBQ', 'אוכל'], 
+            time: '1.5 שעות',
+            lat: 29.7690777, lng: -95.3976086,
+            rating: 4.5, ratingCount: 3984,
+            placeId: 'ChIJUfA6wszBQIYRmrSeublM3zY',
+            website: 'https://truthbbq.com/',
+            hours: { 'שבת': '11:00-20:00' },
+            mustSee: [
+              'Pork ribs מומלצים בביקורות',
+              'Banana caramel slice cake',
+              'אווירת The Heights'
+            ],
+            imgQuery: 'Truth BBQ Houston brisket',
+            desc: 'הזדמנות להשוואה אם לא הספקתם ביום הראשון. דירוג 4.5 מ-3,984 ביקורות.' 
+          },
+          { 
+            name: 'Montrose Neighborhood', 
+            tags: ['מרכז העיר'], 
+            time: '2-3 שעות',
+            lat: 29.7398, lng: -95.3902,
+            rating: 4.6, ratingCount: 5000,
+            placeId: '',
+            website: '',
+            hours: { 'כל יום': 'כל היום' },
+            mustSee: [
+              'Westheimer Road - הרחוב הראשי עם הבוטיקים',
+              'Menil Collection - גלריית אומנות חינמית (מודרני)',
+              'גרפיטי וציורי קיר ברחבי השכונה'
+            ],
+            imgQuery: 'Montrose Houston neighborhood',
+            desc: 'השכונה האומנותית-בוהמית של יוסטון. גלריות, חנויות וינטג\', ברים נחמדים.' 
+          },
+          { 
+            name: 'The Heights Neighborhood', 
+            tags: ['מרכז העיר', 'קניות'], 
+            time: '2-3 שעות',
+            lat: 29.7902, lng: -95.3988,
+            rating: 4.7, ratingCount: 3500,
+            placeId: '',
+            website: '',
+            hours: { 'כל יום': 'כל היום' },
+            mustSee: [
+              '19th Street - הרחוב הראשי עם בוטיקים',
+              'בתים ויקטוריאניים משופצים',
+              'Heights Mercantile - מרכז קניות בוטיקי'
+            ],
+            imgQuery: 'The Heights Houston 19th Street',
+            desc: 'שכונה היפסטרית. רחוב 19th הראשי הכי שווה לסיבוב.' 
+          },
+          { 
+            name: 'Brazos Bend State Park', 
+            tags: ['טבע', 'פארק', 'חוויה ייחודית'], 
+            time: '3-4 שעות',
+            lat: 29.3819, lng: -95.6044,
+            rating: 4.8, ratingCount: 4500,
+            placeId: '',
+            website: 'https://tpwd.texas.gov/state-parks/brazos-bend',
+            hours: { 'כל יום': '07:00-22:00' },
+            mustSee: [
+              'תנינים על שפת המסלולים - לראות מקרוב!',
+              'George Observatory - מצפה כוכבים (סופ"ש בערב)',
+              'מסלול 40-Acre Lake הקצר עם נוף לאגם'
+            ],
+            imgQuery: 'Brazos Bend State Park alligators',
+            desc: 'פארק טבע מטורף 50 דק\' דרומה מיוסטון. **המקום הכי טוב לראות תנינים בטבע** בארה"ב. שבילי הליכה קלים, מצפה כוכבים. כניסה ~7$ למבוגר. לא לוותר על קרם הגנה ודחיפה.' 
+          },
+          { 
+            name: 'San Jacinto Battleground', 
+            tags: ['היסטוריה', 'אנדרטה'], 
+            time: '2-3 שעות',
+            lat: 29.7497, lng: -95.0808,
+            rating: 4.7, ratingCount: 3200,
+            placeId: '',
+            website: 'https://tpwd.texas.gov/state-parks/san-jacinto-battleground',
+            hours: { 'כל יום': '09:00-18:00' },
+            mustSee: [
+              'אובליסק הגבוה בעולם (172 מ\') - תצפית מהפסגה',
+              'USS Texas - ספינת קרב משוחזרת מ-1914',
+              'מוזיאון הקרב לעצמאות טקסס'
+            ],
+            imgQuery: 'San Jacinto Monument Battleground Texas',
+            desc: '30 דק\' מזרחית ליוסטון. האנדרטה הגבוהה בעולם, גבוהה אפילו ממונומנט וושינגטון! מקום הקרב המכריע על עצמאות טקסס ב-1836. כניסה לפארק חינמית, עליה לתצפית ~7$.' 
+          },
+          { 
+            name: 'Kemah Boardwalk', 
+            tags: ['מרכז העיר', 'אוכל'], 
+            time: '2-3 שעות',
+            lat: 29.5454, lng: -95.0235,
+            rating: 4.5, ratingCount: 28000,
+            placeId: '',
+            website: 'https://www.kemahboardwalk.com/',
+            hours: { 'כל יום': '11:00-22:00' },
+            mustSee: [
+              'הטיילת על שפת מפרץ Galveston Bay',
+              'מסעדות עם נוף לסירות וים',
+              'אטרקציות שיט - סיורי דולפינים'
+            ],
+            imgQuery: 'Kemah Boardwalk waterfront Texas',
+            desc: '45 דק\' דרומית-מזרחית מיוסטון. טיילת חוף עם מסעדות אוכל ים, חנויות, ונוף ליאכטות. **שימו לב:** יש שם גם פארק שעשועים קטן - אפשר להתעלם ממנו. אווירה קלילה לערב.' 
+          },
+          { 
+            name: 'San Jacinto Battleground + USS Texas', 
+            tags: ['היסטוריה', 'מוזיאון'], 
+            time: '3-4 שעות',
+            lat: 29.7497, lng: -95.0808,
+            rating: 4.7, ratingCount: 3200,
+            placeId: '',
+            website: 'https://battleshiptexas.org/',
+            hours: { 'כל יום': '10:00-17:00' },
+            mustSee: [
+              'ספינת הקרב USS Texas - היחידה ששרדה משתי מלחמות העולם',
+              'תצפית מאובליסק (172 מ\')',
+              'מוזיאון מאחורי הקלעים של עצמאות טקסס'
+            ],
+            imgQuery: 'USS Texas Battleship San Jacinto',
+            desc: '**אלטרנטיבה לוויתור על USS Alabama במובייל!** ספינת קרב היסטורית קרובה ליוסטון. כניסה משולבת לאובליסק ולספינה.' 
+          },
+          { 
+            name: 'The Galleria Houston', 
+            tags: ['קניות', 'מרכז העיר'], 
+            time: '3-4 שעות',
+            lat: 29.7397, lng: -95.4640,
+            rating: 4.5, ratingCount: 38000,
+            placeId: '',
+            website: 'https://www.simon.com/mall/the-galleria',
+            hours: {
+              'ראשון': '11:00-19:00', 'שני': '10:00-21:00', 'שלישי': '10:00-21:00',
+              'רביעי': '10:00-21:00', 'חמישי': '10:00-21:00', 'שישי': '10:00-21:00', 'שבת': '10:00-21:00'
+            },
+            mustSee: [
+              'זירת החלקה על קרח בלב הקניון',
+              'מותגי יוקרה: Gucci, Prada, Louis Vuitton',
+              'Waterwall Park הסמוך - מבנה מים אייקוני'
+            ],
+            imgQuery: 'The Galleria Houston ice rink',
+            desc: 'הקניון הגדול בטקסס! 25 דק\' מהמלון. 400+ חנויות, מותגי יוקרה ומותגים פופולריים. זירת חלקה על קרח בפנים - חוויה ייחודית בלב טקסס.' 
+          }
+        ]
+      },
+      {
+        id: 'h4',
+        title: 'יום 4 · ראשון 28/06',
+        subtitle: 'אאוטלטים ויום רגוע',
+        summary: 'יום קלאסי של קניות + פעילות קלילה. בחרו אאוטלט אחד לבוקר, ובערב פעילות במרכז העיר.',
+        center: [29.9, -95.6],
+        zoom: 10,
+        attractions: [
+          { 
+            name: 'Houston Premium Outlets (Cypress)', 
+            tags: ['אאוטלט', 'קניות'], 
+            time: '3-4 שעות',
+            lat: 29.9967906, lng: -95.7567342,
+            rating: 4.5, ratingCount: 17353,
+            placeId: 'ChIJOxM7lrnVQIYRHKe4l5V529Q',
+            website: 'https://www.premiumoutlets.com/outlet/houston',
+            hours: {
+              'ראשון': '11:00-19:00', 'שני': '10:00-20:00', 'שלישי': '10:00-20:00',
+              'רביעי': '10:00-20:00', 'חמישי': '10:00-20:00', 'שישי': '10:00-21:00', 'שבת': '10:00-21:00'
+            },
+            mustSee: [
+              'Nike Factory Store - מבחר ענק במחירי אאוטלט',
+              'Coach & Michael Kors - מותגי יוקרה בהנחות',
+              'Polo Ralph Lauren - מותג שאהוב מאוד בארה"ב'
+            ],
+            imgQuery: 'Houston Premium Outlets Cypress',
+            desc: 'דירוג 4.5 מ-17,353 ביקורות. 45 דק\' צפונה. 145 חנויות פתוחות. שווה להגיע בבוקר לנצל קור יחסי.' 
+          },
+          { 
+            name: 'Katy Mills', 
+            tags: ['אאוטלט', 'קניות'], 
+            time: '3-4 שעות',
+            lat: 29.7858, lng: -95.8233,
+            rating: 4.4, ratingCount: 11000,
+            placeId: '',
+            website: 'https://www.simon.com/mall/katy-mills',
+            hours: {
+              'ראשון': '11:00-19:00', 'שני': '10:00-20:00', 'שלישי': '10:00-20:00',
+              'רביעי': '10:00-20:00', 'חמישי': '10:00-20:00', 'שישי': '10:00-21:00', 'שבת': '10:00-21:00'
+            },
+            mustSee: [
+              'Bass Pro Shops הענק - חוויה בפני עצמה',
+              'אקווריום הדגים בתוך החנות',
+              '175 חנויות ממוזגות'
+            ],
+            imgQuery: 'Katy Mills mall Texas',
+            desc: '30 דק\' מערבה. אאוטלט סגור וממוזג. אופציה למי שמעדיף קור או יום גשום.' 
+          },
+          { 
+            name: 'Harwin Outlet Mall', 
+            tags: ['אאוטלט', 'קניות'], 
+            time: '2-3 שעות',
+            lat: 29.7167, lng: -95.5103,
+            rating: 4.2, ratingCount: 2500,
+            placeId: '',
+            website: '',
+            hours: {
+              'ראשון': '11:00-18:00', 'שני': '10:00-19:00', 'שלישי': '10:00-19:00',
+              'רביעי': '10:00-19:00', 'חמישי': '10:00-19:00', 'שישי': '10:00-19:00', 'שבת': '10:00-19:00'
+            },
+            mustSee: [
+              'תכשיטים במחירים שווים מאוד',
+              'אביזרי טלפון וסלולר',
+              'בגדים ונעליים בסטיילים אסיאתיים'
+            ],
+            imgQuery: 'Harwin Drive Houston shopping',
+            desc: 'אאוטלט קטן יותר אבל אגדה מקומית - חנויות אסיאתיות. לא לחוויית מותגים גדולים.' 
+          },
+          { 
+            name: 'The Heights Neighborhood', 
+            tags: ['מרכז העיר', 'קניות'], 
+            time: '2-3 שעות',
+            lat: 29.7902, lng: -95.3988,
+            rating: 4.7, ratingCount: 3500,
+            placeId: '',
+            website: '',
+            hours: { 'כל יום': 'כל היום' },
+            mustSee: [
+              '19th Street - בוטיקים מקסימים',
+              'Heights Mercantile - מרכז קניות בוטיקי',
+              'בתים ויקטוריאניים משופצים'
+            ],
+            imgQuery: 'The Heights Houston 19th Street',
+            desc: 'שכונה היפסטרית עם חנויות בוטיק, ברביקיו, ברים.' 
+          },
+          { 
+            name: 'Montrose Neighborhood', 
+            tags: ['מרכז העיר'], 
+            time: '2-3 שעות',
+            lat: 29.7398, lng: -95.3902,
+            rating: 4.6, ratingCount: 5000,
+            placeId: '',
+            website: '',
+            hours: { 'כל יום': 'כל היום' },
+            mustSee: [
+              'Westheimer Road - הרחוב הראשי',
+              'Menil Collection - גלריה חינמית',
+              'גרפיטי וציורי קיר'
+            ],
+            imgQuery: 'Montrose Houston neighborhood',
+            desc: 'אזור אומנותי-בוהמי. גלריות, חנויות וינטג\', ברים, ציורי קיר ענקיים.' 
+          },
+          { 
+            name: 'Buffalo Bayou Park', 
+            tags: ['פארק', 'טבע'], 
+            time: '1.5 שעות',
+            lat: 29.763078, lng: -95.3761455,
+            rating: 4.7, ratingCount: 6237,
+            placeId: 'ChIJ-zLaJqjAQIYRfnCkjD5AWhA',
+            website: 'https://buffalobayou.org/',
+            hours: { 'כל יום': '06:00-23:00' },
+            mustSee: [
+              'נוף לקו הרקיע בשקיעה',
+              'גשרי הליכה מודרניים',
+              'אזורי פיקניק שקטים'
+            ],
+            imgQuery: 'Buffalo Bayou Park Houston skyline',
+            desc: 'הליכה רגועה לסיום היום בשקיעה. דירוג 4.7.' 
+          },
+          { 
+            name: 'The Galleria Houston', 
+            tags: ['קניות', 'מרכז העיר'], 
+            time: '3-4 שעות',
+            lat: 29.7397, lng: -95.4640,
+            rating: 4.5, ratingCount: 38000,
+            placeId: '',
+            website: 'https://www.simon.com/mall/the-galleria',
+            hours: { 'ראשון': '11:00-19:00' },
+            mustSee: [
+              'זירת החלקה על קרח בלב הקניון',
+              'מותגי יוקרה: Gucci, Prada, Louis Vuitton',
+              'Waterwall Park הסמוך - מבנה מים אייקוני'
+            ],
+            imgQuery: 'The Galleria Houston ice rink',
+            desc: 'הקניון הגדול בטקסס. 400+ חנויות, מותגי יוקרה. 25 דק\' מהמלון. אופציה לקניות יוקרה לעומת אאוטלטים.' 
+          },
+          { 
+            name: 'Kemah Boardwalk', 
+            tags: ['מרכז העיר', 'אוכל'], 
+            time: '2-3 שעות',
+            lat: 29.5454, lng: -95.0235,
+            rating: 4.5, ratingCount: 28000,
+            placeId: '',
+            website: 'https://www.kemahboardwalk.com/',
+            hours: { 'ראשון': '11:00-21:00' },
+            mustSee: [
+              'הטיילת על שפת מפרץ Galveston Bay',
+              'מסעדות עם נוף לסירות וים',
+              'אווירת ערב על המים'
+            ],
+            imgQuery: 'Kemah Boardwalk waterfront Texas',
+            desc: '45 דק\' דרומית-מזרחית. טיילת חוף נחמדה לערב, אוכל ים, נוף ליאכטות. אווירה רגועה.' 
+          },
+          { 
+            name: 'Brenham + Blue Bell Creameries', 
+            tags: ['חוויה ייחודית', 'אוכל'], 
+            time: '4-5 שעות',
+            lat: 30.1669, lng: -96.3977,
+            rating: 4.7, ratingCount: 3200,
+            placeId: '',
+            website: 'https://www.bluebell.com/',
+            hours: {
+              'ראשון': 'סגור', 'שני': '08:00-16:00', 'שלישי': '08:00-16:00',
+              'רביעי': '08:00-16:00', 'חמישי': '08:00-16:00', 'שישי': '08:00-16:00', 'שבת': '08:00-15:00'
+            },
+            mustSee: [
+              'סיור במפעל הגלידה Blue Bell - האגדה של טקסס',
+              'טעימות גלידה חופשיות בסוף הסיור',
+              'מרכז העיר Brenham ההיסטורית'
+            ],
+            imgQuery: 'Blue Bell Creameries Brenham Texas',
+            desc: 'שעה וחצי צפונה. מפעל הגלידה האהובה בטקסס. **שימו לב - המפעל סגור ביום ראשון!** טוב יותר ליום בוקר חזק.' 
+          }
+        ]
+      },
+      {
+        id: 'h5',
+        title: 'יום 5 · שני 29/06',
+        subtitle: 'יום משחק + יציאה',
+        summary: '🎯 המשחק שלכם ב-13:00. תכננו להגיע לאצטדיון 11:00-11:30. אחרי המשחק יציאה לאטלנטה ~16:00-17:00.',
+        center: [29.6847, -95.4107],
+        zoom: 13,
+        attractions: [
+          { 
+            name: 'NRG Stadium - משחק שמינית הגמר', 
+            tags: ['משחק כדורגל', 'חוויה ייחודית'], 
+            time: '4-5 שעות',
+            lat: 29.6847219, lng: -95.4107074,
+            rating: 4.6, ratingCount: 28540,
+            placeId: 'ChIJrWtASxnAQIYRV52aOcJuDxs',
+            website: 'https://www.nrgpark.com/',
+            hours: { 'יום המשחק': 'שערים נפתחים 2 שעות לפני המשחק' },
+            mustSee: [
+              'הגג הניתן לפתיחה - אחד הבודדים בעולם',
+              'מסך הענק - מהגדולים בארה"ב',
+              'הפודי קורט עם אוכל טקסני אותנטי'
+            ],
+            imgQuery: 'NRG Stadium Houston',
+            desc: '🎯 המשחק שלכם! Round of 32: מנצחת בית C נגד סגנית בית F. בית C: ברזיל, מרוקו, האיטי, סקוטלנד. בית F: הולנד, יפן, תוניסיה. **יש סיכוי גבוה לראות את ברזיל**. דירוג 4.6.' 
+          },
+          { 
+            name: 'Tanger Outlets Texas City', 
+            tags: ['אאוטלט', 'קניות'], 
+            time: '2-3 שעות',
+            lat: 29.4341, lng: -94.9663,
+            rating: 4.4, ratingCount: 6500,
+            placeId: '',
+            website: 'https://www.tangeroutlet.com/texascity',
+            hours: {
+              'ראשון': '11:00-19:00', 'שני': '10:00-21:00', 'שלישי': '10:00-21:00',
+              'רביעי': '10:00-21:00', 'חמישי': '10:00-21:00', 'שישי': '10:00-21:00', 'שבת': '10:00-21:00'
+            },
+            mustSee: [
+              'Nike, Adidas, Under Armour',
+              'Coach Factory + Kate Spade',
+              'Tommy Hilfiger - בחירה רחבה'
+            ],
+            imgQuery: 'Tanger Outlets Texas City',
+            desc: '45 דק\' דרומה. רק אם נשאר זמן בבוקר לפני המשחק.' 
+          },
+          { 
+            name: 'יציאה לאטלנטה', 
+            tags: ['חוויה ייחודית'], 
+            time: '~12 שעות נסיעה',
+            lat: 29.6847, lng: -95.4107,
+            rating: 0, ratingCount: 0,
+            placeId: '',
+            website: '',
+            hours: { 'יציאה': 'אחרי המשחק ~16:00-17:00' },
+            mustSee: [],
+            imgQuery: 'I-10 Texas Louisiana drive',
+            desc: 'אחרי המשחק - חזרה למלון, איסוף חפצים, ויציאה. נסיעה ישירה עם עצירה ללינה באמצע הדרך.' 
+          }
+        ]
+      }
+    ]
+  },
+  drive: {
+    label: 'הנסיעה לאטלנטה',
+    days: [
+      {
+        id: 'd1',
+        title: '29/06 (אחה"צ) - 30/06',
+        subtitle: 'יוסטון לאטלנטה · 12-13 שעות',
+        summary: 'בחרתם בנסיעה ישירה למקסם זמן באטלנטה. הצגנו גם את האופציות שדחיתם למקרה שתשנו דעת.',
+        center: [30.5, -90.0],
+        zoom: 6,
+        attractions: [
+          { 
+            name: '✓ הגישה הנבחרת - נסיעה ישירה', 
+            tags: ['חוויה ייחודית'], 
+            time: '~12-13 שעות',
+            lat: 30.5, lng: -90.0,
+            rating: 0, ratingCount: 0,
+            placeId: '',
+            website: '',
+            hours: { 'יציאה': '~17:00 מיוסטון, הגעה ~15:00 לאטלנטה' },
+            mustSee: [
+              'גשרי הביצות של לואיזיאנה - 30 ק"מ מעל מים',
+              'נופי החוף לאורך I-10 במיסיסיפי',
+              'סופת השמש בכניסה לג\'ורג\'יה'
+            ],
+            imgQuery: 'I-10 highway Louisiana bridge',
+            desc: 'יציאה מיוסטון אחרי המשחק (~17:00), נסיעה של 5-6 שעות עד אזור באטון רוז\' או לייק צ\'ארלס ללינה. למחרת בבוקר יציאה מוקדמת (~7:00) והגעה לאטלנטה ב-14:00-15:00.' 
+          },
+          { 
+            name: 'אופציה לשמירה - Atchafalaya Swamp Tour', 
+            tags: ['טבע', 'חוויה ייחודית'], 
+            time: '+2.5 שעות',
+            lat: 30.2944, lng: -91.7917,
+            rating: 4.8, ratingCount: 3500,
+            placeId: '',
+            website: 'https://www.basinlanding.com/',
+            hours: {
+              'כל יום': 'סיורים 10:00, 13:00, 16:00'
+            },
+            mustSee: [
+              'תנינים מקרוב במים',
+              'ציפורי ביצה נדירות - אנפות, אגרונים',
+              'עצי קיפרס עם ספניש מוס'
+            ],
+            imgQuery: 'Atchafalaya swamp airboat tour Louisiana',
+            desc: '**הערה אישית: זאת האופציה שאהבתי הכי הרבה.** סיור באירבוט בביצה הגדולה בארה"ב. ~35$ לאדם. סיור של 75 דק\' עם מדריך קייג\'ון.' 
+          },
+          { 
+            name: 'אופציה לשמירה - USS Alabama Mobile', 
+            tags: ['היסטוריה', 'מוזיאון'], 
+            time: '+3-4 שעות',
+            lat: 30.6815, lng: -88.0145,
+            rating: 4.7, ratingCount: 8500,
+            placeId: '',
+            website: 'https://www.ussalabama.com/',
+            hours: { 'כל יום': '08:00-17:00' },
+            mustSee: [
+              'הסיפון הראשי של ספינת המערכה',
+              'הצוללת USS Drum מבפנים',
+              'אגף המטוסים עם B-52 מקורי'
+            ],
+            imgQuery: 'USS Alabama Battleship Memorial Park',
+            desc: 'ספינת מערכה ממלחמת העולם השנייה + צוללת + אגף מטוסים. ~18$ לאדם. חוויה היסטורית עוצמתית.' 
+          },
+          { 
+            name: 'אופציה לשמירה - ניו אורלינס', 
+            tags: ['מרכז העיר', 'חוויה ייחודית'], 
+            time: '+3-4 שעות',
+            lat: 29.9511, lng: -90.0715,
+            rating: 4.8, ratingCount: 50000,
+            placeId: '',
+            website: 'https://www.neworleans.com/',
+            hours: { 'כל יום': '24/7' },
+            mustSee: [
+              'Café du Monde - בייגנטס וקפה צרפתי',
+              'Jackson Square - הלב הצרפתי',
+              'Bourbon Street - אווירת לילה אגדית'
+            ],
+            imgQuery: 'New Orleans French Quarter Bourbon Street',
+            desc: '**הערה אישית: לדעתי האופציה הפחות מומלצת.** ניו אורלינס היא יעד שלם בפני עצמו - 3 שעות בה זה רק טעימה.' 
+          },
+          { 
+            name: 'הצעת לינה - Baton Rouge', 
+            tags: [], 
+            time: 'לילה',
+            lat: 30.4515, lng: -91.1871,
+            rating: 4.4, ratingCount: 5000,
+            placeId: '',
+            website: 'https://www.visitbatonrouge.com/',
+            hours: { 'תמיד': 'מלונות זמינים' },
+            mustSee: [
+              'Louisiana State Capitol - הקפיטול הגבוה בארה"ב',
+              'Old State Capitol - מבנה ניאו-גותי משוחזר',
+              'סטייקיות מקומיות שווות'
+            ],
+            imgQuery: 'Baton Rouge Louisiana State Capitol',
+            desc: 'בירת לואיזיאנה, 4.5 שעות מיוסטון. הרבה אופציות מלון איכותיות, סטייקיות טובות.' 
+          },
+          { 
+            name: 'הצעת לינה - Lake Charles', 
+            tags: [], 
+            time: 'לילה',
+            lat: 30.2266, lng: -93.2174,
+            rating: 4.3, ratingCount: 3500,
+            placeId: '',
+            website: 'https://www.visitlakecharles.org/',
+            hours: { 'תמיד': 'מלונות וקזינו 24/7' },
+            mustSee: [
+              'Lake Charles Lakefront Promenade',
+              'קזינו L\'Auberge - אופציה לערב',
+              'מסעדות אוכל ים על האגם'
+            ],
+            imgQuery: 'Lake Charles Louisiana lakefront',
+            desc: 'עיירה נחמדה על שפת אגם, 2.5 שעות מיוסטון. מלונות וקזינו טובים.' 
+          },
+          { 
+            name: 'הצעת לינה - Mobile Alabama', 
+            tags: [], 
+            time: 'לילה',
+            lat: 30.6954, lng: -88.0399,
+            rating: 4.4, ratingCount: 4500,
+            placeId: '',
+            website: 'https://www.mobile.org/',
+            hours: { 'תמיד': 'מלונות זמינים' },
+            mustSee: [
+              'Mardi Gras Museum - מקור החגיגות',
+              'Cathedral Square ההיסטורית',
+              'מטעמי הים על מפרץ מובייל'
+            ],
+            imgQuery: 'Mobile Alabama downtown waterfront',
+            desc: '8 שעות מיוסטון, שעה מאטלנטה. אופציה לקום ולראות את ה-USS Alabama בבוקר.' 
+          }
+        ]
+      }
+    ]
+  },
+  atlanta: {
+    label: 'אטלנטה',
+    days: [
+      {
+        id: 'a1',
+        title: 'יום 1 · שלישי 30/06',
+        subtitle: 'יום ההגעה',
+        summary: 'הגעה אחה"צ אחרי נסיעה. ערב נינוח לטעימה ראשונה של אטלנטה. ה-Fan Fest כאן בשיא.',
+        center: [33.762, -84.388],
+        zoom: 12,
+        attractions: [
+          { 
+            name: 'Centennial Olympic Park + FIFA Fan Festival', 
+            tags: ['פארק', 'משחק כדורגל'], 
+            time: '2-3 שעות',
+            lat: 33.760463, lng: -84.3930831,
+            rating: 4.6, ratingCount: 15708,
+            placeId: 'ChIJIRYhpn8E9YgRWy0NPvzLU1M',
+            website: 'https://www.gwcca.org/centennial-park',
+            hours: { 'כל יום': '07:00-23:00' },
+            mustSee: [
+              'Fountain of Rings - מזרקת הטבעות האולימפיות',
+              'FIFA Fan Festival - הפסטיבל הרשמי במונדיאל',
+              'אנדרטאות אולימפיאדת 1996'
+            ],
+            imgQuery: 'Centennial Olympic Park Atlanta fountains',
+            desc: 'דירוג 4.6 מ-15,708 ביקורות. הפארק המרכזי של אטלנטה, נבנה לאולימפיאדת 1996. במהלך המונדיאל - **ה-FIFA Fan Festival הרשמי באטלנטה**. כניסה חופשית.' 
+          },
+          { 
+            name: 'National Center for Civil and Human Rights', 
+            tags: ['מוזיאון', 'היסטוריה'], 
+            time: '2-3 שעות',
+            lat: 33.7640278, lng: -84.3930722,
+            rating: 4.8, ratingCount: 3945,
+            placeId: 'ChIJPRzoQ4AE9YgRqgunUXVptj4',
+            website: 'https://www.civilandhumanrights.org/',
+            hours: {
+              'ראשון': '12:00-17:00', 'שני': '10:00-17:00', 'שלישי': '10:00-17:00',
+              'רביעי': '10:00-17:00', 'חמישי': '10:00-17:00', 'שישי': '10:00-17:00', 'שבת': '10:00-17:00'
+            },
+            mustSee: [
+              'תערוכת ה-Lunch Counter - חוויית סימולציה מטלטלת',
+              'תערוכת מרטין לותר קינג ממורהאוס קולג\'',
+              'תערוכת Broken Promises - תקופת הרקונסטרוקציה'
+            ],
+            imgQuery: 'National Center Civil Human Rights Atlanta',
+            desc: 'דירוג 4.8 מ-3,945 ביקורות - אחד המוזיאונים הכי חזקים בארה"ב. 5 דק\' מהאצטדיון. ~20$ לאדם.' 
+          },
+          { 
+            name: 'Ponce City Market + BeltLine', 
+            tags: ['אוכל', 'מרכז העיר'], 
+            time: '2-3 שעות',
+            lat: 33.7727683, lng: -84.3655967,
+            rating: 4.6, ratingCount: 16766,
+            placeId: 'ChIJTTv9ohAE9YgRgRWbbatrrsg',
+            website: 'https://poncecitymarket.com/',
+            hours: {
+              'ראשון': '11:00-20:00', 'שני': '10:00-21:00', 'שלישי': '10:00-21:00',
+              'רביעי': '10:00-21:00', 'חמישי': '10:00-21:00', 'שישי': '10:00-21:00', 'שבת': '10:00-21:00'
+            },
+            mustSee: [
+              'Central Food Hall - שוק אוכל ענק',
+              'Skyline Park - גג עם משחקים ונוף לעיר (בתשלום)',
+              'Atlanta BeltLine Eastside Trail הסמוך'
+            ],
+            imgQuery: 'Ponce City Market Atlanta BeltLine',
+            desc: 'דירוג 4.6 מ-16,766 ביקורות. מקום מאוד פעיל. ה-BeltLine הסמוך - מסלול 35 ק"מ סביב העיר. אפשר אופניים או קורקינטים חשמליים.' 
+          },
+          { 
+            name: 'Fox Bros Bar-B-Q', 
+            tags: ['BBQ', 'אוכל'], 
+            time: '1.5 שעות',
+            lat: 33.7570, lng: -84.3528,
+            rating: 4.5, ratingCount: 4500,
+            placeId: '',
+            website: 'https://foxbrosbbq.com/',
+            hours: {
+              'ראשון': '11:00-21:00', 'שני': '11:00-21:00', 'שלישי': '11:00-21:00',
+              'רביעי': '11:00-21:00', 'חמישי': '11:00-21:00', 'שישי': '11:00-22:00', 'שבת': '11:00-22:00'
+            },
+            mustSee: [
+              'Frito Pie - המנה המפורסמת שלהם',
+              'Brisket ב-Texas style',
+              'הבר עם בירות מקומיות'
+            ],
+            imgQuery: 'Fox Bros Bar-B-Q Atlanta Georgia',
+            desc: 'BBQ סגנון טקסי באטלנטה. צלעות מעולות, brisket לח, ה-Frito Pie שלהם אגדי.' 
+          },
+          { 
+            name: 'Lewis Barbecue Atlanta', 
+            tags: ['BBQ', 'אוכל'], 
+            time: '1.5 שעות',
+            lat: 33.7929, lng: -84.3719,
+            rating: 4.6, ratingCount: 1200,
+            placeId: '',
+            website: 'https://lewisbarbecue.com/',
+            hours: {
+              'ראשון': '11:00-20:00', 'שני': 'סגור', 'שלישי': '11:00-20:00',
+              'רביעי': '11:00-20:00', 'חמישי': '11:00-20:00', 'שישי': '11:00-21:00', 'שבת': '11:00-21:00'
+            },
+            mustSee: [
+              'Brisket - שמומלץ באופן מטורף',
+              'Mac and Cheese - הסייד הטוב ביותר',
+              'אווירת המקום החדשנית'
+            ],
+            imgQuery: 'Lewis Barbecue Charleston South Carolina',
+            desc: 'סניף של מסעדה מצ\'רלסטון שזכתה בכוכבים. brisket יוצא דופן. סגור ביום שני.' 
+          },
+          { 
+            name: 'The Brewhouse Cafe', 
+            tags: ['בר ספורט', 'משחק כדורגל'], 
+            time: '2-3 שעות',
+            lat: 33.7651, lng: -84.3489,
+            rating: 4.3, ratingCount: 1500,
+            placeId: '',
+            website: '',
+            hours: {
+              'ראשון': '11:00-00:00', 'שני': '11:00-00:00', 'שלישי': '11:00-00:00',
+              'רביעי': '11:00-00:00', 'חמישי': '11:00-02:00', 'שישי': '11:00-02:00', 'שבת': '11:00-02:00'
+            },
+            mustSee: [
+              'מסכים מותאמים למשחקים בינלאומיים',
+              'Fish and Chips באמת טוב',
+              'שכונת Little Five Points הבוהמית סביב'
+            ],
+            imgQuery: 'Brewhouse Cafe Atlanta soccer bar',
+            desc: 'הבר הכדורגלני המוביל באטלנטה. בלב Little Five Points - שכונה בוהמית.' 
+          },
+          { 
+            name: 'Piedmont Park', 
+            tags: ['פארק', 'טבע'], 
+            time: '1-2 שעות',
+            lat: 33.7879265, lng: -84.3721682,
+            rating: 4.8, ratingCount: 17861,
+            placeId: 'ChIJGaxkUDkE9YgRDjUv9U7qrvM',
+            website: 'https://piedmontpark.org/',
+            hours: { 'כל יום': '06:00-23:00' },
+            mustSee: [
+              'Lake Clara Meer - נוף לקו הרקיע מעל האגם',
+              'Atlanta Botanical Garden הסמוך',
+              'מסלולי הליכה מסודרים, אופניים להשכרה'
+            ],
+            imgQuery: 'Piedmont Park Atlanta skyline',
+            desc: 'דירוג 4.8 מ-17,861 ביקורות - הפארק הכי אהוב באטלנטה. "הסנטרל פארק של אטלנטה" במידטאון.' 
+          },
+          { 
+            name: 'Atlantic Station', 
+            tags: ['קניות', 'מרכז העיר'], 
+            time: '2-3 שעות',
+            lat: 33.7906, lng: -84.3970,
+            rating: 4.3, ratingCount: 6800,
+            placeId: '',
+            website: 'https://www.atlanticstation.com/',
+            hours: {
+              'ראשון': '12:00-19:00', 'שני': '11:00-20:00', 'שלישי': '11:00-20:00',
+              'רביעי': '11:00-20:00', 'חמישי': '11:00-20:00', 'שישי': '11:00-21:00', 'שבת': '11:00-21:00'
+            },
+            mustSee: [
+              'H&M, Zara, Old Navy ענקיים',
+              'IMAX Theatre',
+              'Pinkbox - מוזיקה חיה בערב'
+            ],
+            imgQuery: 'Atlantic Station Atlanta shopping',
+            desc: 'אזור מסחרי מודרני - חנויות, מסעדות, IMAX. נחמד לערב קליל.' 
+          },
+          { 
+            name: 'Sweet Auburn Curb Market', 
+            tags: ['אוכל', 'מרכז העיר'], 
+            time: '1-2 שעות',
+            lat: 33.7548, lng: -84.3795,
+            rating: 4.5, ratingCount: 3500,
+            placeId: '',
+            website: 'https://thecurbmarket.com/',
+            hours: {
+              'ראשון': 'סגור', 'שני': '08:00-18:00', 'שלישי': '08:00-18:00',
+              'רביעי': '08:00-18:00', 'חמישי': '08:00-18:00', 'שישי': '08:00-18:00', 'שבת': '08:00-18:00'
+            },
+            mustSee: [
+              'Grindhouse Killer Burgers - מהבורגרים הטובים בעיר',
+              'Bell Street Burritos',
+              'Miss Dee\'s - אוכל סוללי דרומי'
+            ],
+            imgQuery: 'Sweet Auburn Curb Market Atlanta',
+            desc: 'שוק עירוני היסטורי משנת 1924. דוכני אוכל, אוכל דרומי אותנטי במחירים שווים. סגור ביום ראשון.' 
+          }
+        ]
+      },
+      {
+        id: 'a2',
+        title: 'יום 2 · רביעי 01/07',
+        subtitle: 'משחק + טיסה לוושינגטון',
+        summary: '🎯 המשחק ב-12:00. בוקר רגוע, אחרי המשחק חזרה לעיר, איסוף חפצים, וטיסה לוושינגטון בערב.',
+        center: [33.7553, -84.4005],
+        zoom: 13,
+        attractions: [
+          { 
+            name: 'בוקר רגוע במלון', 
+            tags: [], 
+            time: '2-3 שעות',
+            lat: 33.7553, lng: -84.4005,
+            rating: 0, ratingCount: 0,
+            placeId: '',
+            website: '',
+            hours: { 'במלון': 'תלוי בצ\'ק-אאוט' },
+            mustSee: [],
+            imgQuery: 'Atlanta hotel breakfast',
+            desc: 'ארוחת בוקר, אריזה, צ\'ק-אאוט מאוחר.' 
+          },
+          { 
+            name: 'National Center for Civil and Human Rights', 
+            tags: ['מוזיאון', 'היסטוריה'], 
+            time: '1.5 שעות',
+            lat: 33.7640278, lng: -84.3930722,
+            rating: 4.8, ratingCount: 3945,
+            placeId: 'ChIJPRzoQ4AE9YgRqgunUXVptj4',
+            website: 'https://www.civilandhumanrights.org/',
+            hours: { 'רביעי': '10:00-17:00' },
+            mustSee: [
+              'תערוכת ה-Lunch Counter',
+              'תערוכת מ.ל.ק.',
+              'גלריית Broken Promises'
+            ],
+            imgQuery: 'National Center Civil Human Rights Atlanta',
+            desc: 'אם לא הספקתם אתמול: פותח ב-10:00, 5 דק\' מהאצטדיון.' 
+          },
+          { 
+            name: 'Mercedes-Benz Stadium - שמינית הגמר', 
+            tags: ['משחק כדורגל', 'חוויה ייחודית'], 
+            time: '4-5 שעות',
+            lat: 33.7553232, lng: -84.4005905,
+            rating: 4.7, ratingCount: 34969,
+            placeId: 'ChIJ45nHOHwD9YgR7vBdgAC-QWU',
+            website: 'https://mercedesbenzstadium.com/',
+            hours: { 'יום המשחק': 'שערים נפתחים 2 שעות לפני' },
+            mustSee: [
+              'הגג המקופל הייחודי - מבנה מעוצב כמו דיאפרגמה',
+              'מסך 360° עגול - 58 מטר רוחב',
+              'מחירי האוכל הזולים - hot dog ב-2$'
+            ],
+            imgQuery: 'Mercedes-Benz Stadium Atlanta',
+            desc: 'דירוג 4.7 מ-34,969 ביקורות - מהאצטדיונים הכי חדשניים בעולם. שעת המשחק: 12:00. הגעה מומלצת: 10:00. **MARTA** עוצר ב-GWCC/CNN Center Station ו-Vine City Station.' 
+          },
+          { 
+            name: 'World of Coca-Cola', 
+            tags: ['מוזיאון', 'מרכז העיר'], 
+            time: '2 שעות',
+            lat: 33.7625564, lng: -84.392436,
+            rating: 4.4, ratingCount: 35776,
+            placeId: 'ChIJ8yjI7H4E9YgRyacfAZqyAUQ',
+            website: 'https://www.worldofcoca-cola.com/',
+            hours: {
+              'ראשון': '10:00-18:00', 'שני': '10:00-17:00', 'שלישי': '10:00-17:00',
+              'רביעי': '10:00-17:00', 'חמישי': '10:00-17:00', 'שישי': '10:00-18:00', 'שבת': '10:00-18:00'
+            },
+            mustSee: [
+              'חדר טעימות - 100+ משקאות מכל העולם',
+              'הכספת הסודית עם פורמולת קוקה-קולה',
+              'הסרט תלת-ממד 4D על תולדות החברה'
+            ],
+            imgQuery: 'World of Coca-Cola Atlanta',
+            desc: 'דירוג 4.4 מ-35,776 ביקורות. אופציה לפני הטיסה. כניסה ~18$ למבוגר.' 
+          },
+          { 
+            name: 'Georgia Aquarium', 
+            tags: ['חוויה ייחודית', 'מרכז העיר'], 
+            time: '3 שעות',
+            lat: 33.763382, lng: -84.3951098,
+            rating: 4.6, ratingCount: 88825,
+            placeId: 'ChIJGQT0RX4E9YgR3EqvqXZw1_4',
+            website: 'https://www.georgiaaquarium.org/',
+            hours: { 'כל יום': '09:00-21:00 (משתנה)' },
+            mustSee: [
+              'Ocean Voyager - מנהרת 30 מטר מתחת לכרישי לוויתן',
+              'תצוגת דולפינים - מופע יומי',
+              'תצוגת פינגווינים אנטארקטיים'
+            ],
+            imgQuery: 'Georgia Aquarium whale shark',
+            desc: 'דירוג 4.6 מ-88,825 ביקורות - מהאקווריומים הטובים בעולם. אחד הבודדים שמחזיק כרישי לוויתן. כניסה ~50$.' 
+          },
+          { 
+            name: 'נסיעה לשדה התעופה', 
+            tags: [], 
+            time: '2-3 שעות',
+            lat: 33.6407, lng: -84.4277,
+            rating: 0, ratingCount: 0,
+            placeId: '',
+            website: '',
+            hours: { 'תמיד': 'פתוח 24/7' },
+            mustSee: [],
+            imgQuery: 'Atlanta Hartsfield Jackson airport',
+            desc: 'חזרה למלון, נסיעה ל-ATL airport. ATL הוא אחד מהשדות העמוסים בעולם - להגיע 2 שעות לפני.' 
+          }
+        ]
+      }
+    ]
+  },
+  dc: {
+    label: 'וושינגטון',
+    days: [
+      {
+        id: 'dc1',
+        title: 'יום 1 · רביעי 01/07 (לילה)',
+        subtitle: 'הגעה מאוחרת',
+        summary: 'הגעה לוושינגטון בלילה. אם יש כוח - האנדרטאות מוארות בלילה זו חוויה שלא לפספס.',
+        center: [38.8893, -77.0502],
+        zoom: 14,
+        attractions: [
+          { 
+            name: 'Lincoln Memorial (סיבוב לילה)', 
+            tags: ['אנדרטה', 'היסטוריה'], 
+            time: '30-45 דק\'',
+            lat: 38.8892686, lng: -77.050176,
+            rating: 4.8, ratingCount: 54064,
+            placeId: 'ChIJh2KQ4HG3t4kRti5cycnRSRA',
+            website: 'https://www.nps.gov/linc',
+            hours: { 'כל יום': 'פתוח 24 שעות' },
+            mustSee: [
+              'פסל לינקולן הענק (5.8 מ\') - מואר בלילה',
+              'נאומי לינקולן חרוטים על הקירות',
+              'נוף ל-Reflecting Pool ול-Washington Monument'
+            ],
+            imgQuery: 'Lincoln Memorial Washington DC night',
+            desc: 'דירוג 4.8 מ-54,064 ביקורות. פתוח 24 שעות. בלילה מוארת ופחות צפופה. **חוויה אגדית בלילה**.' 
+          },
+          { 
+            name: 'WWII Memorial (לילה)', 
+            tags: ['אנדרטה', 'היסטוריה'], 
+            time: '15-20 דק\'',
+            lat: 38.8895, lng: -77.0404,
+            rating: 4.8, ratingCount: 14500,
+            placeId: '',
+            website: 'https://www.nps.gov/wwii',
+            hours: { 'כל יום': 'פתוח 24 שעות' },
+            mustSee: [
+              '56 העמודים - כל מדינה ב-USA',
+              'קיר ה-Freedom Wall עם 4,000 הכוכבים',
+              'המזרקות המרכזיות מוארות בלילה'
+            ],
+            imgQuery: 'WWII Memorial Washington DC night',
+            desc: 'אנדרטת מלחמת העולם השנייה. בדרך הליכה ל-Lincoln Memorial.' 
+          },
+          { 
+            name: 'הליכה ב-National Mall', 
+            tags: ['פארק', 'מרכז העיר'], 
+            time: '1-2 שעות',
+            lat: 38.8895, lng: -77.0353,
+            rating: 4.7, ratingCount: 25000,
+            placeId: '',
+            website: 'https://www.nps.gov/nama',
+            hours: { 'כל יום': 'פתוח 24 שעות' },
+            mustSee: [
+              'הליכה בין האנדרטאות בלילה',
+              'גורדי שחקים מוארים של הקפיטול',
+              'אווירה רגועה ללא קהל היום'
+            ],
+            imgQuery: 'National Mall Washington DC night',
+            desc: 'הליכה לאורך הפס הירוק האייקוני בלילה.' 
+          }
+        ]
+      },
+      {
+        id: 'dc2',
+        title: 'יום 2 · חמישי 02/07',
+        subtitle: 'יום מלא בוושינגטון',
+        summary: 'יום ארוך וגדוש. ה-National Mall הוא הפיל בחדר. הסמית\'סוניאן חינמיים. בחרו 1-2 מוזיאונים מקסימום.',
+        center: [38.8895, -77.0200],
+        zoom: 13,
+        attractions: [
+          { 
+            name: 'Washington Monument', 
+            tags: ['אנדרטה', 'תצפית'], 
+            time: '1 שעה',
+            lat: 38.8894838, lng: -77.0352791,
+            rating: 4.7, ratingCount: 24170,
+            placeId: 'ChIJfy4MvqG3t4kRuL_QjoJGc-k',
+            website: 'https://www.nps.gov/wamo',
+            hours: { 'כל יום': '09:00-17:00 (תצפית)' },
+            mustSee: [
+              'תצפית מקומה 169 מ\' עם נוף 360',
+              'מבט מבחוץ - האובליסק כולו',
+              'אזור הדגלים מסביב - 50 דגלי המדינות'
+            ],
+            imgQuery: 'Washington Monument National Mall',
+            desc: 'דירוג 4.7 מ-24,170 ביקורות. כרטיסים חינמיים ל-תצפית ב-1$ - **חובה להזמין מראש**. נוף מטורף ל-National Mall.' 
+          },
+          { 
+            name: 'Lincoln Memorial', 
+            tags: ['אנדרטה', 'היסטוריה'], 
+            time: '45 דק\'',
+            lat: 38.8892686, lng: -77.050176,
+            rating: 4.8, ratingCount: 54064,
+            placeId: 'ChIJh2KQ4HG3t4kRti5cycnRSRA',
+            website: 'https://www.nps.gov/linc',
+            hours: { 'כל יום': '24 שעות' },
+            mustSee: [
+              'פסל לינקולן הענק',
+              'מקום הנאום "I Have a Dream"',
+              'מדרגות לאזור Reflecting Pool'
+            ],
+            imgQuery: 'Lincoln Memorial Washington DC',
+            desc: 'דירוג 4.8 - האייקון של DC.' 
+          },
+          { 
+            name: 'Vietnam Veterans Memorial', 
+            tags: ['אנדרטה', 'היסטוריה'], 
+            time: '30 דק\'',
+            lat: 38.8913, lng: -77.0476,
+            rating: 4.8, ratingCount: 8500,
+            placeId: '',
+            website: 'https://www.nps.gov/vive',
+            hours: { 'כל יום': '24 שעות' },
+            mustSee: [
+              'הקיר השחור עם 58,318 שמות',
+              'פסל "The Three Soldiers"',
+              'פסל אישה אחות מהמלחמה'
+            ],
+            imgQuery: 'Vietnam Veterans Memorial Wall',
+            desc: 'קיר שחור עם השמות. מעוצב על-ידי מאיה לין. עוצמתי.' 
+          },
+          { 
+            name: 'Korean War Memorial', 
+            tags: ['אנדרטה', 'היסטוריה'], 
+            time: '20 דק\'',
+            lat: 38.8879, lng: -77.0476,
+            rating: 4.8, ratingCount: 6500,
+            placeId: '',
+            website: 'https://www.nps.gov/kowa',
+            hours: { 'כל יום': '24 שעות' },
+            mustSee: [
+              '19 פסלי חיילים בשדה',
+              'קיר ההנצחה עם השמות',
+              'בריכת הזיכרון השחורה'
+            ],
+            imgQuery: 'Korean War Memorial DC',
+            desc: 'פסלי חיילים בשטח מטעה. מרשים.' 
+          },
+          { 
+            name: 'Smithsonian Air and Space Museum', 
+            tags: ['מוזיאון', 'חוויה ייחודית'], 
+            time: '2-3 שעות',
+            lat: 38.8882063, lng: -77.0198164,
+            rating: 4.6, ratingCount: 47950,
+            placeId: 'ChIJISQme4O3t4kRG-iM3TfJ5_g',
+            website: 'https://airandspace.si.edu/',
+            hours: { 'כל יום': '10:00-17:30' },
+            mustSee: [
+              'מטוס האחים רייט המקורי (Wright Flyer)',
+              'אפולו 11 Command Module - חזר מהירח',
+              'Spirit of St. Louis - של לינדברג'
+            ],
+            imgQuery: 'Smithsonian Air Space Museum DC',
+            desc: 'דירוג 4.6 מ-47,950 ביקורות. חינמי לחלוטין. **דורש כרטיס חינמי מראש** באתר. אם אהבת NASA ביוסטון - זה האח הגדול.' 
+          },
+          { 
+            name: 'Smithsonian Natural History', 
+            tags: ['מוזיאון'], 
+            time: '2-3 שעות',
+            lat: 38.8913, lng: -77.0261,
+            rating: 4.7, ratingCount: 35000,
+            placeId: '',
+            website: 'https://naturalhistory.si.edu/',
+            hours: { 'כל יום': '10:00-17:30' },
+            mustSee: [
+              'יהלום ההופ - 45.52 קראט מקוללים',
+              'דינוזאורים - שלדי ענק',
+              'אגף הימים - לוויתן בגודל מלא'
+            ],
+            imgQuery: 'Smithsonian Natural History Museum DC',
+            desc: 'חינמי. אחד המוזיאונים הטובים בעולם.' 
+          },
+          { 
+            name: 'Smithsonian American History', 
+            tags: ['מוזיאון', 'היסטוריה'], 
+            time: '2-3 שעות',
+            lat: 38.8911, lng: -77.0301,
+            rating: 4.6, ratingCount: 32000,
+            placeId: '',
+            website: 'https://americanhistory.si.edu/',
+            hours: { 'כל יום': '10:00-17:30' },
+            mustSee: [
+              'הדגל המקורי שהשרה את ההמנון האמריקאי',
+              'נעלי דורות\'י מ"הקוסם מארץ עוץ"',
+              'אגף הפרזידנטים'
+            ],
+            imgQuery: 'Smithsonian American History Museum',
+            desc: 'חינמי. חוויה אמריקאית קלאסית.' 
+          },
+          { 
+            name: 'African American History Museum', 
+            tags: ['מוזיאון', 'היסטוריה'], 
+            time: '3-4 שעות',
+            lat: 38.8910, lng: -77.0327,
+            rating: 4.8, ratingCount: 18500,
+            placeId: '',
+            website: 'https://nmaahc.si.edu/',
+            hours: { 'כל יום': '10:00-17:30' },
+            mustSee: [
+              'אגף העבדות - שרשראות מקוריות, ארון קבורה',
+              'אגף Hip-Hop - כובע של LL Cool J',
+              'מטוס של החיילים השחורים מטסקיגי'
+            ],
+            imgQuery: 'African American History Museum DC',
+            desc: 'דירוג 4.8 - חזק במיוחד. **דורש כרטיס חינמי מראש**. חינמי.' 
+          },
+          { 
+            name: 'International Spy Museum', 
+            tags: ['מוזיאון', 'חוויה ייחודית'], 
+            time: '2-3 שעות',
+            lat: 38.8870, lng: -77.0228,
+            rating: 4.5, ratingCount: 11000,
+            placeId: '',
+            website: 'https://www.spymuseum.org/',
+            hours: { 'כל יום': '09:00-19:00' },
+            mustSee: [
+              '"משימת ריגול" אינטראקטיבית',
+              'נעל-מקליט של ה-KGB',
+              'אגף ג\'יימס בונד'
+            ],
+            imgQuery: 'International Spy Museum Washington DC',
+            desc: 'מוזיאון ריגול עם תערוכות אינטראקטיביות. בתשלום ~26$.' 
+          },
+          { 
+            name: 'Capitol Hill (חיצוני)', 
+            tags: ['היסטוריה', 'אנדרטה'], 
+            time: '30-60 דק\'',
+            lat: 38.8898, lng: -77.0091,
+            rating: 4.7, ratingCount: 21000,
+            placeId: '',
+            website: 'https://www.visitthecapitol.gov/',
+            hours: { 'מוצג מבחוץ': '24/7' },
+            mustSee: [
+              'הכיפה המפורסמת',
+              'גגות המבנים הצדדיים',
+              'הגנים הסביב'
+            ],
+            imgQuery: 'US Capitol Building Washington DC',
+            desc: 'מבט מבחוץ + תמונות. סיורים מודרכים בפנים דורשים תיאום מראש.' 
+          },
+          { 
+            name: 'Library of Congress', 
+            tags: ['מוזיאון', 'היסטוריה'], 
+            time: '1-2 שעות',
+            lat: 38.8887, lng: -77.0047,
+            rating: 4.8, ratingCount: 8500,
+            placeId: '',
+            website: 'https://www.loc.gov/',
+            hours: {
+              'ראשון': 'סגור', 'שני': '08:30-16:30', 'שלישי': '08:30-16:30',
+              'רביעי': '08:30-16:30', 'חמישי': '08:30-16:30', 'שישי': '08:30-16:30', 'שבת': '08:30-16:30'
+            },
+            mustSee: [
+              'Main Reading Room - אולם הקריאה האייקוני',
+              'תקרת זהב Great Hall',
+              'תנ"ך גוטנברג המקורי'
+            ],
+            imgQuery: 'Library of Congress interior reading room',
+            desc: 'דירוג 4.8 - מהמקומות הכי יפים בעיר. חינמי. **סגור ביום ראשון**.' 
+          },
+          { 
+            name: 'Arlington National Cemetery', 
+            tags: ['היסטוריה', 'אנדרטה'], 
+            time: '2-3 שעות',
+            lat: 38.8783, lng: -77.0687,
+            rating: 4.8, ratingCount: 17000,
+            placeId: '',
+            website: 'https://www.arlingtoncemetery.mil/',
+            hours: { 'כל יום': '08:00-17:00' },
+            mustSee: [
+              'טקס חילופי המשמר ב-Tomb of the Unknown Soldier',
+              'קבר ג\'ון פ. קנדי עם להבת אש נצח',
+              'בית רוברט E. לי על ההר'
+            ],
+            imgQuery: 'Arlington National Cemetery Virginia',
+            desc: 'דירוג 4.8. **טקס חילופי המשמר כל שעה**. 15 דק\' מעבר לפוטומק. חינמי.' 
+          },
+          { 
+            name: 'Tom\'s Watch Bar Navy Yard', 
+            tags: ['בר ספורט', 'משחק כדורגל'], 
+            time: '2-3 שעות',
+            lat: 38.8754, lng: -77.0073,
+            rating: 4.8, ratingCount: 2700,
+            placeId: '',
+            website: 'https://tomswatchbar.com/',
+            hours: {
+              'ראשון': '11:00-22:00', 'שני': '11:00-22:00', 'שלישי': '11:00-22:00',
+              'רביעי': '11:00-22:00', 'חמישי': '11:00-23:00', 'שישי': '11:00-02:00', 'שבת': '11:00-02:00'
+            },
+            mustSee: [
+              'מסך הענק רצפה-לתקרה',
+              'תפריט מצוין - בורגרים, סלטים',
+              'הפטיו החיצוני'
+            ],
+            imgQuery: 'Toms Watch Bar Navy Yard DC',
+            desc: 'דירוג 4.8 מ-2,700+ ביקורות - **מהברים הספורטיים הטובים בעיר**.' 
+          }
+        ]
+      },
+      {
+        id: 'dc3',
+        title: 'יום 3 · שישי 03/07',
+        subtitle: 'בוקר וושינגטון + רכבת לניו יורק',
+        summary: 'בוקר אחרון לסיבוב קצר. רכבת Amtrak מ-Union Station ~3 שעות לפנסילבניה סטיישן.',
+        center: [38.8979, -77.0067],
+        zoom: 14,
+        attractions: [
+          { 
+            name: 'Capitol Hill', 
+            tags: ['היסטוריה'], 
+            time: '30-45 דק\'',
+            lat: 38.8898, lng: -77.0091,
+            rating: 4.7, ratingCount: 21000,
+            placeId: '',
+            website: 'https://www.visitthecapitol.gov/',
+            hours: { 'מוצג מבחוץ': '24/7' },
+            mustSee: [
+              'הכיפה',
+              'המבנים הצדדיים',
+              'הגנים סביב'
+            ],
+            imgQuery: 'US Capitol Building Washington DC',
+            desc: '5 דק\' מ-Union Station.' 
+          },
+          { 
+            name: 'Library of Congress', 
+            tags: ['מוזיאון', 'היסטוריה'], 
+            time: '1 שעה',
+            lat: 38.8887, lng: -77.0047,
+            rating: 4.8, ratingCount: 8500,
+            placeId: '',
+            website: 'https://www.loc.gov/',
+            hours: { 'שישי': '08:30-16:30' },
+            mustSee: [
+              'Main Reading Room',
+              'Great Hall',
+              'תנ"ך גוטנברג'
+            ],
+            imgQuery: 'Library of Congress interior',
+            desc: '5 דק\' מ-Union Station, חינמי. דירוג 4.8.' 
+          },
+          { 
+            name: 'Union Station', 
+            tags: ['מרכז העיר'], 
+            time: '30 דק\'',
+            lat: 38.8973, lng: -77.0063,
+            rating: 4.5, ratingCount: 21000,
+            placeId: '',
+            website: 'https://www.unionstationdc.com/',
+            hours: { 'כל יום': '05:00-00:00' },
+            mustSee: [
+              'אולם ראשי בסגנון ביאוז-ארטס',
+              'מסעדות וחנויות בתחנה',
+              'אדריכלות ניאו-קלאסית'
+            ],
+            imgQuery: 'Union Station Washington DC interior',
+            desc: 'תחנת הרכבת ההיסטורית - אדריכלות מטורפת.' 
+          },
+          { 
+            name: 'רכבת Amtrak לניו יורק', 
+            tags: ['חוויה ייחודית'], 
+            time: '3-3.5 שעות',
+            lat: 38.8973, lng: -77.0063,
+            rating: 4.3, ratingCount: 5000,
+            placeId: '',
+            website: 'https://www.amtrak.com/',
+            hours: { 'יציאות': 'כל 30-60 דק\'' },
+            mustSee: [
+              'Acela - רכבת מהירה (180 קמ"ש)',
+              'Northeast Regional - אופציה זולה',
+              'WiFi חינמי בכל הרכבות'
+            ],
+            imgQuery: 'Amtrak Acela train Northeast',
+            desc: 'מ-Union Station ב-DC ל-Penn Station ב-NYC. **Acela** - מהירה ויקרה (~150$). **Northeast Regional** - זול יותר (~60$).' 
+          }
+        ]
+      }
+    ]
+  }
+};
+
+const matchData = [
+  { date: '25/06', dayName: 'חמישי', yourCity: 'יוסטון (יום נחיתה)', matches: [
+    { time: '15:00 CT', teams: 'Tunisia vs Netherlands', venue: 'Kansas City', tier: 'משחק קבוצות', highlight: false },
+    { time: '15:00 CT', teams: 'Ecuador vs Germany', venue: 'New York', tier: 'משחק קבוצות', highlight: true },
+    { time: '18:00 CT', teams: 'Japan vs Sweden', venue: 'דאלאס', tier: 'משחק קבוצות', highlight: true },
+    { time: '21:00 CT', teams: 'Türkiye vs USA', venue: 'Los Angeles', tier: 'משחק קבוצות', highlight: true }
+  ]},
+  { date: '26/06', dayName: 'שישי', yourCity: 'יוסטון', note: '⚽ משחק קבוצות ב-NRG Stadium - יוסטון! אופציה לקנות כרטיסים נוספים', matches: [
+    { time: '14:00 CT', teams: 'Norway vs France', venue: 'בוסטון', tier: 'משחק קבוצות', highlight: true },
+    { time: '14:00 CT', teams: 'Senegal vs Iraq', venue: 'טורונטו', tier: 'משחק קבוצות', highlight: false },
+    { time: '19:00 CT', teams: 'Cape Verde vs Saudi Arabia', venue: 'NRG Stadium יוסטון', tier: 'משחק קבוצות', highlight: true, here: true },
+    { time: '22:00 CT', teams: 'New Zealand vs Belgium', venue: 'ונקובר', tier: 'משחק קבוצות', highlight: true },
+    { time: '22:00 CT', teams: 'Egypt vs Iran', venue: 'סיאטל', tier: 'משחק קבוצות', highlight: false }
+  ]},
+  { date: '27/06', dayName: 'שבת', yourCity: 'יוסטון', matches: [
+    { time: '16:00 CT', teams: 'Panama vs England', venue: 'New York', tier: 'משחק קבוצות', highlight: true },
+    { time: '16:00 CT', teams: 'Croatia vs Ghana', venue: 'פילדלפיה', tier: 'משחק קבוצות', highlight: true },
+    { time: '18:30 CT', teams: 'Colombia vs Portugal', venue: 'מיאמי', tier: 'משחק קבוצות', highlight: true, big: true },
+    { time: '18:30 CT', teams: 'DR Congo vs Uzbekistan', venue: 'אטלנטה', tier: 'משחק קבוצות', highlight: false },
+    { time: '21:00 CT', teams: 'Algeria vs Austria', venue: 'קנזס סיטי', tier: 'משחק קבוצות', highlight: false },
+    { time: '21:00 CT', teams: 'Jordan vs Argentina', venue: 'דאלאס', tier: 'משחק קבוצות', highlight: true, big: true }
+  ]},
+  { date: '28/06', dayName: 'ראשון', yourCity: 'יוסטון', note: 'הימים האחרונים של בית. שמיניות הגמר מתחילות', matches: [
+    { time: '14:00 CT', teams: 'מנצחת בית A vs סגנית בית B (Round of 32)', venue: 'LA', tier: 'שמינית גמר', highlight: true },
+    { time: 'TBD', teams: '+ משחקי בית אחרונים', venue: 'מגוון', tier: 'משחק קבוצות', highlight: false }
+  ]},
+  { date: '29/06', dayName: 'שני', yourCity: 'יוסטון → אטלנטה', note: '🎯 המשחק שלכם ב-NRG Stadium ב-13:00 CT', matches: [
+    { time: '12:00 CT', teams: 'Match 76 - מנצחת C vs סגנית F', venue: 'NRG Stadium יוסטון', tier: 'שמינית גמר', highlight: true, here: true, ours: true },
+    { time: '15:30 CT', teams: 'Match 74 - מנצחת E vs 3rd A/B/C/D/F', venue: 'בוסטון', tier: 'שמינית גמר', highlight: true },
+    { time: '20:00 CT', teams: 'Match 75 - מנצחת F vs סגנית C', venue: 'מונטריי, מקסיקו', tier: 'שמינית גמר', highlight: true }
+  ]},
+  { date: '30/06', dayName: 'שלישי', yourCity: 'בדרך לאטלנטה', matches: [
+    { time: '13:00 ET', teams: 'Match 78 - סגנית E vs סגנית I', venue: 'דאלאס', tier: 'שמינית גמר', highlight: true },
+    { time: '17:00 ET', teams: 'Match 77 - מנצחת I vs 3rd C/D/F/G/H', venue: 'New York', tier: 'שמינית גמר', highlight: true, big: true },
+    { time: '21:00 ET', teams: 'Match 79 - מנצחת A vs 3rd', venue: 'מקסיקו סיטי', tier: 'שמינית גמר', highlight: true }
+  ]},
+  { date: '01/07', dayName: 'רביעי', yourCity: 'אטלנטה → וושינגטון', note: '🎯 המשחק שלכם ב-Mercedes-Benz Stadium ב-12:00 ET', matches: [
+    { time: '12:00 ET', teams: 'Match 80 - מנצחת L vs 3rd E/H/I/J/K', venue: 'Mercedes-Benz אטלנטה', tier: 'שמינית גמר', highlight: true, here: true, ours: true },
+    { time: '16:00 ET', teams: 'Match 81 - מנצחת D vs 3rd B/E/F/I/J', venue: 'סיאטל', tier: 'שמינית גמר', highlight: true },
+    { time: '20:00 ET', teams: 'Match 82 - מנצחת G vs 3rd', venue: 'לוס אנג\'לס', tier: 'שמינית גמר', highlight: true }
+  ]},
+  { date: '02/07', dayName: 'חמישי', yourCity: 'וושינגטון', matches: [
+    { time: '12:00 ET', teams: 'Match 83 - מנצחת H vs סגנית J', venue: 'מיאמי', tier: 'שמינית גמר', highlight: true },
+    { time: '16:00 ET', teams: 'Match 84', venue: 'TBD', tier: 'שמינית גמר', highlight: false },
+    { time: '20:00 ET', teams: 'Match 85 - מנצחת B vs 3rd', venue: 'TBD', tier: 'שמינית גמר', highlight: true }
+  ]},
+  { date: '03/07', dayName: 'שישי', yourCity: 'וושינגטון → ניו יורק', matches: [
+    { time: '12:00 ET', teams: 'Match 86 - מנצחת K vs 3rd', venue: 'אטלנטה', tier: 'שמינית גמר', highlight: true },
+    { time: '16:00 ET', teams: 'Match 87', venue: 'TBD', tier: 'שמינית גמר', highlight: false },
+    { time: '20:00 ET', teams: 'Match 88 - מנצחת J vs סגנית H', venue: 'TBD', tier: 'שמינית גמר', highlight: true }
+  ]},
+  { date: '04/07', dayName: 'שבת', yourCity: 'ניו יורק', note: '🇺🇸 4 ביולי - יום העצמאות האמריקאי!', matches: [
+    { time: '12:00 ET', teams: 'Match 89 - רבע גמר (W73 vs W75)', venue: 'TBD', tier: 'רבע גמר', highlight: true, big: true },
+    { time: '16:00 ET', teams: 'Match 90 - רבע גמר', venue: 'TBD', tier: 'רבע גמר', highlight: true, big: true }
+  ]},
+  { date: '05/07', dayName: 'ראשון', yourCity: 'ניו יורק', matches: [
+    { time: '12:00 ET', teams: 'Match 91 - רבע גמר', venue: 'TBD', tier: 'רבע גמר', highlight: true, big: true },
+    { time: '16:00 ET', teams: 'Match 92 - רבע גמר', venue: 'TBD', tier: 'רבע גמר', highlight: true, big: true }
+  ]}
+];
+
+const barData = {
+  houston: { label: 'יוסטון (25/06 - 29/06)', bars: [
+    { name: 'Pitch 25', rec: 'הכי מומלץ', tags: 'EaDo · ליד Shell Energy Stadium', desc: 'הבר הכי שווה לכדורגל ביוסטון, בבעלות שחקן הכדורגל לשעבר Brian Ching. מגרש כדורגל אמיתי במקום, 50+ בירות בלחיצה, מסכי ענק, אזור גינה חיצוני.' },
+    { name: 'Phoenix on Westheimer', rec: 'אווירת פאב', tags: 'Westheimer · פאב בריטי', desc: 'פאב בריטי קטן ושמח, האווירה הכי "פאב כדורגל אירופי" ביוסטון.' },
+    { name: 'Social Beer Garden HTX', rec: 'גן בירה משפחתי', tags: 'Midtown · חיצוני', desc: 'גן בירה גדול עם המון מסכים, ספסלים, אוכל מגוון מפודטראקים.' },
+    { name: 'Discovery Green - FIFA Fan Fest', rec: 'חינמי, אווירת חגיגה', tags: 'Downtown · אוטדור', desc: 'ה-Fan Festival הרשמי של פיפ"א ביוסטון. כניסה חופשית.' }
+  ]},
+  atlanta: { label: 'אטלנטה (30/06 - 01/07)', bars: [
+    { name: 'The Brewhouse Cafe', rec: 'הכי מומלץ', tags: 'Little Five Points · 4.3⭐', desc: 'הבר הכדורגלני המוביל באטלנטה. אווירת פאב, מנגינות בריטיות.' },
+    { name: 'Wicked Wolf Atlanta', rec: 'אטרקטיבי, צעיר', tags: 'Midtown · 4.6⭐', desc: 'בר ספורט גדול במידטאון, מסכים בכל פינה.' },
+    { name: 'The Midway Pub', rec: 'מקומי ושקט יותר', tags: 'East Atlanta · 4.4⭐', desc: 'פאב מקומי בשכונת East Atlanta.' },
+    { name: 'Sports & Social Atlanta', rec: 'מסך ענק', tags: 'The Battery · 4.0⭐', desc: 'בר ספורט עם מסך ענק רצפה-תקרה.' },
+    { name: 'Centennial Olympic Park - FIFA Fan Fest', rec: 'חינמי, אווירה', tags: 'Downtown · אוטדור', desc: 'ה-FIFA Fan Festival הרשמי באטלנטה.' }
+  ]},
+  dc: { label: 'וושינגטון (01/07 - 03/07)', bars: [
+    { name: 'Tom\'s Watch Bar - Navy Yard', rec: 'הכי מומלץ', tags: 'Navy Yard · 4.8⭐', desc: 'בר ספורט מעולה עם מסכי ענק. דירוג 4.8 מ-2,700+ ביקורות.' },
+    { name: 'BUDDY\'S DC', rec: 'מקומי אותנטי', tags: 'Columbia Heights · 4.5⭐', desc: 'בר ספורט קטן יותר ואותנטי.' },
+    { name: 'Public Bar Live', rec: '3 קומות', tags: 'Dupont Circle · 4.0⭐', desc: 'בר ספורט עם 3 קומות.' },
+    { name: 'Penn Quarter Sports Tavern', rec: 'מרכזי', tags: 'Penn Quarter · 4.3⭐', desc: 'בלב הדאון טאון.' },
+    { name: 'Over Under Rooftop', rec: 'גג + נוף', tags: 'Mt Vernon · 4.2⭐', desc: 'בר על גג, ספורט + נוף לעיר.' }
+  ]}
+};
+
+const tagColors = {
+  'אוכל': { bg: '#fde7c8', text: '#7c4a00' },
+  'BBQ': { bg: '#fcd9c2', text: '#8a3416' },
+  'היסטוריה': { bg: '#f5e1c8', text: '#7c5a00' },
+  'מוזיאון': { bg: '#f5e1c8', text: '#7c5a00' },
+  'טבע': { bg: '#dde8c8', text: '#4a6020' },
+  'פארק': { bg: '#dde8c8', text: '#4a6020' },
+  'קניות': { bg: '#f5d4dc', text: '#7c2a4a' },
+  'אאוטלט': { bg: '#f5d4dc', text: '#7c2a4a' },
+  'משחק כדורגל': { bg: '#d4dcec', text: '#1a3a6a' },
+  'בר ספורט': { bg: '#d4dcec', text: '#1a3a6a' },
+  'תצפית': { bg: '#dccae8', text: '#3a2270' },
+  'מרכז העיר': { bg: '#c8e0d4', text: '#1a4030' },
+  'חוויה ייחודית': { bg: '#dccae8', text: '#3a2270' },
+  'אנדרטה': { bg: '#f5e1c8', text: '#7c5a00' }
+};
+
+const dayOrder = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+
+function tag(name) {
+  const c = tagColors[name] || { bg: '#f5e6d3', text: '#5c3a2e' };
+  return `<span class="tag-pill" style="background:${c.bg};color:${c.text}">${name}</span>`;
+}
+
+function mapsLink(query) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
+function mapsLinkLatLng(lat, lng, name) {
+  return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}&query_place_id=`;
+}
+
+function reviewsLink(placeId, name) {
+  if (placeId) {
+    return `https://search.google.com/local/reviews?placeid=${placeId}`;
+  }
+  return `https://www.google.com/search?q=${encodeURIComponent(name + ' reviews')}`;
+}
+
+function imgSearchLink(query) {
+  return `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
+}
+
+function ratingPill(rating, count) {
+  if (!rating || rating === 0) return '';
+  const formatCount = count > 1000 ? `${(count/1000).toFixed(1)}k` : count;
+  return `<span class="rating-pill"><span class="star">★</span>${rating} <span class="count">(${formatCount})</span></span>`;
+}
+
+function renderHours(hours) {
+  if (!hours) return '';
+  const keys = Object.keys(hours);
+  if (keys.length === 1) {
+    return `<div class="hours-grid"><span class="hours-day">${keys[0]}:</span><span class="hours-time">${hours[keys[0]]}</span></div>`;
+  }
+  return `<div class="hours-grid">${keys.map(day => {
+    const time = hours[day];
+    const isClosed = time.includes('סגור');
+    return `<span class="hours-day">${day}:</span><span class="hours-time ${isClosed ? 'hours-closed' : ''}">${time}</span>`;
+  }).join('')}</div>`;
+}
+
+let currentCity = 'houston';
+let currentDayIdx = 0;
+let currentMap = null;
+
+// משיכת תמונה מ-Wikipedia לפי שם אטרקציה - מבקש תמונה רחבה (800px)
+async function fetchWikiImage(query) {
+  try {
+    const searchRes = await fetch(
+      `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*&srlimit=1`
+    );
+    const searchData = await searchRes.json();
+    if (!searchData.query?.search?.length) return null;
+
+    const title = searchData.query.search[0].title;
+    const summaryRes = await fetch(
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`
+    );
+    const summaryData = await summaryRes.json();
+    const src = summaryData.thumbnail?.source;
+    if (!src) return null;
+    // הגדל את התמונה ל-800px כדי למנוע מתיחה
+    return src.replace(/\/\d+px-/, '/800px-');
+  } catch (e) {
+    return null;
+  }
+}
+
+function renderDayTabs() {
+  const container = document.getElementById('day-tabs-container');
+  if (currentCity === 'matches') {
+    container.innerHTML = `
+      <button class="day-tab active" data-view="schedule">לוח משחקים</button>
+      <button class="day-tab" data-view="bars">ברים לצפייה</button>
+    `;
+    container.querySelectorAll('.day-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        container.querySelectorAll('.day-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderMatchesView(btn.dataset.view);
+      });
+    });
+    return;
+  }
+  const city = data[currentCity];
+  container.innerHTML = city.days.map((d, i) => 
+    `<button class="day-tab ${i === currentDayIdx ? 'active' : ''}" data-day="${i}">${d.title}</button>`
+  ).join('');
+  container.querySelectorAll('.day-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentDayIdx = parseInt(btn.dataset.day);
+      renderDayTabs();
+      renderDayContent();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+function renderDayContent() {
+  const day = data[currentCity].days[currentDayIdx];
+  const content = document.getElementById('content');
+  
+  if (currentMap) {
+    currentMap.remove();
+    currentMap = null;
+  }
+  
+  // האם זה יוסטון? אם כן נציג מרחק מהמלון
+  const showHotelDistance = currentCity === 'houston';
+  // אילו ברים להציג ביום הזה
+  const nightlifeBars = cityNightlife[currentCity] || [];
+  
+  content.innerHTML = `
+    <div class="day-header">
+      <h2>${day.title}</h2>
+      <div class="day-sub">${day.subtitle}</div>
+    </div>
+    <div class="summary-box">${day.summary}</div>
+    ${showHotelDistance ? `
+      <div class="hotel-banner">
+        <i class="ti ti-home"></i>
+        <div>
+          <strong>המלון שלך:</strong> ${hotelHouston.name}<br>
+          <span style="font-size: 12px; color: var(--text-muted);">${hotelHouston.area} · ${hotelHouston.checkin} - ${hotelHouston.checkout}</span>
+        </div>
+        <a href="https://www.google.com/maps/search/?api=1&query=${hotelHouston.lat},${hotelHouston.lng}" target="_blank" class="hotel-link">
+          <i class="ti ti-map-pin"></i> במפה
+        </a>
+      </div>
+    ` : ''}
+    <div class="map-container">
+      <div id="day-map" class="day-map"></div>
+      <div id="map-fallback" class="map-fallback" style="display:none;">
+        <i class="ti ti-map-off" style="font-size: 32px; color: var(--text-light);"></i>
+        <div style="margin-top: 10px;">המפה לא נטענה - ייתכן שאין חיבור אינטרנט או שהדפדפן חוסם ספריות חיצוניות</div>
+        <a href="https://www.google.com/maps/?q=${day.center[0]},${day.center[1]}" target="_blank" style="display: inline-block; margin-top: 12px; padding: 8px 16px; background: var(--accent-2); color: white; border-radius: 6px; text-decoration: none; font-size: 13px;">פתח ב-Google Maps</a>
+      </div>
+      <div class="map-link-row">
+        <a href="https://www.google.com/maps/?q=${day.center[0]},${day.center[1]}" target="_blank" class="map-link">
+          <i class="ti ti-external-link"></i> פתח אזור ב-Google Maps
+        </a>
+      </div>
+    </div>
+    <div class="section-label">בחרו מתוך ${day.attractions.length} אופציות:</div>
+    <div>
+      ${day.attractions.map((a, i) => `
+        <div class="attraction-card" data-idx="${i}">
+          <div class="card-img-wrap" data-img-query="${(a.imgQuery||'').replace(/"/g,'&quot;')}" data-local-img="${a.localImg ? 'images/' + a.localImg : ''}">
+            <img class="card-img" alt="${a.name.replace(/"/g,'&quot;')}">
+          </div>
+          <div class="card-header">
+            <div style="flex: 1; min-width: 0;">
+              <div class="card-title-row">
+                <span class="card-title">${a.name}</span>
+                ${ratingPill(a.rating, a.ratingCount)}
+              </div>
+              <div>${a.tags.map(t => tag(t)).join('')}</div>
+              ${a.time ? `<div class="card-meta"><i class="ti ti-clock"></i>${a.time}</div>` : ''}
+              ${showHotelDistance && a.lat ? `<div class="card-meta" style="color: var(--accent-2);">${formatDistanceFromHotel(a.lat, a.lng)}</div>` : ''}
+            </div>
+            <i class="ti ti-chevron-down toggle-icon"></i>
+          </div>
+          <div class="card-details">
+            ${a.mustSee && a.mustSee.length > 0 ? `
+              <div class="info-section">
+                <div class="info-section-title"><i class="ti ti-star"></i>3 דברים שחובה לראות</div>
+                <ul class="must-see-list">
+                  ${a.mustSee.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+              </div>
+            ` : ''}
+            
+            ${a.hours ? `
+              <div class="info-section">
+                <div class="info-section-title"><i class="ti ti-clock-hour-4"></i>שעות פתיחה</div>
+                ${renderHours(a.hours)}
+              </div>
+            ` : ''}
+            
+            <div class="desc-text">${a.desc}</div>
+            
+            <div class="action-links">
+              <a href="${mapsLinkLatLng(a.lat, a.lng, a.name)}" target="_blank" class="action-link">
+                <i class="ti ti-map-pin"></i>Google Maps
+              </a>
+              ${a.website ? `
+                <a href="${a.website}" target="_blank" class="action-link">
+                  <i class="ti ti-world"></i>אתר רשמי
+                </a>
+              ` : ''}
+              <a href="${a.rating > 0 && a.placeId ? reviewsLink(a.placeId, a.name) : 'https://www.google.com/search?q=' + encodeURIComponent(a.name + ' reviews')}" target="_blank" class="action-link">
+                <i class="ti ti-star"></i>ביקורות Google
+              </a>
+              <a href="${imgSearchLink(a.imgQuery)}" target="_blank" class="action-link">
+                <i class="ti ti-photo"></i>תמונות
+              </a>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    
+    ${nightlifeBars.length > 0 ? `
+      <div class="nightlife-section">
+        <div class="nightlife-header">
+          <i class="ti ti-beer"></i>
+          <span>ערב בעיר · ברים ואירועי כדורגל</span>
+        </div>
+        <div class="nightlife-subtitle">צפייה במשחקי מונדיאל ואווירה. אותן אופציות לכל ערב בעיר.</div>
+        ${nightlifeBars.map(bar => `
+          <div class="bar-mini-card">
+            <div class="bar-mini-header">
+              <span class="bar-mini-name">${bar.name}</span>
+              <span class="bar-mini-rec">${bar.rec}</span>
+            </div>
+            <div class="bar-mini-tags">${bar.tags}${showHotelDistance && bar.lat ? ` · ${distanceKm(hotelHouston.lat, hotelHouston.lng, bar.lat, bar.lng).toFixed(1)} ק"מ מהמלון` : ''}</div>
+            <div class="bar-mini-desc">${bar.desc}</div>
+            <div class="action-links" style="margin-top: 8px;">
+              <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(bar.mapsQuery)}" target="_blank" class="action-link" style="font-size: 12px;">
+                <i class="ti ti-map-pin"></i> Google Maps
+              </a>
+              <a href="https://www.google.com/search?q=${encodeURIComponent(bar.mapsQuery + ' reviews')}" target="_blank" class="action-link" style="font-size: 12px;">
+                <i class="ti ti-star"></i> ביקורות
+              </a>
+              <a href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(bar.mapsQuery)}" target="_blank" class="action-link" style="font-size: 12px;">
+                <i class="ti ti-photo"></i> תמונות
+              </a>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    ` : ''}
+  `;
+  
+  setTimeout(() => {
+    initDayMap(day);
+  }, 100);
+  
+  content.querySelectorAll('.attraction-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.tagName === 'A' || e.target.closest('a')) return;
+      card.classList.toggle('expanded');
+    });
+  });
+
+  // טעינת תמונות - Wikipedia לאטרקציות מפורסמות, תמונה מקומית ל-BBQ
+  content.querySelectorAll('.card-img-wrap').forEach(async (wrap) => {
+    const localImg = wrap.dataset.localImg;
+    const imgQuery = wrap.dataset.imgQuery;
+    const img = wrap.querySelector('.card-img');
+
+    let src = null;
+    if (localImg) {
+      src = localImg;
+    } else if (imgQuery) {
+      src = await fetchWikiImage(imgQuery);
+    }
+
+    if (src) {
+      img.onload = () => wrap.classList.add('loaded');
+      img.onerror = () => {};
+      img.src = src;
+    }
+  });
+}
+
+function initDayMap(day) {
+  const mapEl = document.getElementById('day-map');
+  const fallbackEl = document.getElementById('map-fallback');
+  if (!mapEl) return;
+  
+  // טיפול בכשל - אם Leaflet לא נטען מסיבה כלשהי
+  if (typeof L === 'undefined') {
+    mapEl.style.display = 'none';
+    if (fallbackEl) fallbackEl.style.display = 'block';
+    return;
+  }
+  
+  try {
+    currentMap = L.map('day-map').setView(day.center, day.zoom);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap',
+      maxZoom: 19
+    }).addTo(currentMap);
+    
+    const customIcon = L.divIcon({
+      className: 'custom-marker',
+      html: '<div style="background:#d4632a;width:24px;height:24px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.3);"><div style="transform:rotate(45deg);text-align:center;color:#fff;font-size:12px;font-weight:bold;padding-top:2px;">●</div></div>',
+      iconSize: [24, 24],
+      iconAnchor: [12, 24]
+    });
+    
+    const hotelIcon = L.divIcon({
+      className: 'hotel-marker',
+      html: '<div style="background:#5c3a2e;width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">🏠</div>',
+      iconSize: [28, 28],
+      iconAnchor: [14, 14]
+    });
+    
+    day.attractions.forEach(a => {
+      if (a.lat && a.lng) {
+        const marker = L.marker([a.lat, a.lng], {icon: customIcon}).addTo(currentMap);
+        const popupContent = `
+          <strong>${a.name}</strong><br>
+          ${a.rating > 0 ? `★ ${a.rating} (${a.ratingCount > 1000 ? (a.ratingCount/1000).toFixed(1) + 'k' : a.ratingCount} ביקורות)<br>` : ''}
+          <a href="${mapsLinkLatLng(a.lat, a.lng, a.name)}" target="_blank" style="color:#d4632a;">פתח בגוגל מפות ↗</a>
+        `;
+        marker.bindPopup(popupContent);
+      }
+    });
+    
+    // הוספת המלון אם זה יוסטון
+    if (currentCity === 'houston') {
+      const hotelMarker = L.marker([hotelHouston.lat, hotelHouston.lng], {icon: hotelIcon}).addTo(currentMap);
+      hotelMarker.bindPopup(`<strong>🏠 המלון שלך</strong><br>${hotelHouston.name}<br>${hotelHouston.area}<br><a href="https://www.google.com/maps/search/?api=1&query=${hotelHouston.lat},${hotelHouston.lng}" target="_blank" style="color:#d4632a;">פתח בגוגל מפות ↗</a>`);
+    }
+    
+    // הוספת ברים אם יש בעיר
+    const bars = cityNightlife[currentCity] || [];
+    const barIcon = L.divIcon({
+      className: 'bar-marker',
+      html: '<div style="background:#8a4a00;width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;">🍺</div>',
+      iconSize: [22, 22],
+      iconAnchor: [11, 11]
+    });
+    bars.forEach(bar => {
+      if (bar.lat && bar.lng) {
+        const marker = L.marker([bar.lat, bar.lng], {icon: barIcon}).addTo(currentMap);
+        marker.bindPopup(`<strong>🍺 ${bar.name}</strong><br>${bar.tags}<br><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(bar.mapsQuery)}" target="_blank" style="color:#d4632a;">פתח בגוגל מפות ↗</a>`);
+      }
+    });
+  } catch (e) {
+    console.error('Map error:', e);
+    mapEl.style.display = 'none';
+    if (fallbackEl) fallbackEl.style.display = 'block';
+  }
+}
+
+function renderMatchesView(view) {
+  if (currentMap) {
+    currentMap.remove();
+    currentMap = null;
+  }
+  
+  const content = document.getElementById('content');
+  if (view === 'schedule') {
+    content.innerHTML = `
+      <div class="legend">
+        <div>🎯 = המשחק שלכם · 📍 = משחק בעיר שלכם · 🔥 = משחק חם במיוחד</div>
+        <div>הזמנים: CT = יוסטון · ET = אטלנטה/וושינגטון/ניו יורק (הפרש של שעה)</div>
+      </div>
+      ${matchData.map(day => {
+        const isOursDay = day.matches.some(m => m.ours);
+        return `
+          <div class="match-day-card ${isOursDay ? 'our-match' : ''}">
+            <div class="match-day-header">
+              <div>
+                <span class="match-day-date">${day.date}</span>
+                <span class="match-day-day">${day.dayName}</span>
+              </div>
+              <span class="match-day-location">${day.yourCity}</span>
+            </div>
+            ${day.note ? `<div class="match-day-note">${day.note}</div>` : ''}
+            ${day.matches.map(m => `
+              <div class="match-row ${m.ours ? 'ours' : ''}">
+                <span class="match-time">${m.time}</span>
+                <div class="match-teams-block">
+                  <div class="match-teams-name" style="color: ${m.highlight ? 'var(--text)' : 'var(--text-muted)'};">
+                    ${m.ours ? '🎯 ' : ''}${m.here && !m.ours ? '📍 ' : ''}${m.big ? '🔥 ' : ''}${m.teams}
+                  </div>
+                  <div class="match-venue">${m.venue} · ${m.tier}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }).join('')}
+    `;
+  } else {
+    content.innerHTML = `
+      <div class="legend">ברים לצפייה במשחקים - ממוינים לפי עיר ולפי איכות. דירוגי Google בצמוד למיקום.</div>
+      ${Object.keys(barData).map(cityKey => {
+        const city = barData[cityKey];
+        return `
+          <div class="city-section-header">${city.label}</div>
+          ${city.bars.map(bar => `
+            <div class="bar-card">
+              <div class="bar-header">
+                <div class="bar-name">${bar.name}</div>
+                <span class="bar-rec-badge">${bar.rec}</span>
+              </div>
+              <div class="bar-tags">${bar.tags}</div>
+              <div class="bar-desc">${bar.desc}</div>
+            </div>
+          `).join('')}
+        `;
+      }).join('')}
+    `;
+  }
+}
+
+document.querySelectorAll('#cityTabs .tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#cityTabs .tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCity = btn.dataset.city;
+    currentDayIdx = 0;
+    renderDayTabs();
+    if (currentCity === 'matches') {
+      renderMatchesView('schedule');
+    } else {
+      renderDayContent();
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+renderDayTabs();
+renderDayContent();
+</script>
+</body>
+</html>
