@@ -718,6 +718,20 @@ header .divider {
   .attraction-card { break-inside: avoid; }
 }
 
+/* רקע עיר */
+#city-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  filter: blur(14px) brightness(0.45);
+  transform: scale(1.05);
+  transition: opacity 0.7s ease;
+  opacity: 0;
+}
+#city-bg.visible { opacity: 1; }
+
 /* מסך פתיחה */
 #splash-screen {
   position: fixed;
@@ -879,6 +893,8 @@ header .divider {
   </div>
   <button class="splash-skip" onclick="hideSplash()">דלג</button>
 </div>
+
+<div id="city-bg"></div>
 
 <div class="container">
 
@@ -3179,6 +3195,7 @@ document.querySelectorAll('#cityTabs .tab-btn').forEach(btn => {
     } else {
       renderDayContent();
     }
+    setCityBackground(currentCity);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 });
@@ -3262,9 +3279,42 @@ function hideSplash() {
 }
 
 initSplash();
+// שאילתות Wikipedia לתמונות רקע לכל עיר
+const cityBgQueries = {
+  houston:    'Houston Texas skyline downtown night',
+  transit:    'Interstate 10 Louisiana highway',
+  atlanta:    'Atlanta Georgia skyline downtown',
+  washington: 'Washington DC National Mall night',
+  matches:    'FIFA World Cup stadium crowd'
+};
+const cityBgCache = {};
+
+async function setCityBackground(cityKey) {
+  const bg = document.getElementById('city-bg');
+  if (!bg) return;
+
+  // השתמש בcache אם כבר נטענה התמונה
+  if (cityBgCache[cityKey]) {
+    bg.style.backgroundImage = `url('${cityBgCache[cityKey]}')`;
+    bg.classList.add('visible');
+    return;
+  }
+
+  const query = cityBgQueries[cityKey];
+  if (!query) return;
+
+  const src = await fetchWikiImage(query);
+  if (src) {
+    cityBgCache[cityKey] = src;
+    bg.style.backgroundImage = `url('${src}')`;
+    bg.classList.add('visible');
+  }
+}
+
 autoNavigateToToday();
 renderDayTabs();
 renderDayContent();
+setCityBackground(currentCity);
 </script>
 </body>
 </html>
