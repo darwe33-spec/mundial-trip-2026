@@ -2657,10 +2657,7 @@ async function fetchWikiImage(query) {
       `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`
     );
     const summaryData = await summaryRes.json();
-    const src = summaryData.thumbnail?.source;
-    if (!src) return null;
-    // הגדל את התמונה ל-800px כדי למנוע מתיחה
-    return src.replace(/\/\d+px-/, '/800px-');
+    return summaryData.thumbnail?.source || null;
   } catch (e) {
     return null;
   }
