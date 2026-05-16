@@ -2643,7 +2643,7 @@ let currentCity = 'houston';
 let currentDayIdx = 0;
 let currentMap = null;
 
-// משיכת תמונה מ-Wikipedia - מחפש 3 תוצאות ומחזיר הראשונה עם תמונה
+// משיכת תמונה מ-Wikipedia - בודק כל תוצאת חיפוש בסדר עד שמוצא תמונה
 async function fetchWikiImage(query) {
   try {
     const searchRes = await fetch(
@@ -2652,14 +2652,13 @@ async function fetchWikiImage(query) {
     const searchData = await searchRes.json();
     if (!searchData.query?.search?.length) return null;
 
-    const titles = searchData.query.search.map(r => r.title).join('|');
-    const imgRes = await fetch(
-      `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(titles)}&prop=pageimages&format=json&origin=*&pithumbsize=600&piprop=thumbnail`
-    );
-    const imgData = await imgRes.json();
-    const pages = Object.values(imgData.query.pages);
-    for (const page of pages) {
-      if (page.thumbnail?.source) return page.thumbnail.source;
+    for (const result of searchData.query.search) {
+      const imgRes = await fetch(
+        `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(result.title)}&prop=pageimages&format=json&origin=*&pithumbsize=600&piprop=thumbnail`
+      );
+      const imgData = await imgRes.json();
+      const page = Object.values(imgData.query.pages)[0];
+      if (page?.thumbnail?.source) return page.thumbnail.source;
     }
     return null;
   } catch (e) {
