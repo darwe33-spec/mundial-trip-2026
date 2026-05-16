@@ -2643,21 +2643,25 @@ let currentCity = 'houston';
 let currentDayIdx = 0;
 let currentMap = null;
 
-// משיכת תמונה מ-Wikipedia לפי שם אטרקציה - מבקש תמונה רחבה (800px)
+// משיכת תמונה מ-Wikipedia - מחפש 3 תוצאות ומחזיר הראשונה עם תמונה
 async function fetchWikiImage(query) {
   try {
     const searchRes = await fetch(
-      `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*&srlimit=1`
+      `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*&srlimit=3`
     );
     const searchData = await searchRes.json();
     if (!searchData.query?.search?.length) return null;
 
-    const title = searchData.query.search[0].title;
-    const summaryRes = await fetch(
-      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`
+    const titles = searchData.query.search.map(r => r.title).join('|');
+    const imgRes = await fetch(
+      `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(titles)}&prop=pageimages&format=json&origin=*&pithumbsize=600&piprop=thumbnail`
     );
-    const summaryData = await summaryRes.json();
-    return summaryData.thumbnail?.source || null;
+    const imgData = await imgRes.json();
+    const pages = Object.values(imgData.query.pages);
+    for (const page of pages) {
+      if (page.thumbnail?.source) return page.thumbnail.source;
+    }
+    return null;
   } catch (e) {
     return null;
   }
