@@ -720,24 +720,25 @@ header .divider {
   .attraction-card { break-inside: avoid; }
 }
 
-/* רקע עיר - שכבות מסודרות */
+/* רקע עיר - גרדיאנטים לפי עיר */
 #city-bg {
   position: fixed;
   inset: 0;
   z-index: 0;
-  background-size: cover;
-  background-position: center;
-  filter: blur(14px) brightness(0.55);
-  transform: scale(1.05);
-  transition: opacity 0.7s ease;
+  transition: background 0.8s ease, opacity 0.8s ease;
   opacity: 0;
 }
 #city-bg.visible { opacity: 1; }
+#city-bg.bg-houston    { background: linear-gradient(160deg, #7a3a1e 0%, #c26020 40%, #e8a050 70%, #f0c87a 100%); }
+#city-bg.bg-transit    { background: linear-gradient(160deg, #4a5a2a 0%, #8a9a40 40%, #b8c060 70%, #d8c880 100%); }
+#city-bg.bg-atlanta    { background: linear-gradient(160deg, #1a2a5a 0%, #3a508a 40%, #6a80b8 70%, #9ab0d8 100%); }
+#city-bg.bg-washington { background: linear-gradient(160deg, #0a1a3a 0%, #1a3060 40%, #2a5090 70%, #4a78b8 100%); }
+#city-bg.bg-matches    { background: linear-gradient(160deg, #1a3a1a 0%, #2a6030 40%, #3a9040 70%, #60b840 100%); }
 #city-overlay {
   position: fixed;
   inset: 0;
   z-index: 1;
-  background: rgba(255, 248, 243, 0.62);
+  background: rgba(255, 248, 243, 0.72);
   pointer-events: none;
 }
 
@@ -3289,39 +3290,11 @@ function hideSplash() {
 }
 
 initSplash();
-// שמות כתבות Wikipedia לתמונות רקע (Summary API - אמין יותר)
-const cityBgArticles = {
-  houston:    'Houston',
-  transit:    'Houston',
-  atlanta:    'Atlanta',
-  washington: 'Washington,_D.C.',
-  matches:    'FIFA_World_Cup'
-};
-const cityBgCache = {};
-
-async function setCityBackground(cityKey) {
+// רקע גרדיאנט לפי עיר - פשוט ואמין, ללא API
+function setCityBackground(cityKey) {
   const bg = document.getElementById('city-bg');
   if (!bg) return;
-
-  if (cityBgCache[cityKey]) {
-    bg.style.backgroundImage = `url('${cityBgCache[cityKey]}')`;
-    bg.classList.add('visible');
-    return;
-  }
-
-  const article = cityBgArticles[cityKey];
-  if (!article) return;
-
-  try {
-    const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(article)}`);
-    const data = await res.json();
-    const src = data.originalimage?.source || data.thumbnail?.source;
-    if (src) {
-      cityBgCache[cityKey] = src;
-      bg.style.backgroundImage = `url('${src}')`;
-      bg.classList.add('visible');
-    }
-  } catch(e) {}
+  bg.className = `bg-${cityKey} visible`;
 }
 
 autoNavigateToToday();
