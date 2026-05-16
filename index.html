@@ -743,12 +743,36 @@ header .divider {
   from { opacity: 1; transform: scale(1); }
   to   { opacity: 0; transform: scale(0.97); }
 }
+/* כדור - אנימציית גלגול */
+.splash-ball {
+  width: 80px;
+  height: 80px;
+  animation: ballRoll 0.85s cubic-bezier(0.3, 0.1, 0.3, 1) forwards;
+}
+@keyframes ballRoll {
+  from { transform: translateX(280px) rotate(540deg); opacity: 0.2; }
+  to   { transform: translateX(0) rotate(0deg); opacity: 1; }
+}
+.splash-ball.explode {
+  animation: ballExplode 0.3s ease-out forwards;
+}
+@keyframes ballExplode {
+  0%   { transform: scale(1);   opacity: 1; }
+  60%  { transform: scale(2.2); opacity: 0.5; }
+  100% { transform: scale(3.5); opacity: 0; }
+}
 .splash-greeting {
   font-family: var(--serif);
   font-size: 32px;
   color: #fff;
   text-align: center;
   letter-spacing: 1px;
+  opacity: 0;
+  animation: greetingIn 0.45s ease 1.15s forwards;
+}
+@keyframes greetingIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .splash-items {
   display: flex;
@@ -756,6 +780,12 @@ header .divider {
   gap: 16px;
   width: 100%;
   max-width: 340px;
+  opacity: 0;
+  animation: itemsIn 0.4s ease 1.4s forwards;
+}
+@keyframes itemsIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .splash-item {
   background: rgba(255,255,255,0.1);
@@ -766,13 +796,6 @@ header .divider {
   align-items: center;
   gap: 14px;
   color: #fff;
-  animation: splashItemIn 0.5s ease both;
-}
-.splash-item:nth-child(2) { animation-delay: 0.1s; }
-.splash-item:nth-child(3) { animation-delay: 0.2s; }
-@keyframes splashItemIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 .splash-icon { font-size: 26px; flex-shrink: 0; }
 .splash-label { font-size: 13px; opacity: 0.8; margin-bottom: 2px; }
@@ -807,6 +830,15 @@ header .divider {
 
 <!-- מסך פתיחה -->
 <div id="splash-screen">
+  <svg class="splash-ball" id="splash-ball" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="50" r="47" fill="white"/>
+    <polygon points="50,30 63,39 58,55 42,55 37,39" fill="#1a1a1a"/>
+    <polygon points="50,2 65,12 60,28 40,28 35,12" fill="#1a1a1a"/>
+    <polygon points="85,28 92,46 78,56 65,46 68,28" fill="#1a1a1a"/>
+    <polygon points="75,78 58,86 42,86 25,78 30,62 70,62" fill="#1a1a1a"/>
+    <polygon points="15,28 8,46 22,56 35,46 32,28" fill="#1a1a1a"/>
+    <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="2"/>
+  </svg>
   <div class="splash-greeting">שלום דר! 👋</div>
   <div class="splash-items">
     <div class="splash-item">
@@ -3199,7 +3231,13 @@ function initSplash() {
       el.textContent = 'עבר';
     }
   });
-  setTimeout(hideSplash, 3000);
+  // כדור מתפוצץ אחרי 0.9 שניות, טקסט מופיע ב-1.15 שניות
+  setTimeout(() => {
+    const ball = document.getElementById('splash-ball');
+    if (ball) ball.classList.add('explode');
+  }, 900);
+  // מסך נעלם אחרי 4 שניות (1.5s אנימציה + 2.5s קריאה)
+  setTimeout(hideSplash, 4000);
 }
 
 function hideSplash() {
