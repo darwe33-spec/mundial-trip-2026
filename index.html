@@ -3289,13 +3289,13 @@ function hideSplash() {
 }
 
 initSplash();
-// שאילתות Wikipedia לתמונות רקע לכל עיר
-const cityBgQueries = {
+// שמות כתבות Wikipedia לתמונות רקע (Summary API - אמין יותר)
+const cityBgArticles = {
   houston:    'Houston',
   transit:    'Houston',
   atlanta:    'Atlanta',
-  washington: 'Washington, D.C.',
-  matches:    'FIFA World Cup'
+  washington: 'Washington,_D.C.',
+  matches:    'FIFA_World_Cup'
 };
 const cityBgCache = {};
 
@@ -3303,22 +3303,25 @@ async function setCityBackground(cityKey) {
   const bg = document.getElementById('city-bg');
   if (!bg) return;
 
-  // השתמש בcache אם כבר נטענה התמונה
   if (cityBgCache[cityKey]) {
     bg.style.backgroundImage = `url('${cityBgCache[cityKey]}')`;
     bg.classList.add('visible');
     return;
   }
 
-  const query = cityBgQueries[cityKey];
-  if (!query) return;
+  const article = cityBgArticles[cityKey];
+  if (!article) return;
 
-  const src = await fetchWikiImage(query);
-  if (src) {
-    cityBgCache[cityKey] = src;
-    bg.style.backgroundImage = `url('${src}')`;
-    bg.classList.add('visible');
-  }
+  try {
+    const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(article)}`);
+    const data = await res.json();
+    const src = data.originalimage?.source || data.thumbnail?.source;
+    if (src) {
+      cityBgCache[cityKey] = src;
+      bg.style.backgroundImage = `url('${src}')`;
+      bg.classList.add('visible');
+    }
+  } catch(e) {}
 }
 
 autoNavigateToToday();
