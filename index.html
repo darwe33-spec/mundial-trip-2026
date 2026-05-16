@@ -53,7 +53,7 @@ body {
   margin: 0 auto;
   padding: 0 16px 60px;
   position: relative;
-  z-index: 2;
+  z-index: 3;
 }
 header {
   text-align: center;
@@ -734,6 +734,33 @@ header .divider {
 #city-bg.bg-atlanta    { background: linear-gradient(160deg, #1a2a5a 0%, #3a508a 40%, #6a80b8 70%, #9ab0d8 100%); }
 #city-bg.bg-washington { background: linear-gradient(160deg, #0a1a3a 0%, #1a3060 40%, #2a5090 70%, #4a78b8 100%); }
 #city-bg.bg-matches    { background: linear-gradient(160deg, #1a3a1a 0%, #2a6030 40%, #3a9040 70%, #60b840 100%); }
+
+/* אייקונים צפים ברקע */
+#floating-icons {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+.fi-icon {
+  position: absolute;
+  opacity: 0.13;
+  font-size: var(--sz);
+  left: var(--x);
+  top: var(--y);
+  user-select: none;
+  animation: fiFloat var(--dur) var(--delay) infinite ease-in-out;
+}
+@keyframes fiFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-18px) rotate(6deg); }
+  66%       { transform: translateY(-8px) rotate(-4deg); }
+}
+@media (max-width: 600px) {
+  .fi-icon:nth-child(n+5) { display: none; }
+}
+
 #city-overlay {
   position: fixed;
   inset: 0;
@@ -905,6 +932,7 @@ header .divider {
 </div>
 
 <div id="city-bg"></div>
+<div id="floating-icons"></div>
 <div id="city-overlay"></div>
 
 <div class="container">
@@ -3207,6 +3235,7 @@ document.querySelectorAll('#cityTabs .tab-btn').forEach(btn => {
       renderDayContent();
     }
     setCityBackground(currentCity);
+    setFloatingIcons(currentCity);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 });
@@ -3297,10 +3326,34 @@ function setCityBackground(cityKey) {
   bg.className = `bg-${cityKey} visible`;
 }
 
+// אייקונים צפים - ייחודיים לכל עיר
+const cityIcons = {
+  houston:    ['⚽','🤠','🏈','🌵','⭐','🛢️','🎸'],
+  transit:    ['🚗','🌅','🛣️','⚽','☀️','🌾'],
+  atlanta:    ['⚽','🍑','✈️','🏆','🌟','🎭'],
+  washington: ['🦅','⭐','🏛️','🇺🇸','⚽','🔔'],
+  matches:    ['⚽','🏆','🎉','📣','🌟','🥅','🎊']
+};
+
+function setFloatingIcons(cityKey) {
+  const container = document.getElementById('floating-icons');
+  if (!container) return;
+  const icons = cityIcons[cityKey] || [];
+  container.innerHTML = icons.map((icon, i) => {
+    const x  = 5  + (i * 13 + i * 7)  % 85;
+    const y  = 10 + (i * 17 + i * 5)  % 75;
+    const dur   = 5 + (i % 4) * 1.5;
+    const delay = -((i * 1.3) % 5);
+    const sz    = 1.4 + (i % 3) * 0.35;
+    return `<span class="fi-icon" style="--x:${x}%;--y:${y}%;--dur:${dur}s;--delay:${delay}s;--sz:${sz}rem">${icon}</span>`;
+  }).join('');
+}
+
 autoNavigateToToday();
 renderDayTabs();
 renderDayContent();
 setCityBackground(currentCity);
+setFloatingIcons(currentCity);
 </script>
 </body>
 </html>
