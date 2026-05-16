@@ -161,6 +161,11 @@ header .divider {
   color: white;
   border-color: var(--accent-2);
 }
+.day-tab.today::after {
+  content: ' · היום';
+  font-size: 10px;
+  opacity: 0.85;
+}
 .day-header {
   margin-bottom: 16px;
   padding-bottom: 14px;
@@ -931,7 +936,7 @@ const data = {
     label: 'יוסטון',
     days: [
       {
-        id: 'h1',
+        id: 'h1', date: '2026-06-25',
         title: 'יום 1 · חמישי 25/06',
         subtitle: 'יום הנחיתה',
         summary: 'אחרי טיסת לילה כדאי להוריד הילוך, לטעום BBQ טקסני קלאסי ולעשות סיבוב קליל. אל תעמיסו - הג\'ט לג ידחוף אתכם לישון מוקדם.',
@@ -1074,7 +1079,7 @@ const data = {
         ]
       },
       {
-        id: 'h2',
+        id: 'h2', date: '2026-06-26',
         title: 'יום 2 · שישי 26/06',
         subtitle: 'NASA ומרכז העיר',
         summary: 'מומלץ להקדיש את היום ל-NASA - חוויה שדורשת זמן. בערב כדאי לשלב משחק מונדיאל בבר שווה - יש משחק קבוצות ב-NRG Stadium היום!',
@@ -1196,7 +1201,7 @@ const data = {
         ]
       },
       {
-        id: 'h3',
+        id: 'h3', date: '2026-06-27',
         title: 'יום 3 · שבת 27/06',
         subtitle: 'מרכז העיר וההיסטוריה',
         summary: 'יום בלב יוסטון. הצירוף הקלאסי: מוזיאון בבוקר, BBQ בצהריים, סיבוב במרכז בערב.',
@@ -1442,7 +1447,7 @@ const data = {
         ]
       },
       {
-        id: 'h4',
+        id: 'h4', date: '2026-06-28',
         title: 'יום 4 · ראשון 28/06',
         subtitle: 'אאוטלטים ויום רגוע',
         summary: 'יום קלאסי של קניות + פעילות קלילה. בחרו אאוטלט אחד לבוקר, ובערב פעילות במרכז העיר.',
@@ -1617,7 +1622,7 @@ const data = {
         ]
       },
       {
-        id: 'h5',
+        id: 'h5', date: '2026-06-29',
         title: 'יום 5 · שני 29/06',
         subtitle: 'יום משחק + יציאה',
         summary: '🎯 המשחק שלכם ב-13:00. תכננו להגיע לאצטדיון 11:00-11:30. אחרי המשחק יציאה לאטלנטה ~16:00-17:00.',
@@ -1682,7 +1687,7 @@ const data = {
     label: 'הנסיעה לאטלנטה',
     days: [
       {
-        id: 'd1',
+        id: 'd1', date: '2026-06-29',
         title: '29/06 (אחה"צ) - 30/06',
         subtitle: 'יוסטון לאטלנטה · 12-13 שעות',
         summary: 'בחרתם בנסיעה ישירה למקסם זמן באטלנטה. הצגנו גם את האופציות שדחיתם למקרה שתשנו דעת.',
@@ -1818,7 +1823,7 @@ const data = {
     label: 'אטלנטה',
     days: [
       {
-        id: 'a1',
+        id: 'a1', date: '2026-06-30',
         title: 'יום 1 · שלישי 30/06',
         subtitle: 'יום ההגעה',
         summary: 'הגעה אחה"צ אחרי נסיעה. ערב נינוח לטעימה ראשונה של אטלנטה. ה-Fan Fest כאן בשיא.',
@@ -2002,7 +2007,7 @@ const data = {
         ]
       },
       {
-        id: 'a2',
+        id: 'a2', date: '2026-07-01',
         title: 'יום 2 · רביעי 01/07',
         subtitle: 'משחק + טיסה לוושינגטון',
         summary: '🎯 המשחק ב-12:00. בוקר רגוע, אחרי המשחק חזרה לעיר, איסוף חפצים, וטיסה לוושינגטון בערב.',
@@ -2114,7 +2119,7 @@ const data = {
     label: 'וושינגטון',
     days: [
       {
-        id: 'dc1',
+        id: 'dc1', date: '2026-07-01',
         title: 'יום 1 · רביעי 01/07 (לילה)',
         subtitle: 'הגעה מאוחרת',
         summary: 'הגעה לוושינגטון בלילה. אם יש כוח - האנדרטאות מוארות בלילה זו חוויה שלא לפספס.',
@@ -2175,7 +2180,7 @@ const data = {
         ]
       },
       {
-        id: 'dc2',
+        id: 'dc2', date: '2026-07-02',
         title: 'יום 2 · חמישי 02/07',
         subtitle: 'יום מלא בוושינגטון',
         summary: 'יום ארוך וגדוש. ה-National Mall הוא הפיל בחדר. הסמית\'סוניאן חינמיים. בחרו 1-2 מוזיאונים מקסימום.',
@@ -2412,7 +2417,7 @@ const data = {
         ]
       },
       {
-        id: 'dc3',
+        id: 'dc3', date: '2026-07-03',
         title: 'יום 3 · שישי 03/07',
         subtitle: 'בוקר וושינגטון + רכבת לניו יורק',
         summary: 'בוקר אחרון לסיבוב קצר. רכבת Amtrak מ-Union Station ~3 שעות לפנסילבניה סטיישן.',
@@ -2683,9 +2688,12 @@ function renderDayTabs() {
     return;
   }
   const city = data[currentCity];
-  container.innerHTML = city.days.map((d, i) => 
-    `<button class="day-tab ${i === currentDayIdx ? 'active' : ''}" data-day="${i}">${d.title}</button>`
-  ).join('');
+  const todayStr = getTodayStr();
+  container.innerHTML = city.days.map((d, i) => {
+    const isActive = i === currentDayIdx ? 'active' : '';
+    const isToday = d.date === todayStr ? 'today' : '';
+    return `<button class="day-tab ${isActive} ${isToday}" data-day="${i}">${d.title}</button>`;
+  }).join('');
   container.querySelectorAll('.day-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       currentDayIdx = parseInt(btn.dataset.day);
@@ -3016,6 +3024,34 @@ document.querySelectorAll('#cityTabs .tab-btn').forEach(btn => {
   });
 });
 
+// מחזיר את תאריך היום בפורמט YYYY-MM-DD לפי שעון המכשיר
+function getTodayStr() {
+  const t = new Date();
+  return t.getFullYear() + '-' +
+    String(t.getMonth() + 1).padStart(2, '0') + '-' +
+    String(t.getDate()).padStart(2, '0');
+}
+
+// מנווט אוטומטית ליום הנוכחי אם הטיול בעיצומו
+function autoNavigateToToday() {
+  const todayStr = getTodayStr();
+  const cityOrder = ['houston', 'transit', 'atlanta', 'washington'];
+  for (const cityKey of cityOrder) {
+    const city = data[cityKey];
+    if (!city) continue;
+    const dayIdx = city.days.findIndex(d => d.date === todayStr);
+    if (dayIdx !== -1) {
+      currentCity = cityKey;
+      currentDayIdx = dayIdx;
+      document.querySelectorAll('#cityTabs .tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.city === cityKey);
+      });
+      return;
+    }
+  }
+}
+
+autoNavigateToToday();
 renderDayTabs();
 renderDayContent();
 </script>
