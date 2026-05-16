@@ -717,9 +717,122 @@ header .divider {
   .card-details { display: block !important; }
   .attraction-card { break-inside: avoid; }
 }
+
+/* מסך פתיחה */
+#splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: linear-gradient(145deg, #3d1f10 0%, #6b3320 40%, #c25a20 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 32px;
+  animation: splashIn 0.5s ease forwards;
+}
+#splash-screen.hiding {
+  animation: splashOut 0.6s ease forwards;
+}
+@keyframes splashIn {
+  from { opacity: 0; transform: scale(1.03); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes splashOut {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.97); }
+}
+.splash-greeting {
+  font-family: var(--serif);
+  font-size: 32px;
+  color: #fff;
+  text-align: center;
+  letter-spacing: 1px;
+}
+.splash-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 340px;
+}
+.splash-item {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #fff;
+  animation: splashItemIn 0.5s ease both;
+}
+.splash-item:nth-child(2) { animation-delay: 0.1s; }
+.splash-item:nth-child(3) { animation-delay: 0.2s; }
+@keyframes splashItemIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.splash-icon { font-size: 26px; flex-shrink: 0; }
+.splash-label { font-size: 13px; opacity: 0.8; margin-bottom: 2px; }
+.splash-count {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffd89b;
+}
+.splash-count.today-text {
+  color: #ffe066;
+  font-size: 20px;
+}
+.splash-skip {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.6);
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.splash-skip:hover { color: #fff; border-color: rgba(255,255,255,0.7); }
 </style>
 </head>
 <body>
+
+<!-- מסך פתיחה -->
+<div id="splash-screen">
+  <div class="splash-greeting">שלום דר! 👋</div>
+  <div class="splash-items">
+    <div class="splash-item">
+      <div class="splash-icon">✈️</div>
+      <div>
+        <div class="splash-label">טיסה לארה"ב</div>
+        <div class="splash-count" id="splash-flight"></div>
+      </div>
+    </div>
+    <div class="splash-item">
+      <div class="splash-icon">🏟</div>
+      <div>
+        <div class="splash-label">משחק 1 · NRG Stadium יוסטון</div>
+        <div class="splash-count" id="splash-match1"></div>
+      </div>
+    </div>
+    <div class="splash-item">
+      <div class="splash-icon">🏟</div>
+      <div>
+        <div class="splash-label">משחק 2 · Mercedes-Benz Stadium אטלנטה</div>
+        <div class="splash-count" id="splash-match2"></div>
+      </div>
+    </div>
+  </div>
+  <button class="splash-skip" onclick="hideSplash()">דלג</button>
+</div>
 
 <div class="container">
 
@@ -3051,6 +3164,52 @@ function autoNavigateToToday() {
   }
 }
 
+// מסך פתיחה - חישוב ספירה לאחור לכל אירוע
+function daysUntil(dateStr) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(dateStr);
+  target.setHours(0, 0, 0, 0);
+  return Math.round((target - today) / (1000 * 60 * 60 * 24));
+}
+
+function countdownText(days) {
+  if (days > 1)  return `עוד ${days} ימים`;
+  if (days === 1) return 'מחר!';
+  if (days === 0) return 'היום!';
+  return null;
+}
+
+function initSplash() {
+  const events = [
+    { id: 'splash-flight',  date: '2026-06-25' },
+    { id: 'splash-match1',  date: '2026-06-29' },
+    { id: 'splash-match2',  date: '2026-07-01' }
+  ];
+  events.forEach(e => {
+    const el = document.getElementById(e.id);
+    if (!el) return;
+    const days = daysUntil(e.date);
+    const text = countdownText(days);
+    if (text) {
+      el.textContent = text;
+      if (days <= 1) el.classList.add('today-text');
+    } else {
+      el.closest('.splash-item').style.opacity = '0.4';
+      el.textContent = 'עבר';
+    }
+  });
+  setTimeout(hideSplash, 3000);
+}
+
+function hideSplash() {
+  const splash = document.getElementById('splash-screen');
+  if (!splash) return;
+  splash.classList.add('hiding');
+  setTimeout(() => splash.remove(), 600);
+}
+
+initSplash();
 autoNavigateToToday();
 renderDayTabs();
 renderDayContent();
