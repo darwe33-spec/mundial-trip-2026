@@ -1007,6 +1007,17 @@ const hotelHouston = {
   bookingUrl: 'https://www.booking.com/hotel/us/pool-house-with-hot-tub.he.html'
 };
 
+// המלון שלך בוושינגטון
+const hotelDC = {
+  name: 'Le Méridien Washington DC, The Madison',
+  area: '15th St NW, Washington DC',
+  lat: 38.9046,
+  lng: -77.0349,
+  checkin: '01/07',
+  checkout: '04/07',
+  bookingUrl: 'https://www.guestreservations.com/le-meridien-washington-dc-the-madison/booking'
+};
+
 // פונקציית חישוב מרחק בקילומטרים (Haversine)
 function distanceKm(lat1, lng1, lat2, lng2) {
   if (!lat1 || !lat2) return null;
@@ -1022,7 +1033,8 @@ function distanceKm(lat1, lng1, lat2, lng2) {
 
 function formatDistanceFromHotel(lat, lng) {
   if (!lat || !lng) return '';
-  const km = distanceKm(hotelHouston.lat, hotelHouston.lng, lat, lng);
+  const hotel = currentCity === 'dc' ? hotelDC : hotelHouston;
+  const km = distanceKm(hotel.lat, hotel.lng, lat, lng);
   if (km === null) return '';
   const mins = Math.round(km / 30 * 60);
   return `<i class="ti ti-home"></i> ${km.toFixed(1)} ק"מ מהמלון · כ-${mins} דק' נסיעה`;
@@ -2927,8 +2939,9 @@ function renderDayContent() {
     currentMap = null;
   }
   
-  // האם זה יוסטון? אם כן נציג מרחק מהמלון
-  const showHotelDistance = currentCity === 'houston';
+  // האם יש מלון בעיר הנוכחית?
+  const showHotelDistance = currentCity === 'houston' || currentCity === 'dc';
+  const currentHotel = currentCity === 'dc' ? hotelDC : hotelHouston;
   // אילו ברים להציג ביום הזה
   const nightlifeBars = cityNightlife[currentCity] || [];
   
@@ -2942,10 +2955,10 @@ function renderDayContent() {
       <div class="hotel-banner">
         <i class="ti ti-home"></i>
         <div>
-          <strong>המלון שלך:</strong> ${hotelHouston.name}<br>
-          <span style="font-size: 12px; color: var(--text-muted);">${hotelHouston.area} · ${hotelHouston.checkin} - ${hotelHouston.checkout}</span>
+          <strong>המלון שלך:</strong> ${currentHotel.name}<br>
+          <span style="font-size: 12px; color: var(--text-muted);">${currentHotel.area} · ${currentHotel.checkin} - ${currentHotel.checkout}</span>
         </div>
-        <a href="https://www.google.com/maps/search/?api=1&query=${hotelHouston.lat},${hotelHouston.lng}" target="_blank" class="hotel-link">
+        <a href="https://www.google.com/maps/search/?api=1&query=${currentHotel.lat},${currentHotel.lng}" target="_blank" class="hotel-link">
           <i class="ti ti-map-pin"></i> במפה
         </a>
       </div>
@@ -3035,7 +3048,7 @@ function renderDayContent() {
               <span class="bar-mini-name">${bar.name}</span>
               <span class="bar-mini-rec">${bar.rec}</span>
             </div>
-            <div class="bar-mini-tags">${bar.tags}${showHotelDistance && bar.lat ? ` · ${distanceKm(hotelHouston.lat, hotelHouston.lng, bar.lat, bar.lng).toFixed(1)} ק"מ מהמלון` : ''}</div>
+            <div class="bar-mini-tags">${bar.tags}${showHotelDistance && bar.lat ? ` · ${distanceKm(currentHotel.lat, currentHotel.lng, bar.lat, bar.lng).toFixed(1)} ק"מ מהמלון` : ''}</div>
             <div class="bar-mini-desc">${bar.desc}</div>
             <div class="action-links" style="margin-top: 8px;">
               <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(bar.mapsQuery)}" target="_blank" class="action-link" style="font-size: 12px;">
@@ -3132,10 +3145,11 @@ function initDayMap(day) {
       }
     });
     
-    // הוספת המלון אם זה יוסטון
-    if (currentCity === 'houston') {
-      const hotelMarker = L.marker([hotelHouston.lat, hotelHouston.lng], {icon: hotelIcon}).addTo(currentMap);
-      hotelMarker.bindPopup(`<strong>🏠 המלון שלך</strong><br>${hotelHouston.name}<br>${hotelHouston.area}<br><a href="https://www.google.com/maps/search/?api=1&query=${hotelHouston.lat},${hotelHouston.lng}" target="_blank" style="color:#d4632a;">פתח בגוגל מפות ↗</a>`);
+    // הוספת המלון אם יש בעיר הנוכחית
+    const mapHotel = currentCity === 'houston' ? hotelHouston : currentCity === 'dc' ? hotelDC : null;
+    if (mapHotel) {
+      const hotelMarker = L.marker([mapHotel.lat, mapHotel.lng], {icon: hotelIcon}).addTo(currentMap);
+      hotelMarker.bindPopup(`<strong>🏠 המלון שלך</strong><br>${mapHotel.name}<br>${mapHotel.area}<br><a href="https://www.google.com/maps/search/?api=1&query=${mapHotel.lat},${mapHotel.lng}" target="_blank" style="color:#d4632a;">פתח בגוגל מפות ↗</a>`);
     }
     
     // הוספת ברים אם יש בעיר
