@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mundial-2026-v2';
+const CACHE_NAME = 'mundial-2026-v3';
 
 const ASSETS = [
   '/mundial-trip-2026/',
