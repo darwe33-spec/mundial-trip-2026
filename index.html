@@ -842,6 +842,78 @@ header .divider {
 }
 .route-empty { color: var(--text-muted); font-size: 14px; text-align: center; padding: 8px 0; }
 
+/* שלב 10 - דר-בוט */
+#chat-fab {
+  position: fixed; bottom: 24px; left: 24px; z-index: 8000;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  border: none; cursor: pointer; font-size: 24px;
+  box-shadow: 0 4px 14px rgba(92,58,46,0.4);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+#chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 18px rgba(92,58,46,0.5); }
+#chat-window {
+  position: fixed; bottom: 90px; left: 24px; z-index: 8001;
+  width: 340px; max-height: 520px;
+  background: var(--surface); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg); box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+@media (max-width: 600px) {
+  #chat-window { left: 8px; right: 8px; width: auto; bottom: 84px; }
+}
+#chat-header {
+  background: var(--accent); color: var(--bg-paper);
+  padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;
+  font-weight: 700; font-size: 15px;
+}
+#chat-header button { background: none; border: none; color: var(--bg-paper); cursor: pointer; font-size: 18px; padding: 0; }
+#chat-messages {
+  flex: 1; overflow-y: auto; padding: 12px;
+  display: flex; flex-direction: column; gap: 8px;
+  max-height: 300px;
+}
+.chat-msg { max-width: 85%; padding: 9px 13px; border-radius: 14px; font-size: 14px; line-height: 1.5; word-break: break-word; }
+.chat-msg.bot  { background: var(--bg-paper); border: 1px solid var(--border); align-self: flex-start; border-radius: 4px 14px 14px 14px; }
+.chat-msg.user { background: var(--accent); color: #fff; align-self: flex-end; border-radius: 14px 4px 14px 14px; }
+.chat-msg.typing { color: var(--text-muted); font-style: italic; }
+.chat-food-card {
+  background: var(--surface); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md); padding: 10px 12px; margin-top: 6px;
+}
+.chat-food-card .food-title { font-weight: 700; font-size: 14px; color: var(--accent); margin-bottom: 2px; }
+.chat-food-card .food-note  { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.chat-food-card a {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--accent-2); color: #fff;
+  padding: 6px 12px; border-radius: var(--radius-sm);
+  text-decoration: none; font-size: 13px; font-weight: 600;
+}
+#chat-quick { padding: 6px 10px; display: flex; flex-wrap: wrap; gap: 5px; border-top: 1px solid var(--border); }
+.qr-btn {
+  background: var(--bg-paper); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 10px; font-size: 12px;
+  cursor: pointer; font-family: 'Heebo', sans-serif; color: var(--text);
+  transition: background 0.15s;
+}
+.qr-btn:hover { background: var(--surface-2); }
+#chat-input-row {
+  display: flex; gap: 6px; padding: 10px 12px;
+  border-top: 1px solid var(--border); background: var(--surface);
+}
+#chat-input {
+  flex: 1; border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 8px 12px; font-size: 14px; font-family: 'Heebo', sans-serif;
+  direction: rtl; background: var(--bg-paper); color: var(--text);
+}
+#chat-input:focus { outline: none; border-color: var(--accent-2); }
+#chat-send {
+  background: var(--accent-2); color: #fff; border: none;
+  border-radius: var(--radius-md); padding: 8px 14px;
+  cursor: pointer; font-size: 15px;
+}
+
 /* מפת המסע */
 #tripmap-view { padding: 8px 0 40px; }
 #tripmap-view h2 {
@@ -1085,6 +1157,29 @@ header .divider {
 <div id="content"></div>
 
 <div id="tripmap-view" style="display:none;"></div>
+
+<!-- דר-בוט -->
+<button id="chat-fab" onclick="toggleChat()" title="דר-בוט">🤖</button>
+
+<div id="chat-window" style="display:none;">
+  <div id="chat-header">
+    <span>🤖 דר-בוט</span>
+    <button onclick="toggleChat()">✕</button>
+  </div>
+  <div id="chat-messages"></div>
+  <div id="chat-quick">
+    <button class="qr-btn" onclick="sendQuick('🍔 המבורגר קרוב')">🍔 המבורגר</button>
+    <button class="qr-btn" onclick="sendQuick('🍕 פיצה עכשיו')">🍕 פיצה</button>
+    <button class="qr-btn" onclick="sendQuick('🍗 עוף מטוגן קרוב')">🍗 עוף</button>
+    <button class="qr-btn" onclick="sendQuick('☕ קפה קרוב')">☕ קפה</button>
+    <button class="qr-btn" onclick="sendQuick('🍺 בר קרוב')">🍺 בר</button>
+    <button class="qr-btn" onclick="sendQuick('מה מומלץ לי לעשות היום?')">📍 מה היום?</button>
+  </div>
+  <div id="chat-input-row">
+    <button id="chat-send" onclick="sendChatMessage()">➤</button>
+    <input id="chat-input" placeholder="שאל את דר-בוט..." onkeydown="if(event.key==='Enter')sendChatMessage()" />
+  </div>
+</div>
 
 <div class="footer-note">
 החוברת נבנתה במיוחד עבורכם לטיול<br>
@@ -3751,6 +3846,152 @@ renderDayTabs();
 renderDayContent();
 setCityBackground(currentCity);
 setFloatingIcons(currentCity);
+
+// שלב 10 - דר-בוט
+const GEMINI_KEY = 'AIzaSyBP0E95KWXjBhGkPvSLNM_IhhjdhCP2OvI';
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`;
+
+const BOT_SYSTEM = `אתה דר-בוט - עוזר טיולים אישי של דר. ענה תמיד בעברית, קצר וידידותי (עד 3 משפטים).
+פרטי הטיול:
+- 5 אנשים: 3 גברים, 2 ילדים מעל 25 ואבא
+- 25 יוני – 5 יולי 2026
+- מסלול: יוסטון ← אטלנטה ← וושינגטון DC ← ניו יורק
+- יוסטון 25/06-29/06: מלון Pool House with Hot Tub, שכונת Heights
+- משחק מונדיאל ביוסטון: 29/06 שעה 13:00, NRG Stadium (ייתכן ברזיל)
+- אטלנטה 30/06-01/07: משחק מונדיאל 01/07 שעה 12:00, Mercedes-Benz Stadium
+- וושינגטון 01/07-04/07: מלון Le Méridien Washington DC, The Madison
+- אוהבים: אטרקציות, פארקים, אוכל וברים, ספורט אמריקאי, קניות, מוזיאוני היסטוריה
+- לא אוהבים: אומנות, פארקי שעשועים, פארקי מים
+כשמבקשים אוכל קרוב - אמור שאתה יוצר קישור לגוגל מפות עם התוצאות.`;
+
+const foodMap = {
+  'המבורגר': 'hamburgers', 'בורגר': 'hamburgers',
+  'פיצה': 'pizza',
+  'עוף': 'fried+chicken', 'עוף מטוגן': 'fried+chicken',
+  'סטייק': 'steakhouse', 'בשר': 'steakhouse',
+  'bbq': 'BBQ+restaurant', 'ברביקיו': 'BBQ+restaurant',
+  'מקסיקני': 'mexican+food', 'טאקו': 'tacos',
+  'קפה': 'coffee+shop', 'בית קפה': 'coffee+shop',
+  'בר': 'bar', 'ביר': 'sports+bar',
+  'ארוחת בוקר': 'breakfast', 'וופל': 'waffles',
+  'אוכל': 'restaurants+near+me'
+};
+
+let chatHistory = [];
+let chatUserLocation = null;
+let chatOpen = false;
+
+function toggleChat() {
+  const win = document.getElementById('chat-window');
+  chatOpen = !chatOpen;
+  win.style.display = chatOpen ? 'flex' : 'none';
+  if (chatOpen && chatHistory.length === 0) {
+    addBotMsg('שלום דר! 👋 אני דר-בוט, העוזר האישי שלך לטיול. אפשר לשאול אותי כל דבר על המסלול, או ללחוץ על אחד הכפתורים למטה לחיפוש אוכל קרוב.');
+  }
+  if (chatOpen) document.getElementById('chat-input').focus();
+}
+
+function addBotMsg(html, isHtml = false) {
+  const div = document.getElementById('chat-messages');
+  const msg = document.createElement('div');
+  msg.className = 'chat-msg bot';
+  if (isHtml) msg.innerHTML = html; else msg.textContent = html;
+  div.appendChild(msg);
+  div.scrollTop = div.scrollHeight;
+  return msg;
+}
+
+function addUserMsg(text) {
+  const div = document.getElementById('chat-messages');
+  const msg = document.createElement('div');
+  msg.className = 'chat-msg user';
+  msg.textContent = text;
+  div.appendChild(msg);
+  div.scrollTop = div.scrollHeight;
+}
+
+function detectFood(text) {
+  const lower = text.toLowerCase();
+  for (const [heb, eng] of Object.entries(foodMap)) {
+    if (lower.includes(heb)) return eng;
+  }
+  return null;
+}
+
+function makeFoodCard(foodType, lat, lng) {
+  const label = Object.keys(foodMap).find(k => foodMap[k] === foodType) || foodType;
+  const url = lat && lng
+    ? `https://www.google.com/maps/search/${foodType}/@${lat},${lng},15z`
+    : `https://www.google.com/maps/search/${foodType}+near+me`;
+  return `<div class="chat-food-card">
+    <div class="food-title">🍽️ ${label} — תוצאות קרובות</div>
+    <div class="food-note">ממוין לפי דירוג · עם סינון פתוח עכשיו</div>
+    <a href="${url}" target="_blank"><i class="ti ti-map-pin"></i> פתח בגוגל מפות</a>
+  </div>`;
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  await handleMessage(text);
+}
+
+function sendQuick(text) { handleMessage(text); }
+
+async function handleMessage(text) {
+  addUserMsg(text);
+  const typing = addBotMsg('מקליד...', false);
+  typing.classList.add('typing');
+
+  const foodType = detectFood(text);
+
+  try {
+    // שליחה ל-Gemini
+    chatHistory.push({ role: 'user', parts: [{ text }] });
+    const body = {
+      system_instruction: { parts: [{ text: BOT_SYSTEM }] },
+      contents: chatHistory,
+      generationConfig: { maxOutputTokens: 300, temperature: 0.7 }
+    };
+    const res = await fetch(GEMINI_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'מצטער, לא הצלחתי לענות. נסה שוב.';
+    chatHistory.push({ role: 'model', parts: [{ text: reply }] });
+
+    typing.classList.remove('typing');
+    typing.textContent = reply;
+
+    // אם זה חיפוש אוכל - הוסף כרטיס
+    if (foodType) {
+      if (chatUserLocation) {
+        addBotMsg(makeFoodCard(foodType, chatUserLocation.lat, chatUserLocation.lng), true);
+      } else {
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            chatUserLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            addBotMsg(makeFoodCard(foodType, chatUserLocation.lat, chatUserLocation.lng), true);
+          },
+          () => {
+            // אין GPS - השתמש בקואורדינטות העיר הנוכחית
+            const c = weatherCityCoords[currentCity];
+            addBotMsg(makeFoodCard(foodType, c?.lat, c?.lon), true);
+          }
+        );
+      }
+    }
+  } catch(e) {
+    typing.classList.remove('typing');
+    typing.textContent = 'שגיאת חיבור. בדוק אינטרנט ונסה שוב.';
+  }
+
+  document.getElementById('chat-messages').scrollTop = 9999;
+}
 
 // שלב 11 - רישום Service Worker לגיבוי אופליין
 if ('serviceWorker' in navigator) {
