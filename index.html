@@ -1065,6 +1065,128 @@ header .divider {
   transition: all 0.2s;
 }
 .splash-skip:hover { color: #fff; border-color: rgba(255,255,255,0.7); }
+
+/* ===== בורר תמות ===== */
+.theme-switcher { display:flex; gap:8px; justify-content:center; margin-top:14px; }
+.theme-btn {
+  width:22px; height:22px; border-radius:50%; border:2px solid transparent;
+  cursor:pointer; padding:0; transition:transform 0.15s, border-color 0.15s;
+}
+.theme-btn:hover, .theme-btn.active-theme { transform:scale(1.25); border-color:var(--text); }
+.theme-btn[data-theme="vintage"]  { background:#5c3a2e; }
+.theme-btn[data-theme="neon"]     { background:#0a0a1a; box-shadow:0 0 7px rgba(212,99,42,0.9); }
+.theme-btn[data-theme="newspaper"]{ background:#b91c1c; }
+
+/* ===== תמה: נאון לילי ===== */
+html.theme-neon {
+  --bg: #06060f;
+  --bg-paper: #0f0f1c;
+  --surface: #0a0a18;
+  --surface-2: #14142a;
+  --border: #252535;
+  --border-strong: #d4632a;
+  --text: #f0e8df;
+  --text-muted: #8888aa;
+  --text-light: #444460;
+  --accent: #d4632a;
+  --accent-2: #ff7540;
+  --accent-light: #e8854a;
+  --info-bg: #14142a;
+  --info-text: #f0e8df;
+  --warn-bg: #1a100a;
+  --warn-text: #ff9060;
+  --success: #30b060;
+  --rating-gold: #ffd040;
+  --radius-lg: 10px;
+}
+html.theme-neon header h1 {
+  text-shadow: 0 0 30px rgba(212,99,42,0.7), 0 0 60px rgba(212,99,42,0.3);
+}
+html.theme-neon .tab-btn.active {
+  box-shadow: 0 0 14px rgba(212,99,42,0.6);
+}
+html.theme-neon .attraction-card {
+  border-color: #252535;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+html.theme-neon .attraction-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 16px rgba(212,99,42,0.25);
+}
+html.theme-neon #city-overlay { background: rgba(6,6,15,0.72); }
+html.theme-neon #city-bg.bg-houston    { background: linear-gradient(160deg,#08030a 0%,#1a0808 40%,#3a1008 70%,#5a1a0a 100%); }
+html.theme-neon #city-bg.bg-drive      { background: linear-gradient(160deg,#030808 0%,#060e08 40%,#0a1a0a 70%,#102010 100%); }
+html.theme-neon #city-bg.bg-atlanta    { background: linear-gradient(160deg,#04040e 0%,#08082a 40%,#10104a 70%,#181870 100%); }
+html.theme-neon #city-bg.bg-dc         { background: linear-gradient(160deg,#020610 0%,#040e20 40%,#081840 70%,#0c2060 100%); }
+html.theme-neon #city-bg.bg-matches    { background: linear-gradient(160deg,#020802 0%,#050f05 40%,#081808 70%,#0a1e0a 100%); }
+html.theme-neon .hotel-banner { box-shadow: 0 0 20px rgba(212,99,42,0.3); }
+html.theme-neon .section-label { color: var(--accent-2); letter-spacing:1px; }
+html.theme-neon .day-tab.active { box-shadow: 0 0 10px rgba(212,99,42,0.4); }
+
+/* ===== תמה: עיתון ספורט ===== */
+html.theme-newspaper {
+  --bg: #f2ece0;
+  --bg-paper: #faf7f0;
+  --surface: #ffffff;
+  --surface-2: #ebe5d8;
+  --border: #1a1a1a;
+  --border-strong: #000000;
+  --text: #080808;
+  --text-muted: #2a2a2a;
+  --text-light: #555;
+  --accent: #b91c1c;
+  --accent-2: #dc2626;
+  --accent-light: #991b1b;
+  --info-bg: #fef9ee;
+  --info-text: #0a0a0a;
+  --warn-bg: #fff1e0;
+  --warn-text: #92400e;
+  --rating-gold: #92400e;
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+}
+html.theme-newspaper header h1 {
+  font-family: 'Frank Ruhl Libre', Georgia, serif;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  font-size: 30px;
+}
+html.theme-newspaper header {
+  border-bottom: 3px double #000;
+}
+html.theme-newspaper .tab-btn {
+  border-radius: 2px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+html.theme-newspaper .tab-btn.active {
+  background: #000;
+  color: #f2ece0;
+  border-color: #000;
+}
+html.theme-newspaper .attraction-card {
+  border-radius: 2px;
+  border-left: 4px solid #000;
+}
+html.theme-newspaper .attraction-card:hover {
+  border-left-color: var(--accent);
+}
+html.theme-newspaper .card-title { font-weight: 800; }
+html.theme-newspaper .section-label {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-bottom: 2px solid #000;
+  padding-bottom: 4px;
+}
+html.theme-newspaper #city-bg { display:none; }
+html.theme-newspaper #city-overlay { background: transparent; }
+html.theme-newspaper #floating-icons { display:none; }
+html.theme-newspaper .hotel-banner { border-radius: 2px; }
+html.theme-newspaper .day-tab.active { background:#000; color:#f2ece0; border-color:#000; border-radius:2px; }
 </style>
 </head>
 <body>
@@ -1131,6 +1253,11 @@ header .divider {
   <div class="pretitle">מונדיאל 2026 · ארצות הברית</div>
   <h1>חוברת המסלול שלכם</h1>
   <div class="subtitle">25 ביוני – 5 ביולי 2026 · יוסטון → אטלנטה → וושינגטון → ניו יורק</div>
+  <div class="theme-switcher">
+    <button class="theme-btn active-theme" data-theme="vintage"  onclick="setTheme('vintage')"  title="וינטג' חם"></button>
+    <button class="theme-btn"              data-theme="neon"      onclick="setTheme('neon')"      title="נאון לילי"></button>
+    <button class="theme-btn"              data-theme="newspaper" onclick="setTheme('newspaper')" title="עיתון ספורט"></button>
+  </div>
   <div class="divider"></div>
 </header>
 
@@ -4075,6 +4202,19 @@ async function handleMessage(text) {
 
   document.getElementById('chat-messages').scrollTop = 9999;
 }
+
+// בורר תמות
+function setTheme(theme) {
+  const html = document.documentElement;
+  html.classList.remove('theme-neon', 'theme-newspaper');
+  if (theme !== 'vintage') html.classList.add(`theme-${theme}`);
+  localStorage.setItem('mundial_theme', theme);
+  document.querySelectorAll('.theme-btn').forEach(btn =>
+    btn.classList.toggle('active-theme', btn.dataset.theme === theme)
+  );
+}
+const savedTheme = localStorage.getItem('mundial_theme');
+if (savedTheme) setTheme(savedTheme);
 
 // שלב 11 - רישום Service Worker לגיבוי אופליין
 if ('serviceWorker' in navigator) {
