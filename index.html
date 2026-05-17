@@ -769,6 +769,51 @@ header .divider {
   pointer-events: none;
 }
 
+/* מפת המסע */
+#tripmap-view { padding: 8px 0 40px; }
+#tripmap-view h2 {
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 26px;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+#tripmap-view .tripmap-sub {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+#tripmap-leaflet {
+  height: 460px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px solid var(--border);
+  margin-bottom: 24px;
+}
+.city-stops {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+.city-stop-card {
+  background: var(--bg-paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  text-align: center;
+}
+.city-stop-card .stop-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; color: #fff;
+  margin-bottom: 8px;
+}
+.city-stop-card .stop-name { font-weight: 700; font-size: 15px; color: var(--accent); }
+.city-stop-card .stop-dates { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.city-stop-card .stop-days  { font-size: 12px; color: var(--accent-2); margin-top: 4px; font-weight: 600; }
+
 /* מסך פתיחה */
 #splash-screen {
   position: fixed;
@@ -959,11 +1004,14 @@ header .divider {
   <button class="tab-btn" data-city="atlanta">אטלנטה</button>
   <button class="tab-btn" data-city="dc">וושינגטון</button>
   <button class="tab-btn" data-city="matches">משחקים וברים</button>
+  <button class="tab-btn" data-city="tripmap">🗺️ מפת המסע</button>
 </div>
 
 <div id="day-tabs-container" class="day-tabs"></div>
 
 <div id="content"></div>
+
+<div id="tripmap-view" style="display:none;"></div>
 
 <div class="footer-note">
 החוברת נבנתה במיוחד עבורכם לטיול<br>
@@ -3242,17 +3290,115 @@ document.querySelectorAll('#cityTabs .tab-btn').forEach(btn => {
     btn.classList.add('active');
     currentCity = btn.dataset.city;
     currentDayIdx = 0;
-    renderDayTabs();
-    if (currentCity === 'matches') {
-      renderMatchesView('schedule');
+
+    const tripmapView = document.getElementById('tripmap-view');
+    const dayTabs    = document.getElementById('day-tabs-container');
+    const content    = document.getElementById('content');
+
+    if (currentCity === 'tripmap') {
+      dayTabs.style.display = 'none';
+      content.style.display = 'none';
+      tripmapView.style.display = 'block';
+      renderTripMap();
     } else {
-      renderDayContent();
+      dayTabs.style.display = '';
+      content.style.display = '';
+      tripmapView.style.display = 'none';
+      renderDayTabs();
+      if (currentCity === 'matches') {
+        renderMatchesView('schedule');
+      } else {
+        renderDayContent();
+      }
     }
     setCityBackground(currentCity);
     setFloatingIcons(currentCity);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 });
+
+// מפת המסע הגדולה
+let tripMapInstance = null;
+
+const tripCities = [
+  { name: 'יוסטון',       nameEn: 'Houston',        dates: '25/06 – 29/06', days: '5 ימים',  lat: 29.7604, lng: -95.3698, color: '#d4632a' },
+  { name: 'אטלנטה',       nameEn: 'Atlanta',         dates: '30/06 – 01/07', days: '2 ימים',  lat: 33.7490, lng: -84.3880, color: '#5c3a2e' },
+  { name: 'וושינגטון DC', nameEn: 'Washington DC',   dates: '01/07 – 04/07', days: '3 ימים',  lat: 38.9072, lng: -77.0369, color: '#2a4a7a' },
+  { name: 'ניו יורק',     nameEn: 'New York',        dates: '04/07 – 05/07', days: '2 ימים',  lat: 40.7128, lng: -74.0060, color: '#1a4a1a' }
+];
+
+function renderTripMap() {
+  const view = document.getElementById('tripmap-view');
+
+  // כרטיסי עצירות
+  const stopsHtml = tripCities.map((c, i) => `
+    <div class="city-stop-card">
+      <div class="stop-num" style="background:${c.color};">${i + 1}</div>
+      <div class="stop-name">${c.name}</div>
+      <div class="stop-dates">${c.dates}</div>
+      <div class="stop-days">${c.days}</div>
+    </div>
+  `).join('');
+
+  view.innerHTML = `
+    <h2>מפת המסע שלנו</h2>
+    <p class="tripmap-sub">יוסטון → אטלנטה → וושינגטון → ניו יורק · 11 ימים</p>
+    <div id="tripmap-leaflet"></div>
+    <div class="city-stops">${stopsHtml}</div>
+  `;
+
+  // אתחול המפה
+  if (tripMapInstance) { tripMapInstance.remove(); tripMapInstance = null; }
+
+  const map = L.map('tripmap-leaflet', { center: [36, -86], zoom: 5 });
+  tripMapInstance = map;
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  // סיכות ערים
+  tripCities.forEach((c, i) => {
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="background:${c.color};width:46px;height:46px;border-radius:50%;border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;">${i + 1}</div>`,
+      iconSize: [46, 46], iconAnchor: [23, 23]
+    });
+    const marker = L.marker([c.lat, c.lng], { icon }).addTo(map);
+    marker.bindPopup(`
+      <div dir="rtl" style="text-align:right;min-width:150px;font-family:Heebo,sans-serif;">
+        <strong style="font-size:15px;color:${c.color};">${c.name}</strong><br>
+        <span style="color:#8a6747;font-size:13px;">${c.dates}</span><br>
+        <span style="font-size:12px;">${c.days}</span>
+      </div>
+    `);
+  });
+
+  // אנימציית קו מסע - נקודות בין הערים
+  const allCoords = [];
+  for (let i = 0; i < tripCities.length - 1; i++) {
+    const a = tripCities[i], b = tripCities[i + 1];
+    const steps = 30;
+    for (let s = 0; s <= steps; s++) {
+      const t = s / steps;
+      allCoords.push([a.lat + (b.lat - a.lat) * t, a.lng + (b.lng - a.lng) * t]);
+    }
+  }
+
+  const routeLine = L.polyline([], {
+    color: '#d4632a', weight: 3, opacity: 0.85, dashArray: '8,5'
+  }).addTo(map);
+
+  let idx = 0;
+  function drawStep() {
+    if (idx < allCoords.length) {
+      routeLine.addLatLng(allCoords[idx]);
+      idx++;
+      setTimeout(drawStep, 40);
+    }
+  }
+  setTimeout(drawStep, 400);
+}
 
 // מחזיר את תאריך היום בפורמט YYYY-MM-DD לפי שעון המכשיר
 function getTodayStr() {
