@@ -770,6 +770,22 @@ header .divider {
   pointer-events: none;
 }
 
+/* שלב 5 - מזג אוויר */
+.weather-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--info-bg); color: var(--info-text);
+  border: 1px solid var(--border); border-radius: 20px;
+  padding: 3px 10px; font-size: 13px; font-weight: 500;
+  margin-top: 6px;
+}
+.current-weather-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-paper); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 8px 14px;
+  font-size: 13px; color: var(--text-muted); margin-bottom: 16px;
+}
+.current-weather-bar strong { color: var(--text); }
+
 /* שלב 9 - מסלול יום */
 .mark-btn {
   background: none;
@@ -3054,7 +3070,9 @@ function renderDayContent() {
     <div class="day-header">
       <h2>${day.title}</h2>
       <div class="day-sub">${day.subtitle}</div>
+      <div id="day-weather-badge"></div>
     </div>
+    <div id="city-current-weather"></div>
     <div class="summary-box">${day.summary}</div>
     ${showHotelDistance ? `
       <div class="hotel-banner">
@@ -3175,9 +3193,24 @@ function renderDayContent() {
     ` : ''}
   `;
   
-  setTimeout(() => {
-    initDayMap(day);
-  }, 100);
+  setTimeout(() => { initDayMap(day); }, 100);
+
+  // טעינת מזג אוויר
+  if (weatherCityCoords[currentCity]) {
+    getWeatherForCity(currentCity).then(list => {
+      const badge = document.getElementById('day-weather-badge');
+      if (badge && day.date) {
+        const html = buildWeatherBadge(list, day.date);
+        if (html) badge.innerHTML = html;
+      }
+    });
+    getCurrentWeather(currentCity).then(w => {
+      const bar = document.getElementById('city-current-weather');
+      if (bar && w) {
+        bar.innerHTML = `<div class="current-weather-bar">${weatherEmoji(w.icon)} <strong>מזג אוויר כרגע:</strong> ${w.temp}°C · ${w.desc}</div>`;
+      }
+    });
+  }
   
   content.querySelectorAll('.attraction-card').forEach(card => {
     card.addEventListener('click', (e) => {
@@ -3398,6 +3431,59 @@ document.querySelectorAll('#cityTabs .tab-btn').forEach(btn => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 });
+
+// שלב 5 - מזג אוויר
+const WEATHER_KEY = '83cce8c7bf14af23ae21fab1c6f48923';
+const weatherCityCoords = {
+  houston:    { lat: 29.7604, lon: -95.3698 },
+  drive:      { lat: 29.7604, lon: -95.3698 },
+  atlanta:    { lat: 33.7490, lon: -84.3880 },
+  dc:         { lat: 38.9072, lon: -77.0369 }
+};
+const weatherCache = {};
+
+function weatherEmoji(icon) {
+  const c = icon?.substring(0, 2) || '01';
+  return { '01':'☀️','02':'🌤️','03':'⛅','04':'☁️','09':'🌧️','10':'🌦️','11':'⛈️','13':'❄️','50':'🌫️' }[c] || '🌡️';
+}
+
+async function getWeatherForCity(cityKey) {
+  if (weatherCache[cityKey]) return weatherCache[cityKey];
+  const c = weatherCityCoords[cityKey];
+  if (!c) return null;
+  try {
+    const res = await fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${c.lat}&lon=${c.lon}&appid=${WEATHER_KEY}&units=metric&cnt=40`
+    );
+    const data = await res.json();
+    if (data.cod !== '200') return null;
+    weatherCache[cityKey] = data.list;
+    return data.list;
+  } catch(e) { return null; }
+}
+
+async function getCurrentWeather(cityKey) {
+  const c = weatherCityCoords[cityKey];
+  if (!c) return null;
+  try {
+    const res = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${c.lat}&lon=${c.lon}&appid=${WEATHER_KEY}&units=metric`
+    );
+    const d = await res.json();
+    if (!d.main) return null;
+    return { temp: Math.round(d.main.temp), icon: d.weather[0].icon, desc: d.weather[0].description };
+  } catch(e) { return null; }
+}
+
+function buildWeatherBadge(list, dateStr) {
+  if (!list) return null;
+  const items = list.filter(i => i.dt_txt.startsWith(dateStr));
+  if (items.length === 0) return null;
+  const maxTemp = Math.round(Math.max(...items.map(i => i.main.temp_max)));
+  const rain    = Math.round(Math.max(...items.map(i => (i.pop || 0) * 100)));
+  const icon    = items[Math.floor(items.length / 2)]?.weather[0]?.icon;
+  return `<span class="weather-badge">${weatherEmoji(icon)} ${maxTemp}°C${rain > 10 ? ` · 🌧️ ${rain}%` : ''}</span>`;
+}
 
 // שלב 9 - סימון אטרקציות ומסלול יום
 function getMarked() {
