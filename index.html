@@ -769,6 +769,62 @@ header .divider {
   pointer-events: none;
 }
 
+/* שלב 9 - מסלול יום */
+.mark-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  cursor: pointer;
+  font-size: 15px;
+  color: var(--text-light);
+  flex-shrink: 0;
+  transition: all 0.15s;
+  margin-left: 6px;
+  line-height: 1;
+}
+.mark-btn.marked { background: #fff8dc; border-color: var(--rating-gold); }
+.route-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--accent); color: var(--bg-paper);
+  border: none; border-radius: var(--radius-md);
+  padding: 10px 18px; cursor: pointer;
+  font-size: 14px; font-family: 'Heebo', sans-serif; font-weight: 600;
+  width: 100%; margin-bottom: 12px;
+  transition: opacity 0.15s;
+}
+.route-btn:hover { opacity: 0.88; }
+.route-result {
+  background: var(--bg-paper);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 16px; margin-bottom: 16px;
+}
+.route-result-title {
+  font-weight: 700; color: var(--accent);
+  margin-bottom: 12px; font-size: 15px;
+}
+.route-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px dashed var(--border);
+  font-size: 14px;
+}
+.route-step:last-child { border-bottom: none; }
+.route-step-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--accent-2); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 12px; flex-shrink: 0;
+}
+.route-step-name { flex: 1; }
+.route-step-dist { font-size: 12px; color: var(--text-muted); }
+.route-start-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 0; font-size: 13px; color: var(--text-muted);
+  border-bottom: 1px dashed var(--border); margin-bottom: 2px;
+}
+.route-empty { color: var(--text-muted); font-size: 14px; text-align: center; padding: 8px 0; }
+
 /* מפת המסע */
 #tripmap-view { padding: 8px 0 40px; }
 #tripmap-view h2 {
@@ -3025,6 +3081,8 @@ function renderDayContent() {
       </div>
     </div>
     <div class="section-label">בחרו מתוך ${day.attractions.length} אופציות:</div>
+    <button class="route-btn" id="route-btn"><i class="ti ti-route"></i> צור לי מסלול מהאטרקציות שסימנתי ⭐</button>
+    <div id="route-result-area"></div>
     <div>
       ${day.attractions.map((a, i) => `
         <div class="attraction-card" data-idx="${i}">
@@ -3041,6 +3099,7 @@ function renderDayContent() {
               ${a.time ? `<div class="card-meta"><i class="ti ti-clock"></i>${a.time}</div>` : ''}
               ${showHotelDistance && a.lat ? `<div class="card-meta" style="color: var(--accent-2);">${formatDistanceFromHotel(a.lat, a.lng)}</div>` : ''}
             </div>
+            <button class="mark-btn" data-action="mark" data-idx="${i}">⭐</button>
             <i class="ti ti-chevron-down toggle-icon"></i>
           </div>
           <div class="card-details">
@@ -3122,9 +3181,31 @@ function renderDayContent() {
   content.querySelectorAll('.attraction-card').forEach(card => {
     card.addEventListener('click', (e) => {
       if (e.target.tagName === 'A' || e.target.closest('a')) return;
+      if (e.target.closest('[data-action="mark"]')) return;
       card.classList.toggle('expanded');
     });
   });
+
+  // אתחול מצב כפתורי סימון
+  const dayId = day.id;
+  content.querySelectorAll('.mark-btn').forEach(btn => {
+    const idx = parseInt(btn.dataset.idx);
+    if (isMarked(currentCity, dayId, idx)) btn.classList.add('marked');
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const nowMarked = toggleMark(currentCity, dayId, idx);
+      btn.classList.toggle('marked', nowMarked);
+    });
+  });
+
+  const routeBtn = document.getElementById('route-btn');
+  if (routeBtn) {
+    routeBtn.addEventListener('click', () => {
+      const area = document.getElementById('route-result-area');
+      if (area) area.innerHTML = buildRouteHtml(currentCity, dayId, day.attractions);
+      area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  }
 
   // טעינת תמונות - Wikipedia לאטרקציות מפורסמות, תמונה מקומית ל-BBQ
   content.querySelectorAll('.card-img-wrap').forEach(async (wrap) => {
@@ -3316,6 +3397,75 @@ document.querySelectorAll('#cityTabs .tab-btn').forEach(btn => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 });
+
+// שלב 9 - סימון אטרקציות ומסלול יום
+function getMarked() {
+  try { return JSON.parse(localStorage.getItem('mundial_marked') || '{}'); } catch(e) { return {}; }
+}
+function setMarked(m) { localStorage.setItem('mundial_marked', JSON.stringify(m)); }
+
+function isMarked(city, dayId, idx) {
+  return !!getMarked()[`${city}_${dayId}_${idx}`];
+}
+
+function toggleMark(city, dayId, idx) {
+  const m = getMarked();
+  const key = `${city}_${dayId}_${idx}`;
+  const nowMarked = !m[key];
+  if (nowMarked) m[key] = true; else delete m[key];
+  setMarked(m);
+  return nowMarked;
+}
+
+function buildRouteHtml(city, dayId, attractions) {
+  const marked = attractions
+    .map((a, i) => ({ a, i }))
+    .filter(({ i }) => isMarked(city, dayId, i));
+
+  if (marked.length === 0) {
+    return `<div class="route-result"><div class="route-empty">לא סימנת אטרקציות ביום הזה. לחץ ⭐ על האטרקציות שמעניינות אותך ואז נסה שוב.</div></div>`;
+  }
+
+  const hotel = city === 'houston' ? hotelHouston : city === 'dc' ? hotelDC : null;
+  const remaining = [...marked];
+  const route = [];
+  let current = hotel;
+
+  // Nearest Neighbor - מוצא את הקרובה ביותר בכל פעם
+  while (remaining.length > 0) {
+    let bestIdx = 0, bestDist = Infinity;
+    remaining.forEach((item, i) => {
+      if (!item.a.lat || !current) return;
+      const d = distanceKm(current.lat, current.lng, item.a.lat, item.a.lng);
+      if (d !== null && d < bestDist) { bestDist = d; bestIdx = i; }
+    });
+    const chosen = remaining.splice(bestIdx, 1)[0];
+    const dist = chosen.a.lat && current ? distanceKm(current.lat, current.lng, chosen.a.lat, chosen.a.lng) : null;
+    const mins = dist ? Math.round(dist / 30 * 60) : null;
+    route.push({ ...chosen, dist, mins });
+    current = chosen.a.lat ? chosen.a : current;
+  }
+
+  const hotelLine = hotel
+    ? `<div class="route-start-step">🏠 התחלה מהמלון: ${hotel.name}</div>`
+    : '';
+
+  const steps = route.map((item, i) => `
+    <div class="route-step">
+      <span class="route-step-num">${i + 1}</span>
+      <span class="route-step-name">${item.a.name}</span>
+      ${item.dist ? `<span class="route-step-dist">${item.dist.toFixed(1)} ק"מ · ~${item.mins} דק'</span>` : ''}
+    </div>
+  `).join('');
+
+  return `
+    <div class="route-result">
+      <div class="route-result-title"><i class="ti ti-route"></i> המסלול המומלץ ל-${marked.length} אטרקציות</div>
+      ${hotelLine}
+      ${steps}
+    </div>
+  `;
+}
 
 // מפת המסע הגדולה
 let tripMapInstance = null;
