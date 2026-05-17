@@ -1139,7 +1139,12 @@ header .divider {
     <i class="ti ti-current-location" style="font-size: 18px;"></i>
     מה קרוב אליי?
   </button>
+  <button id="nowBtn" onclick="whatToDoNow()" style="background: var(--accent); color: white; border: none; padding: 10px 22px; border-radius: 24px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; box-shadow: 0 2px 6px rgba(92,58,46,0.3); display: inline-flex; align-items: center; gap: 8px;">
+    <i class="ti ti-bolt" style="font-size: 18px;"></i>
+    מה עושים עכשיו?
+  </button>
 </div>
+<div id="nowResults" style="display:none; background: var(--bg-paper); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 20px;"></div>
 
 <div id="nearMeResults" style="display:none; background: var(--bg-paper); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 20px;"></div>
 
@@ -1170,10 +1175,12 @@ header .divider {
   <div id="chat-quick">
     <button class="qr-btn" onclick="sendQuick('🍔 המבורגר קרוב')">🍔 המבורגר</button>
     <button class="qr-btn" onclick="sendQuick('🍕 פיצה עכשיו')">🍕 פיצה</button>
-    <button class="qr-btn" onclick="sendQuick('🍗 עוף מטוגן קרוב')">🍗 עוף</button>
     <button class="qr-btn" onclick="sendQuick('☕ קפה קרוב')">☕ קפה</button>
     <button class="qr-btn" onclick="sendQuick('🍺 בר קרוב')">🍺 בר</button>
     <button class="qr-btn" onclick="sendQuick('מה מומלץ לי לעשות היום?')">📍 מה היום?</button>
+    <button class="qr-btn" onclick="sendQuick('תן לי טיפ מעניין על העיר שאני נמצא בה')">💡 טיפ על העיר</button>
+    <button class="qr-btn" onclick="sendQuick('מה כדאי לי להכין לפני הטיול?')">🎒 להכין לטיול</button>
+    <button class="qr-btn" onclick="sendQuick('כמה עולה מונית באמריקה?')">🚕 מחירי נסיעה</button>
   </div>
   <div id="chat-input-row">
     <button id="chat-send" onclick="sendChatMessage()">➤</button>
@@ -1254,6 +1261,80 @@ function formatDistanceFromHotel(lat, lng) {
   if (km === null) return '';
   const mins = Math.round(km / 30 * 60);
   return `<i class="ti ti-home"></i> ${km.toFixed(1)} ק"מ מהמלון · כ-${mins} דק' נסיעה`;
+}
+
+// בודק אם אטרקציה פתוחה עכשיו לפי שעות פתיחה
+function isOpenNow(hours) {
+  if (!hours) return true;
+  const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  const now = new Date();
+  const dayStr = hours[dayNames[now.getDay()]];
+  if (!dayStr || dayStr === 'סגור') return false;
+  const cur = now.getHours() * 60 + now.getMinutes();
+  return dayStr.split(',').some(r => {
+    const parts = r.trim().split('-');
+    if (parts.length < 2) return false;
+    const toMin = t => { const [h,m] = t.trim().split(':').map(Number); return h*60+(m||0); };
+    return cur >= toMin(parts[0]) && cur <= toMin(parts[1]);
+  });
+}
+
+function whatToDoNow() {
+  const btn = document.getElementById('nowBtn');
+  const results = document.getElementById('nowResults');
+  if (!data[currentCity]) { results.style.display='block'; results.innerHTML='<div style="color:var(--text-muted)">עבור ללשונית עיר כדי לקבל המלצה.</div>'; return; }
+
+  btn.innerHTML = '<i class="ti ti-loader" style="font-size:18px;"></i> מאתר...';
+  btn.disabled = true;
+
+  navigator.geolocation.getCurrentPosition(pos => {
+    const { latitude: lat, longitude: lng } = pos.coords;
+    const now = new Date();
+    const allAttractions = data[currentCity].days.flatMap(d => d.attractions);
+
+    // סנן אטרקציות פתוחות עכשיו עם קואורדינטות
+    const open = allAttractions.filter(a => a.lat && a.lng && isOpenNow(a.hours));
+
+    if (open.length === 0) {
+      results.style.display = 'block';
+      results.innerHTML = '<div style="color:var(--text-muted)">לא נמצאו אטרקציות פתוחות כרגע. נסה מאוחר יותר.</div>';
+      btn.innerHTML = '<i class="ti ti-bolt" style="font-size:18px;"></i> מה עושים עכשיו?';
+      btn.disabled = false;
+      return;
+    }
+
+    // מיין לפי מרחק
+    const sorted = open.map(a => ({
+      ...a,
+      dist: distanceKm(lat, lng, a.lat, a.lng)
+    })).sort((a, b) => a.dist - b.dist).slice(0, 3);
+
+    results.style.display = 'block';
+    results.innerHTML = `
+      <div style="font-weight:700;color:var(--accent);margin-bottom:12px;font-size:15px;">
+        ⚡ פתוח עכשיו · קרוב אליך
+      </div>
+      ${sorted.map((a, i) => `
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i < sorted.length-1 ? 'border-bottom:1px dashed var(--border);' : ''}">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--accent-2);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">${i+1}</div>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:14px;">${a.name}</div>
+            <div style="font-size:12px;color:var(--text-muted);">${a.dist.toFixed(1)} ק"מ ממך · ${Math.round(a.dist/30*60)} דק' נסיעה</div>
+          </div>
+          <a href="${mapsLinkLatLng(a.lat, a.lng, a.name)}" target="_blank" style="background:var(--accent-2);color:#fff;padding:6px 10px;border-radius:var(--radius-sm);text-decoration:none;font-size:12px;white-space:nowrap;">
+            <i class="ti ti-map-pin"></i> נווט
+          </a>
+        </div>
+      `).join('')}
+    `;
+    btn.innerHTML = '<i class="ti ti-bolt" style="font-size:18px;"></i> מה עושים עכשיו?';
+    btn.disabled = false;
+  }, () => {
+    results.style.display = 'block';
+    results.innerHTML = '<div style="color:var(--text-muted)">לא ניתן לקבל מיקום. אפשר גישה למיקום בדפדפן ונסה שוב.</div>';
+    btn.innerHTML = '<i class="ti ti-bolt" style="font-size:18px;"></i> מה עושים עכשיו?';
+    btn.disabled = false;
+  });
 }
 
 function findNearMe() {
@@ -3851,18 +3932,20 @@ setFloatingIcons(currentCity);
 const GEMINI_KEY = 'AIzaSyBP0E95KWXjBhGkPvSLNM_IhhjdhCP2OvI';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`;
 
-const BOT_SYSTEM = `אתה דר-בוט - עוזר טיולים אישי של דר. ענה תמיד בעברית, קצר וידידותי (עד 3 משפטים).
-פרטי הטיול:
+const BOT_SYSTEM = `אתה דר-בוט - עוזר טיולים אישי חכם ומצחיק של דר. ענה תמיד בעברית, קצר וידידותי.
+אתה יכול לענות על כל שאלה - טיולים, המלצות, עובדות על ערים, ספורט, אוכל, תרבות, NBA, כדורגל, מזג אוויר, טיפים לנסיעה, ועוד.
+פרטי הטיול של דר:
 - 5 אנשים: 3 גברים, 2 ילדים מעל 25 ואבא
 - 25 יוני – 5 יולי 2026
-- מסלול: יוסטון ← אטלנטה ← וושינגטון DC ← ניו יורק
+- מסלול: יוסטון → אטלנטה → וושינגטון DC → ניו יורק
 - יוסטון 25/06-29/06: מלון Pool House with Hot Tub, שכונת Heights
 - משחק מונדיאל ביוסטון: 29/06 שעה 13:00, NRG Stadium (ייתכן ברזיל)
 - אטלנטה 30/06-01/07: משחק מונדיאל 01/07 שעה 12:00, Mercedes-Benz Stadium
 - וושינגטון 01/07-04/07: מלון Le Méridien Washington DC, The Madison
 - אוהבים: אטרקציות, פארקים, אוכל וברים, ספורט אמריקאי, קניות, מוזיאוני היסטוריה
 - לא אוהבים: אומנות, פארקי שעשועים, פארקי מים
-כשמבקשים אוכל קרוב - אמור שאתה יוצר קישור לגוגל מפות עם התוצאות.`;
+כשמבקשים אוכל קרוב - ציין שאתה יוצר קישור לגוגל מפות.
+כשמישהו שואל שאלה כללית - ענה בחופשיות, אתה לא מוגבל לנושא הטיול בלבד.`;
 
 const foodMap = {
   'המבורגר': 'hamburgers', 'בורגר': 'hamburgers',
