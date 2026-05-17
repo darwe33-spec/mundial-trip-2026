@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#5c3a2e">
+<link rel="manifest" href="manifest.json">
 <title>חוברת המסלול - מונדיאל 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3664,6 +3665,12 @@ renderDayTabs();
 renderDayContent();
 setCityBackground(currentCity);
 setFloatingIcons(currentCity);
+
+// שלב 11 - רישום Service Worker לגיבוי אופליין
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/mundial-trip-2026/sw.js')
+    .catch(() => {});
+}
 </script>
 </body>
 </html>
