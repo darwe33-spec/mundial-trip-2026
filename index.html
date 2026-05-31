@@ -914,6 +914,98 @@ header .divider {
   cursor: pointer; font-size: 15px;
 }
 
+/* ===== אמריקה 250 ===== */
+#america250-view { padding: 12px 0 60px; }
+.a250-header {
+  text-align: center;
+  padding: 28px 16px 20px;
+  background: linear-gradient(135deg, #b22234 0%, #3c3b6e 100%);
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.a250-header::before {
+  content: '★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★';
+  position: absolute; top: 8px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px; letter-spacing: 4px; opacity: 0.5;
+  white-space: nowrap;
+}
+.a250-header h2 {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 900;
+  margin: 10px 0 8px;
+  letter-spacing: 1px;
+}
+.a250-header .a250-flag { font-size: 42px; line-height: 1; }
+.a250-header .a250-sub {
+  font-size: 14px; opacity: 0.92; line-height: 1.6; max-width: 560px; margin: 0 auto;
+}
+.a250-city-block {
+  border-radius: var(--radius-lg);
+  margin-bottom: 20px;
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+}
+.a250-city-header {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border-bottom: 1.5px solid var(--border);
+}
+.a250-city-dot { font-size: 18px; color: var(--accent-2); }
+.a250-city-dot.a250-star { color: gold; font-size: 22px; }
+.a250-city-name { font-family: var(--serif); font-size: 18px; font-weight: 700; color: var(--accent); }
+.a250-city-dates { font-size: 12px; color: var(--text-muted); background: var(--bg); padding: 2px 8px; border-radius: 20px; border: 1px solid var(--border); }
+.a250-city-note { font-size: 12px; color: var(--text-muted); margin-right: auto; }
+.a250-event {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.a250-event:last-child { border-bottom: none; }
+.a250-event-special { background: #fffbee; }
+.a250-event-confirmed { background: #f5fff5; }
+.a250-event-header {
+  display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.a250-event-title {
+  font-weight: 600; font-size: 14px; color: var(--text); flex: 1;
+}
+.a250-badge {
+  font-size: 10px; font-weight: 600; padding: 2px 8px;
+  border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+}
+.a250-badge-confirmed { background: #d4f4dd; color: #1a6b2e; }
+.a250-badge-free { background: #fff0c0; color: #7a5900; }
+.a250-badge-wc { background: #e8f0fe; color: #1a3a8f; }
+.a250-badge-special { background: #ffe4e4; color: #8b0000; }
+.a250-event-meta {
+  font-size: 12px; color: var(--text-muted); margin-bottom: 6px; line-height: 1.6;
+}
+.a250-event-desc {
+  font-size: 13px; color: var(--text); line-height: 1.7;
+}
+.a250-event-links {
+  display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;
+}
+.a250-link {
+  font-size: 12px; color: var(--accent-2); text-decoration: none;
+  padding: 4px 10px; border: 1px solid var(--accent-2);
+  border-radius: var(--radius-sm);
+}
+.a250-link:hover { background: var(--accent-2); color: white; }
+.a250-tip-box {
+  background: #fff8e8; border: 1.5px solid #e8c060;
+  border-radius: var(--radius-md); padding: 12px 16px;
+  margin: 8px 16px 16px; font-size: 13px; color: #5a4000;
+}
+.a250-tip-box strong { color: #8b5e00; }
+
 /* מפת המסע */
 #tripmap-view { padding: 8px 0 40px; }
 #tripmap-view h2 {
@@ -1282,6 +1374,7 @@ html.theme-newspaper .day-tab.active { background:#000; color:#f2ece0; border-co
   <button class="tab-btn" data-city="dc">וושינגטון</button>
   <button class="tab-btn" data-city="matches">משחקים וברים</button>
   <button class="tab-btn" data-city="tripmap">🗺️ מפת המסע</button>
+  <button class="tab-btn" data-city="america250">🎆 אמריקה 250</button>
 </div>
 
 <div id="day-tabs-container" class="day-tabs"></div>
@@ -1289,6 +1382,7 @@ html.theme-newspaper .day-tab.active { background:#000; color:#f2ece0; border-co
 <div id="content"></div>
 
 <div id="tripmap-view" style="display:none;"></div>
+<div id="america250-view" style="display:none;"></div>
 
 <!-- דר-בוט -->
 <button id="chat-fab" onclick="toggleChat()" title="דר-בוט">🤖</button>
@@ -4169,19 +4263,28 @@ document.querySelectorAll('#cityTabs .tab-btn').forEach(btn => {
     currentCity = btn.dataset.city;
     currentDayIdx = 0;
 
-    const tripmapView = document.getElementById('tripmap-view');
-    const dayTabs    = document.getElementById('day-tabs-container');
-    const content    = document.getElementById('content');
+    const tripmapView   = document.getElementById('tripmap-view');
+    const a250View      = document.getElementById('america250-view');
+    const dayTabs       = document.getElementById('day-tabs-container');
+    const content       = document.getElementById('content');
+
+    // הסתר את כל התצוגות המיוחדות תמיד
+    tripmapView.style.display = 'none';
+    a250View.style.display    = 'none';
 
     if (currentCity === 'tripmap') {
       dayTabs.style.display = 'none';
       content.style.display = 'none';
       tripmapView.style.display = 'block';
       renderTripMap();
+    } else if (currentCity === 'america250') {
+      dayTabs.style.display = 'none';
+      content.style.display = 'none';
+      a250View.style.display = 'block';
+      renderAmerica250();
     } else {
       dayTabs.style.display = '';
       content.style.display = '';
-      tripmapView.style.display = 'none';
       renderDayTabs();
       if (currentCity === 'matches') {
         renderMatchesView('schedule');
@@ -4326,6 +4429,188 @@ const tripCities = [
   { name: 'וושינגטון DC', nameEn: 'Washington DC',   dates: '01/07 – 04/07', days: '3 ימים',  lat: 38.9072, lng: -77.0369, color: '#2a4a7a' },
   { name: 'ניו יורק',     nameEn: 'New York',        dates: '04/07 – 05/07', days: '2 ימים',  lat: 40.7128, lng: -74.0060, color: '#1a4a1a' }
 ];
+
+// ===== אמריקה 250 =====
+function renderAmerica250() {
+  const view = document.getElementById('america250-view');
+  view.innerHTML = `
+    <div class="a250-header">
+      <div class="a250-flag">🇺🇸</div>
+      <h2>אמריקה 250</h2>
+      <p class="a250-sub">ב-4 ביולי 2026 ארצות הברית חוגגת <strong>250 שנה לעצמאות</strong> — אתם שם בדיוק בזמן. וושינגטון DC ביום הגדול, ניו יורק יום אחרי עם ספינות וסילונים.</p>
+    </div>
+
+    <!-- יוסטון -->
+    <div class="a250-city-block">
+      <div class="a250-city-header">
+        <span class="a250-city-dot">●</span>
+        <span class="a250-city-name">יוסטון</span>
+        <span class="a250-city-dates">25–29/06</span>
+        <span class="a250-city-note">חגיגות ה-4/7 אחרי יציאתכם — אבל יש רקע</span>
+      </div>
+      <div class="a250-event">
+        <div class="a250-event-header">
+          <span class="a250-event-title">⚽ ה-World Cup הוא אירוע America250 רשמי</span>
+          <span class="a250-badge a250-badge-wc">חלק מ-America250</span>
+        </div>
+        <div class="a250-event-desc">
+          ה-FIFA World Cup 2026 הוכרז כאירוע שותף בחגיגות 250 שנה. יוסטון היא אחת מ-11 הערים המארחות — תמצאו ברחוב עיצובי "250" לצד דגלי מדינות, פסטיבלים ואנרגיה חגיגית. המשחק שלכם ב-NRG Stadium (29/06) הוא חלק ישיר מהחגיגה הלאומית.
+        </div>
+      </div>
+      <div class="a250-event">
+        <div class="a250-event-header">
+          <span class="a250-event-title">Freedom Trucks — מוזיאוני America250 ניידים</span>
+          <span class="a250-badge a250-badge-free">חינם</span>
+        </div>
+        <div class="a250-event-meta">📍 עוצרים בפארקים, ספריות ואצטדיונים ברחבי יוסטון</div>
+        <div class="a250-event-desc">
+          6 משאיות-מוזיאון של America250 מסיירות ב-48 מדינות ומציגות 250 שנות היסטוריה בתצוגה אינטראקטיבית. בדקו לוח עצירות עדכני ב-<a href="https://freedom250.org" target="_blank" style="color:var(--accent-2)">freedom250.org</a>
+        </div>
+      </div>
+      <div class="a250-tip-box">
+        💡 <strong>Freedom Over Texas</strong> — חגיגת ה-4 ביולי הגדולה ביוסטון (Keith Urban, Collective Soul, זיקוקים) מתקיימת <strong>לאחר שתצאו</strong> (4/7 ב-Eleanor Tinsley Park). אם יש גמישות בלוח — שווה לשקול.
+      </div>
+    </div>
+
+    <!-- אטלנטה -->
+    <div class="a250-city-block">
+      <div class="a250-city-header">
+        <span class="a250-city-dot">●</span>
+        <span class="a250-city-name">אטלנטה</span>
+        <span class="a250-city-dates">30/06 – 01/07</span>
+        <span class="a250-city-note">מתחיל בדיוק ביום שאתם שם ✓</span>
+      </div>
+      <div class="a250-event a250-event-confirmed">
+        <div class="a250-event-header">
+          <span class="a250-event-title">Stone Mountain Park — Fantastic Fourth 250</span>
+          <span class="a250-badge a250-badge-confirmed">✓ מאושר</span>
+        </div>
+        <div class="a250-event-meta">📅 01–06/07 · ⏰ מדי ערב · 📍 Stone Mountain Park, GA · 30 דק' מאטלנטה</div>
+        <div class="a250-event-desc">
+          מופע דרונים מיוחד לכבוד 250 שנה: <strong>250 רחפנים יוצרים צורת נשר אמריקאי</strong> — רוב הרחפנים מצוידים לירות זיקוקים מכנפיהם. אחריו מופע זיקוקים. מתחיל <strong>1 ביולי</strong> — הלילה שאתם באטלנטה.
+        </div>
+        <div class="a250-event-links">
+          <a href="https://stonemountainpark.com/activity/events/fantastic-fourth-celebration/" target="_blank" class="a250-link">אתר רשמי ↗</a>
+          <a href="https://waze.com/ul?ll=33.8081,-84.1402&navigate=yes" target="_blank" class="a250-link">🧭 Waze ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- וושינגטון DC -->
+    <div class="a250-city-block">
+      <div class="a250-city-header">
+        <span class="a250-city-dot a250-star">★</span>
+        <span class="a250-city-name">וושינגטון DC</span>
+        <span class="a250-city-dates">02–04/07</span>
+        <span class="a250-city-note">⭐ לב החגיגות — אתם שם ביום הגדול</span>
+      </div>
+
+      <div class="a250-event a250-event-confirmed">
+        <div class="a250-event-header">
+          <span class="a250-event-title">Great American State Fair — על ה-National Mall</span>
+          <span class="a250-badge a250-badge-free">חינם לחלוטין</span>
+          <span class="a250-badge a250-badge-confirmed">✓ מאושר</span>
+        </div>
+        <div class="a250-event-meta">📅 25/06–10/07 · ⏰ א'-ד' 10:00–21:00 · ה'-ש' 10:00–23:00 · 4/7 עד 00:00 · 📍 National Mall (4th–14th St)</div>
+        <div class="a250-event-desc">
+          יריד לאומי ענק של 16 יום שתופס את כל ה-National Mall מהקפיטול לוושינגטון מונומנט. <strong>56 פביליונים — כל מדינה וטריטוריה של ארה"ב</strong>, גלגל ענק 110 רגל, קרוסלה לאומית משוחזרת, מוזיקה חיה מדי יום. אתם שם בדיוק 3 הימים האחרונים לפני 4/7 — השיא.
+        </div>
+        <div class="a250-event-links">
+          <a href="https://freedom250.org/celebration/the-great-american-state-fair" target="_blank" class="a250-link">אתר רשמי ↗</a>
+          <a href="https://waze.com/ul?ll=38.8895,-77.0353&navigate=yes" target="_blank" class="a250-link">🧭 Waze ↗</a>
+        </div>
+      </div>
+
+      <div class="a250-event a250-event-confirmed">
+        <div class="a250-event-header">
+          <span class="a250-event-title">Lincoln Memorial Undercroft — מוזיאון תת-קרקעי חדש</span>
+          <span class="a250-badge a250-badge-confirmed">✓ נפתח 25/06</span>
+        </div>
+        <div class="a250-event-meta">📅 נפתח 25/06/2026 · ⚠️ כרטיסים מוזמנים מראש · 📍 Lincoln Memorial</div>
+        <div class="a250-event-desc">
+          פרויקט $69 מיליון: <strong>1,400 מ"ר מוזיאון אינטראקטיבי מתחת ל-Lincoln Memorial</strong> שנחתם 100 שנה ונפתח לראשונה בחגיגות 250. עמודי הבטון המקוריים משנת 1922 נשמרו, תצוגות הולוגרפיות על ההיסטוריה האמריקאית וזכויות האזרח. <strong>הכרטיסים נמכרו כבר מהר — הזמינו עכשיו!</strong>
+        </div>
+        <div class="a250-event-links">
+          <a href="https://www.recreation.gov" target="_blank" class="a250-link">הזמנת כרטיסים ↗</a>
+          <a href="https://waze.com/ul?ll=38.8893,-77.0502&navigate=yes" target="_blank" class="a250-link">🧭 Waze ↗</a>
+        </div>
+      </div>
+
+      <div class="a250-event a250-event-special">
+        <div class="a250-event-header">
+          <span class="a250-event-title">🎆 4 ביולי — זיקוקי ה-250: 17 דקות מהגדולים בהיסטוריה</span>
+          <span class="a250-badge a250-badge-confirmed">✓ מאושר</span>
+        </div>
+        <div class="a250-event-meta">📅 04/07/2026 · ⏰ 21:09–21:27 · 📍 National Mall — Lincoln Memorial Reflecting Pool</div>
+        <div class="a250-event-desc">
+          מושק משני צידי בריכת ה-Reflecting Pool ומאיר <strong>את כל האנדרטאות בו-זמנית</strong> — Washington Monument, Jefferson Memorial, Lincoln Memorial. שידור לאומי "Salute to America 250" מוקרן על המדשאה. הצטיידו בכיסאות, הגיעו מוקדם — יהיו מיליוני אנשים.
+        </div>
+      </div>
+
+      <div class="a250-event a250-event-confirmed">
+        <div class="a250-event-header">
+          <span class="a250-event-title">National Independence Day Parade</span>
+          <span class="a250-badge a250-badge-free">חינם</span>
+          <span class="a250-badge a250-badge-confirmed">✓ מאושר</span>
+        </div>
+        <div class="a250-event-meta">📅 04/07/2026 · ⏰ בוקר · 📍 Constitution Avenue</div>
+        <div class="a250-event-desc">
+          הפרדה הלאומית הכי גדולה בהיסטוריה: פלואטים של כל 50 מדינות, יחידות צבאיות, להקות מרצ'. מוקרן לאומית. בוקר ה-4/7 — לפני הזיקוקים בלילה.
+        </div>
+      </div>
+
+      <div class="a250-event">
+        <div class="a250-event-header">
+          <span class="a250-event-title">National Archives — קריאת הצהרת העצמאות ב-250</span>
+          <span class="a250-badge a250-badge-free">חינם</span>
+        </div>
+        <div class="a250-event-meta">📅 04/07/2026 · ⏰ בוקר מוקדם · 📍 National Archives, Constitution Ave</div>
+        <div class="a250-event-desc">
+          שחקנים בתלבושות 1776 קוראים את הצהרת העצמאות המקורית בטקס שנתי. ב-2026 — <strong>הקריאה ה-250</strong>. המסמך המקורי מוצג בפנים. אנשי DC מגיעים לזה בבוקר לפני שהכל נהיה עמוס.
+        </div>
+        <div class="a250-event-links">
+          <a href="https://waze.com/ul?ll=38.8935,-77.0232&navigate=yes" target="_blank" class="a250-link">🧭 Waze ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ניו יורק -->
+    <div class="a250-city-block">
+      <div class="a250-city-header">
+        <span class="a250-city-dot">●</span>
+        <span class="a250-city-name">ניו יורק</span>
+        <span class="a250-city-dates">04–05/07</span>
+        <span class="a250-city-note">⚓ ים + שמים + 8 מיליון איש</span>
+      </div>
+
+      <div class="a250-event a250-event-confirmed">
+        <div class="a250-event-header">
+          <span class="a250-event-title">Sail4th 250 — שיירת האוניות הגדולה בהיסטוריה</span>
+          <span class="a250-badge a250-badge-free">צפייה מהחוף — חינם</span>
+          <span class="a250-badge a250-badge-confirmed">✓ מאושר</span>
+        </div>
+        <div class="a250-event-meta">📅 03–04/07 · ⏰ כל היום · 📍 New York Harbor — Battery Park & Hudson River</div>
+        <div class="a250-event-desc">
+          <strong>50+ ספינות מפרש עתיקות מ-30 מדינות</strong> עוגנות בנמל ניו יורק ועוברות בסקירה נשיאותית מול פסל החירות. ספינות חיל ים (Navy), ה-Queen Mary 2 של Cunard, ו-<strong>100+ מטוסים כולל ה-Blue Angels</strong>. ~8 מיליון צופים לאורך החוף. הצפייה מהחוף — חינמית לחלוטין.
+        </div>
+        <div class="a250-event-links">
+          <a href="https://sail4th.org/" target="_blank" class="a250-link">אתר רשמי ↗</a>
+        </div>
+      </div>
+
+      <div class="a250-event">
+        <div class="a250-event-header">
+          <span class="a250-event-title">Times Square — Ball Drop מיוחד 250</span>
+          <span class="a250-badge a250-badge-confirmed">✓ מאושר</span>
+        </div>
+        <div class="a250-event-meta">📅 04/07/2026 · ⏰ ערב · 📍 Times Square, Manhattan</div>
+        <div class="a250-event-desc">
+          Ball Drop מיוחד לכבוד 250 שנה הוכרז רשמית. Times Square ב-4 ביולי — אחד הרגעים הניו-יורקיים שקשה לתאר במילים.
+        </div>
+      </div>
+    </div>
+  `;
+}
 
 function renderTripMap() {
   const view = document.getElementById('tripmap-view');
