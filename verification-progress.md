@@ -53,4 +53,17 @@
 
 **מקור הטעויות הכללי:** קואורדינטות שהוזנו ידנית בעיגול ל-4 ספרות (לפעמים placeholder שחזר על עצמו) במקום העתקה ממקור. הקואורדינטות ה"ארוכות" (7 ספרות) שנבדקו — היו תקינות.
 
-**עדיין לבדוק ביוסטון:** h2 (Pitch 25), h3 (Holocaust, Buffalo Soldiers, Sam Houston Park, Brazos Bend, San Jacinto, Kemah, Galleria, Traders Village, Cistern, Waugh Bat), h4 (Outlets, Katy Mills, Harwin, Bass Pro, Cavender's, Spec's, HEB, Texas Roadhouse, TJ Maxx/Ross/Burlington), h5 (Tanger), ברים.
+**יוסטון — ימים 2–5 (h2–h5):**
+| מקום | הטעות | סטייה | שורש | תיקון (מקור) |
+|------|-------|-------|------|--------------|
+| Pitch 25 (אטרקציה+בר) | lng שגוי | ~870 מ' | הזנה ידנית מעוגלת | 29.7515194,-95.3546548 (Apple Maps) |
+| Holocaust Museum Houston | lat דרומה מדי | ~700 מ' | הזנה ידנית מעוגלת | 29.7217,-95.3848 (5401 Caroline St) |
+| **Traders Village Houston** | קואורדינטה בדרום במקום NW | **~22 ק"מ ⚠️⚠️** | קואורדינטה שגויה לגמרי | 29.89511,-95.60785 (7979 N Eldridge Pkwy, Waze/Yelp) |
+| Waugh Drive Bat Colony | קואורדינטה צפונה-מזרחה מדי | ~900 מ' | הזנה ידנית | 29.7589,-95.3924 (גשר Waugh/Allen Pkwy, TPWD) |
+| Tanger Outlets Texas City | lat צפונה מדי | ~2.5 ק"מ | הזנה ידנית מעוגלת | 29.4118,-94.9690 (5885 Gulf Fwy, ליד Buc-ee's) |
+
+**נבדקו ותקינים (בטווח סבילות ~150 מ' או קואורדינטת 7-ספרות):** Buffalo Soldiers, Sam Houston Park, The Pit Room, Truth BBQ, Montrose, The Heights, Brazos Bend, San Jacinto (×2), Kemah, Galleria, Cistern, Ninfa's, Saint Arnold, Mai's, Daikin Park, Premium Outlets, Katy Mills, Harwin, Buffalo Bayou Park, Bass Pro, Cavender's, Spec's, HEB, Texas Roadhouse, TJ Maxx/Ross/Burlington, NRG Stadium.
+
+**לתשומת לב (לא טעות — תוכן):** San Jacinto מופיע פעמיים ב-h3 (אנדרטה + USS Texas) — מכוון, נשאר.
+
+✅ **יוסטון הושלם.** עדיין לבדוק: drive, אטלנטה (a1/a2+ברים), וושינגטון DC (+ברים), קואורדינטות לשונית America 250, מטא-דאטה tripCities.
