@@ -1784,10 +1784,10 @@ const data = {
             desc: '22,071 ביקורות עם 4.7 - פארק מאוד פעיל. כניסה חופשית. בזמן המונדיאל הוא משמש כ-FIFA Fan Festival הרשמי. בלב הדאון טאון, ליד מרכז הכנסים והאצטדיון.' 
           },
           { 
-            name: 'Market Square Park + Downtown Walk', 
-            tags: ['מרכז העיר', 'פארק'], 
+            name: 'Market Square Park + Downtown Walk',
+            tags: ['מרכז העיר', 'פארק'],
             time: '1-2 שעות',
-            lat: 29.7626, lng: -95.3604,
+            lat: 29.762753, lng: -95.362518,
             rating: 4.5, ratingCount: 1200,
             placeId: '',
             website: 'https://www.houstondowntown.com/',
@@ -1801,10 +1801,10 @@ const data = {
             desc: 'פארק קטן בלב העיר ההיסטורית. הליכה רגלית של 30-60 דק\' באזור. גורדי שחקים, פסלי רחוב, תחושה אורבנית.' 
           },
           { 
-            name: 'Downtown Aquarium', 
-            tags: ['מרכז העיר'], 
+            name: 'Downtown Aquarium',
+            tags: ['מרכז העיר'],
             time: '2 שעות',
-            lat: 29.7626, lng: -95.3702,
+            lat: 29.7642822, lng: -95.3674131,
             rating: 4.2, ratingCount: 8500,
             placeId: '',
             website: 'https://www.aquariumrestaurants.com/downtownaquariumhouston/',
@@ -1821,27 +1821,27 @@ const data = {
             desc: 'אקווריום עירוני קטן יחסית. נחמד למשפחות עם ילדים, אבל לא יוצא דופן. אופציה לערב פנימי ביום הנחיתה.'
           },
           {
-            name: 'Shipley Do-Nuts',
+            name: 'Shipley Do-Nuts (רשת)',
             tags: ['אוכל', 'ארוחת בוקר'],
             time: '20-30 דקות',
-            lat: 29.7630, lng: -95.3700,
+            lat: 29.7934973, lng: -95.3760784,
             rating: 4.3, ratingCount: 2800,
             placeId: '',
-            website: 'https://shipleydonuts.com/',
-            hours: { 'כל יום': 'פתוח 24/7' },
+            website: 'https://shipleydonuts.com/locations/tx/houston',
+            hours: { 'כל יום': 'מהבוקר המוקדם (שעות משתנות לפי סניף)' },
             mustSee: [
               'Kolache - מאפה טקסני-צ\'כי עם נקניק, גבינה או ג\'לי',
               'Glazed donut - אפוי טרי, מרגיש אחרת לגמרי מדאנקין',
               'Coffee combo - $5 לדונאט + קפה = ארוחת בוקר שלמה'
             ],
             imgQuery: 'Shipley Do-Nuts Houston Texas kolache donuts',
-            desc: 'רשת דונאטס טקסנית מ-1936. **מה שמייחד: ה-Kolache** - מאפה מורשת צ\'כית-טקסנית, מתוק או מלוח. פתוח 24/7, 50+ סניפים ביוסטון. ארוחת בוקר מקומית אמיתית, ~$5-8 לאדם.'
+            desc: 'רשת דונאטס טקסנית מ-1936. **מה שמייחד: ה-Kolache** - מאפה מורשת צ\'כית-טקסנית, מתוק או מלוח. 50+ סניפים ביוסטון — הסיכה כאן על סניף N Main (Northside, ליד ההייטס). ארוחת בוקר מקומית אמיתית, ~$5-8 לאדם.'
           },
           {
             name: 'POST Houston',
             tags: ['אוכל', 'מרכז העיר', 'חוויה ייחודית'],
             time: '2-3 שעות',
-            lat: 29.7578, lng: -95.3717,
+            lat: 29.7660696, lng: -95.3645899,
             rating: 4.5, ratingCount: 3100,
             placeId: '',
             website: 'https://www.posthtx.com/',
@@ -1861,10 +1861,10 @@ const data = {
             name: 'Neon Boots Dancehall & Saloon',
             tags: ['בר', 'ערב', 'חוויה ייחודית'],
             time: '2-3 שעות',
-            lat: 29.7467, lng: -95.3527,
+            lat: 29.814445, lng: -95.475974,
             rating: 4.4, ratingCount: 4200,
             placeId: '',
-            website: 'https://www.neonboots.com/',
+            website: 'https://neonbootsclub.com/',
             hours: {
               'ראשון': '15:00-02:00', 'שני': '16:00-02:00', 'שלישי': '16:00-02:00',
               'רביעי': '16:00-02:00', 'חמישי': '16:00-02:00', 'שישי': '16:00-04:00', 'שבת': '14:00-04:00'
@@ -3949,7 +3949,19 @@ function mapsLink(query) {
 }
 
 function mapsLinkLatLng(lat, lng, name) {
-  return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}&query_place_id=`;
+  // ניווט חכם ל-Google Maps: מחפש לפי שם, אבל ממורכז על הקואורדינטה המדויקת.
+  // למה? כך מקבלים "רשת ביטחון" כפולה:
+  // 1. ברשתות (כמה סניפים, כמו Shipley/Cracker Barrel) - המרכוז על הקואורדינטה
+  //    גורם ל-Google לבחור את הסניף הנכון ולא סניף אקראי.
+  // 2. אם הקואורדינטה קצת לא מדויקת - Google עדיין מוצא את המקום לפי השם.
+  // Waze (כפתור נפרד) מנווט לפי קואורדינטה ישירה - שתי שיטות עצמאיות.
+  if (lat && lng && name) {
+    return `https://www.google.com/maps/search/${encodeURIComponent(name)}/@${lat},${lng},16z`;
+  }
+  if (lat && lng) {
+    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+  }
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`;
 }
 
 function reviewsLink(placeId, name) {
