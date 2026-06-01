@@ -1094,18 +1094,53 @@ header .divider {
   60%  { transform: scale(2.2); opacity: 0.5; }
   100% { transform: scale(3.5); opacity: 0; }
 }
+/* סרטון פתיחה במסך מלא */
+.splash-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  background: #000;
+}
+/* שכבה כהה לקריאוּת — שקופה בזמן הסרטון, מתעמעמת פנימה בסיום */
+.splash-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to top, rgba(20,10,5,0.92) 0%, rgba(20,10,5,0.55) 45%, rgba(20,10,5,0.25) 100%);
+  opacity: 0;
+  pointer-events: none;
+}
+#splash-screen.revealed .splash-veil { animation: splashFade 0.6s ease forwards; }
+
+/* עוטף המלל — מופיע רק כש-#splash-screen מקבל .revealed (בסיום הסרטון) */
+.splash-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+}
+#splash-screen.revealed .splash-content {
+  animation: splashRise 0.55s ease forwards;
+  pointer-events: auto;
+}
+@keyframes splashFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes splashRise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
 .splash-greeting {
   font-family: var(--serif);
   font-size: 32px;
   color: #fff;
   text-align: center;
   letter-spacing: 1px;
-  opacity: 0;
-  animation: greetingIn 0.45s ease 1.15s forwards;
-}
-@keyframes greetingIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 .splash-items {
   display: flex;
@@ -1113,12 +1148,6 @@ header .divider {
   gap: 16px;
   width: 100%;
   max-width: 340px;
-  opacity: 0;
-  animation: itemsIn 0.4s ease 1.4s forwards;
-}
-@keyframes itemsIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 .splash-item {
   background: rgba(255,255,255,0.1);
@@ -1146,28 +1175,39 @@ header .divider {
   position: absolute;
   bottom: 24px;
   left: 24px;
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.3);
-  color: rgba(255,255,255,0.6);
-  font-size: 12px;
-  padding: 6px 14px;
+  z-index: 3;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.45);
+  color: #fff;
+  font-size: 13px;
+  padding: 8px 18px;
   border-radius: 20px;
   cursor: pointer;
   font-family: inherit;
-  transition: all 0.2s;
+  /* מוסתר עד שהסרטון מסתיים */
+  opacity: 0;
+  pointer-events: none;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
 }
-.splash-skip:hover { color: #fff; border-color: rgba(255,255,255,0.7); }
+#splash-screen.revealed .splash-skip { animation: splashFade 0.5s ease forwards; pointer-events: auto; }
+.splash-skip:hover { background: rgba(0,0,0,0.55); border-color: rgba(255,255,255,0.9); }
 
 /* ===== בורר תמות ===== */
 .theme-switcher { display:flex; gap:8px; justify-content:center; margin-top:14px; }
 .theme-btn {
-  width:22px; height:22px; border-radius:50%; border:2px solid transparent;
-  cursor:pointer; padding:0; transition:transform 0.15s, border-color 0.15s;
+  display:inline-flex; align-items:center; gap:7px;
+  border:1.5px solid var(--border-strong); background:var(--surface);
+  border-radius:999px; padding:5px 13px 5px 9px; cursor:pointer;
+  font-family:inherit; font-size:12px; font-weight:600; color:var(--text-muted);
+  transition:all 0.15s;
 }
-.theme-btn:hover, .theme-btn.active-theme { transform:scale(1.25); border-color:var(--text); }
-.theme-btn[data-theme="vintage"]  { background:#5c3a2e; }
-.theme-btn[data-theme="neon"]     { background:#0a0a1a; box-shadow:0 0 7px rgba(212,99,42,0.9); }
-.theme-btn[data-theme="newspaper"]{ background:#b91c1c; }
+.theme-btn::before { content:''; width:13px; height:13px; border-radius:50%; flex-shrink:0; }
+.theme-btn span { line-height:1; }
+.theme-btn[data-theme="app"]::before     { background:#0d9488; }
+.theme-btn[data-theme="lookbook"]::before { background:#bf5e3a; }
+.theme-btn[data-theme="vintage"]::before { background:#5c3a2e; }
+.theme-btn:hover { border-color:var(--accent-2); }
+.theme-btn.active-theme { color:var(--text); border-color:var(--accent-2); background:var(--surface-2); }
 
 /* ===== תמה: נאון לילי ===== */
 html.theme-neon {
@@ -1279,60 +1319,702 @@ html.theme-newspaper #city-overlay { background: transparent; }
 html.theme-newspaper #floating-icons { display:none; }
 html.theme-newspaper .hotel-banner { border-radius: 2px; }
 html.theme-newspaper .day-tab.active { background:#000; color:#f2ece0; border-color:#000; border-radius:2px; }
+
+/* ===== תמה: מגזין / Editorial — "נשמה" ===== */
+/* פלטה: נייר חם + דיו, מבטא כתום מאופק, קווי שיער דקים, טיפוגרפיה עורכית */
+html.theme-editorial {
+  --bg: #f3ebdf;
+  --bg-paper: #ede2d1;
+  --surface: #fbf6ee;
+  --surface-2: #e9dcc8;
+  --border: #d7c3a6;
+  --border-strong: #2a2017;
+  --text: #221a12;
+  --text-muted: #6c5942;
+  --text-light: #9d876c;
+  --accent: #1c130c;        /* דיו לכותרות */
+  --accent-2: #b8430f;      /* כתום שרוף מאופק */
+  --accent-light: #463526;
+  --info-bg: #ece2d1;
+  --info-text: #1c130c;
+  --warn-bg: #f6e7cf;
+  --warn-text: #8a4a00;
+  --success: #4a7030;
+  --rating-gold: #9a6a10;
+  --radius-sm: 0px;
+  --radius-md: 2px;
+  --radius-lg: 3px;
+  --max-width: 880px;
+}
+/* טקסטורת גרעין עדינה על כל העמוד — "נייר אמיתי" */
+html.theme-editorial body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+html.theme-editorial #city-overlay { background: rgba(243, 235, 223, 0.82); }
+html.theme-editorial #floating-icons { opacity: 0.5; }
+
+/* כותרת ראשית — אסימטרית, עורכית, עם חותם-מים 2026 */
+html.theme-editorial header {
+  text-align: right;
+  padding: 30px 4px 22px;
+  border-bottom: 1px solid var(--border-strong);
+  overflow: hidden;
+}
+html.theme-editorial header::before { display: none; }
+html.theme-editorial header > * { position: relative; z-index: 1; }
+html.theme-editorial header::after {
+  content: '2026';
+  position: absolute;
+  left: -6px;
+  bottom: -34px;
+  font-family: var(--serif);
+  font-weight: 900;
+  font-size: 150px;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.05;
+  letter-spacing: -6px;
+  z-index: 0;
+}
+html.theme-editorial header .pretitle {
+  color: var(--accent-2);
+  letter-spacing: 5px;
+  font-size: 10px;
+  font-weight: 600;
+}
+html.theme-editorial header h1 {
+  font-weight: 900;
+  font-size: 46px;
+  letter-spacing: -1.5px;
+  line-height: 1.02;
+  color: var(--accent);
+}
+html.theme-editorial header .subtitle {
+  font-style: normal;
+  letter-spacing: 0.3px;
+  color: var(--text-muted);
+  border-top: none;
+}
+html.theme-editorial header .divider {
+  margin: 14px 0 0;
+  width: 44px;
+  height: 2px;
+  background: var(--accent-2);
+}
+
+/* תוויות מקטע — מיקרו-טיפוגרפיה עורכית עם קו שיער מוביל */
+html.theme-editorial .section-label,
+html.theme-editorial .nightlife-subtitle {
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+html.theme-editorial .section-label::before {
+  content: '';
+  width: 26px;
+  height: 1px;
+  background: var(--accent-2);
+  flex-shrink: 0;
+}
+
+/* כותרת יום — מספור עורכי גדול בצד */
+html.theme-editorial .day-header {
+  border-bottom: 1px solid var(--border-strong);
+  padding-bottom: 12px;
+}
+html.theme-editorial .day-header h2 {
+  font-weight: 900;
+  font-size: 30px;
+  letter-spacing: -0.8px;
+  color: var(--accent);
+}
+html.theme-editorial .day-header .day-sub {
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 11px;
+  color: var(--accent-2);
+}
+html.theme-editorial .city-section-header {
+  border-bottom: 1px solid var(--border-strong);
+  font-weight: 900;
+  letter-spacing: -0.3px;
+}
+
+/* כרטיסים — שטוחים, קו שיער, רווח נדיב, מבטא בצד בריחוף */
+html.theme-editorial .attraction-card,
+html.theme-editorial .bar-card,
+html.theme-editorial .match-day-card,
+html.theme-editorial .bar-mini-card {
+  border: 1px solid var(--border);
+  border-right: 2px solid transparent;
+  box-shadow: none;
+  background: var(--surface);
+  transition: border-color 0.2s, transform 0.2s;
+}
+html.theme-editorial .attraction-card:hover,
+html.theme-editorial .bar-card:hover {
+  border-color: var(--border-strong);
+  border-right-color: var(--accent-2);
+  box-shadow: none;
+  transform: translateX(-2px);
+}
+html.theme-editorial .attraction-card.expanded {
+  border-right-color: var(--accent-2);
+  background: var(--surface);
+}
+html.theme-editorial .card-title,
+html.theme-editorial .bar-name {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.2px;
+  color: var(--accent);
+}
+html.theme-editorial .info-section-title {
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 12px;
+}
+html.theme-editorial .rating-pill,
+html.theme-editorial .tag-pill,
+html.theme-editorial .match-day-location,
+html.theme-editorial .bar-rec-badge,
+html.theme-editorial .bar-mini-rec {
+  border-radius: 2px;
+}
+html.theme-editorial .summary-box {
+  border-right: 2px solid var(--accent-2);
+  background: var(--bg-paper);
+  font-style: italic;
+}
+/* תגיות עורכיות — אותיות גדולות מאופקות */
+html.theme-editorial .tag-pill {
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-size: 10px;
+}
+/* כפתורי לשוניות — מאופקים, אות גדולה */
+html.theme-editorial .tab-btn {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+  font-weight: 600;
+}
+html.theme-editorial .match-day-date {
+  font-weight: 900;
+}
+/* באנר מלון — דיו על נייר, ללא גרדיאנט צעקני */
+html.theme-editorial .hotel-banner {
+  background: var(--accent);
+  box-shadow: none;
+}
+/* כפתור התמה החדשה */
+.theme-btn[data-theme="editorial"] { background:#f3ebdf; border-color:#2a2017 !important; box-shadow: inset 0 0 0 2px #b8430f; }
+
+/* ===== תמה: אפליקציה / App — מודרני, רך, נקי (בהשראת אפליקציות מובייל) ===== */
+html.theme-app {
+  --bg: #eef1f6;            /* אפור קריר רך */
+  --bg-paper: #f6f8fb;
+  --surface: #ffffff;
+  --surface-2: #eef2f8;
+  --border: #e7ebf2;
+  --border-strong: #d6dce6;
+  --text: #1f2937;
+  --text-muted: #6b7280;
+  --text-light: #9aa3b2;
+  --accent: #0d9488;        /* טורקיז ראשי — כפתורים/לשוניות פעילות */
+  --accent-2: #14b8a6;
+  --accent-light: #0f766e;
+  --info-bg: #e6f6f4;
+  --info-text: #0f766e;
+  --warn-bg: #fff4e5;
+  --warn-text: #b45309;
+  --success: #16a34a;
+  --rating-gold: #f59e0b;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --max-width: 880px;
+  --shadow-card: 0 6px 22px rgba(31,41,55,0.07);
+  --shadow-soft: 0 2px 10px rgba(31,41,55,0.05);
+}
+html.theme-app body { font-weight: 400; }
+/* רקע נקי — בלי גרדיאנטים צבעוניים ובלי אייקונים מרחפים */
+html.theme-app #city-bg { display: none; }
+html.theme-app #floating-icons { display: none; }
+/* רקע פסטל רך עם כתמי צבע מטושטשים — נותן לזכוכית מה לטשטש */
+html.theme-app #city-overlay {
+  background:
+    radial-gradient(42% 32% at 82% 10%, rgba(20,184,166,0.30), transparent 70%),
+    radial-gradient(46% 36% at 10% 28%, rgba(99,102,241,0.22), transparent 72%),
+    radial-gradient(50% 40% at 62% 96%, rgba(244,114,182,0.18), transparent 72%),
+    radial-gradient(40% 30% at 95% 70%, rgba(251,191,36,0.16), transparent 72%),
+    linear-gradient(160deg, #e9f6f3 0%, #eef0fa 50%, #f5eef9 100%);
+}
+html.theme-app body::after { display: none; }
+html.theme-app body { background: #eaf2f4; }
+
+/* טיפוגרפיה: בלי Serif — סאנס מודרני בלבד, כותרות בכהה-פצם */
+html.theme-app header h1,
+html.theme-app .day-header h2,
+html.theme-app .card-title,
+html.theme-app .bar-name,
+html.theme-app .bar-mini-name,
+html.theme-app .city-section-header,
+html.theme-app .match-day-date,
+html.theme-app .info-section-title,
+html.theme-app .nightlife-header,
+html.theme-app .day-header,
+html.theme-app .match-day-date {
+  font-family: 'Heebo', system-ui, sans-serif !important;
+  color: #111827;
+}
+
+/* כותרת ראשית — נקייה, ידידותית, עם תווית כדור-מבטא רך */
+html.theme-app header {
+  text-align: right;
+  border-bottom: none;
+  padding: 26px 4px 6px;
+}
+html.theme-app header::before { display: none; }
+html.theme-app header .pretitle {
+  display: inline-block;
+  background: var(--info-bg);
+  color: var(--accent-light);
+  padding: 5px 12px;
+  border-radius: 999px;
+  letter-spacing: 1px;
+  font-size: 11px;
+}
+html.theme-app header h1 {
+  font-weight: 800;
+  font-size: 38px;
+  letter-spacing: -1px;
+  margin-top: 12px;
+}
+html.theme-app header .subtitle { font-style: normal; color: var(--text-muted); }
+html.theme-app header .divider { display: none; }
+
+/* לשוניות עיר — כדורי-pill, פעיל = מילוי טורקיז עם צל רך */
+html.theme-app .city-tabs {
+  border-bottom: none;
+  gap: 8px;
+}
+html.theme-app .tab-btn {
+  background: var(--surface);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  box-shadow: var(--shadow-soft);
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 9px 18px;
+}
+html.theme-app .tab-btn:hover { color: var(--accent-light); background: #fff; }
+html.theme-app .tab-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 6px 16px rgba(13,148,136,0.32);
+}
+html.theme-app .day-tabs {
+  border-bottom: none;
+  gap: 8px;
+  justify-content: flex-start;
+  position: relative;
+  margin-bottom: 16px;
+}
+html.theme-app .day-tab {
+  background: rgba(255,255,255,0.5);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(31,41,55,0.07);
+  color: var(--text);
+  padding: 8px 16px;
+  font-weight: 600;
+}
+html.theme-app .day-tab.active {
+  background: rgba(13,148,136,0.92);
+  color: #fff;
+  border-color: rgba(13,148,136,0.9);
+  box-shadow: 0 6px 16px rgba(13,148,136,0.32);
+}
+/* בורר ימים מתקפל: כברירת מחדל מציג רק את היום הנוכחי + חץ; בלחיצה נפתחים כולם */
+html.theme-app .day-tabs .day-tab { display: none; }
+html.theme-app .day-tabs .day-tab.active { display: inline-flex; align-items: center; }
+html.theme-app .day-tabs:not(.dp-open) .day-tab.active::before { content: '📅'; margin-left: 6px; font-size: 13px; }
+html.theme-app .day-tabs:not(.dp-open) .day-tab.active::after  { content: '▾'; margin-right: 7px; font-size: 13px; opacity: 0.9; }
+html.theme-app .day-tabs.dp-open .day-tab { display: inline-flex; }
+html.theme-app .day-tabs.dp-open .day-tab.active::before,
+html.theme-app .day-tabs.dp-open .day-tab.active::after { content: none; }
+
+/* כותרת יום */
+html.theme-app .day-header { border-bottom: none; margin-bottom: 8px; }
+html.theme-app .day-header h2 { font-weight: 800; font-size: 28px; letter-spacing: -0.6px; }
+html.theme-app .day-header .day-sub { font-style: normal; color: var(--accent-light); font-weight: 600; }
+html.theme-app .city-section-header { border-bottom: none; font-weight: 800; }
+
+/* תיבת סיכום — כרטיס רך עם רקע מנטה עדין */
+html.theme-app .summary-box {
+  background: var(--info-bg);
+  border-right: none;
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  color: var(--accent-light);
+}
+
+/* מפה — כרטיס רך */
+html.theme-app .map-container {
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  background: #fff;
+  padding: 8px;
+}
+
+/* כרטיסים — לבן, פינות גדולות, צל רך, בלי מסגרת; ריחוף = הרמה */
+html.theme-app .attraction-card,
+html.theme-app .bar-card,
+html.theme-app .match-day-card,
+html.theme-app .bar-mini-card,
+html.theme-app .nightlife-section,
+html.theme-app .info-section,
+html.theme-app .legend,
+html.theme-app .route-result,
+html.theme-app .map-container {
+  background: rgba(255,255,255,0.45);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.65);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 30px rgba(31,41,55,0.10);
+  padding: 18px 20px;
+}
+html.theme-app .info-section { background: rgba(255,255,255,0.35); box-shadow: none; padding: 12px 14px; }
+html.theme-app .map-container { padding: 8px; }
+html.theme-app .attraction-card { margin-bottom: 14px; transition: transform 0.2s, box-shadow 0.2s; }
+html.theme-app .attraction-card:hover {
+  border: none;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(31,41,55,0.12);
+}
+html.theme-app .attraction-card.expanded { background: #fff; }
+html.theme-app .card-title, html.theme-app .bar-name { font-weight: 700; font-size: 16px; }
+
+/* תמונת כרטיס — פינות מעוגלות בהתאמה לכרטיס */
+html.theme-app .card-img-wrap.loaded { max-height: 150px; }
+html.theme-app .card-img { height: 150px; }
+
+/* פילים רכים בגוונים עדינים */
+html.theme-app .rating-pill {
+  background: #fff7e6;
+  border: none;
+  border-radius: 999px;
+  color: #b45309;
+  font-weight: 600;
+}
+html.theme-app .rating-pill .star { color: var(--rating-gold); }
+html.theme-app .tag-pill {
+  background: var(--info-bg) !important;
+  color: var(--accent-light) !important;
+  border-radius: 999px;
+  font-weight: 600;
+  padding: 3px 11px;
+}
+html.theme-app .match-day-location,
+html.theme-app .bar-rec-badge,
+html.theme-app .bar-mini-rec {
+  border-radius: 999px;
+  border: none;
+}
+
+/* כפתורים — מעוגלים מלא, מילוי מבטא, צל רך */
+html.theme-app .route-btn,
+html.theme-app .geo-btn,
+html.theme-app #chat-fab {
+  border-radius: 999px;
+  box-shadow: 0 6px 16px rgba(13,148,136,0.3);
+}
+html.theme-app .info-section-title { font-weight: 700; }
+html.theme-app .action-link, html.theme-app .map-link { font-weight: 600; }
+
+/* באנר מלון — כרטיס טורקיז רך */
+html.theme-app .hotel-banner {
+  background: linear-gradient(135deg, #0d9488, #14b8a6);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 22px rgba(13,148,136,0.28);
+}
+/* ===== בר ניווט תחתון (Bottom Navigation) — השינוי המבני ===== */
+html.theme-app .city-tabs {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  top: auto;
+  margin: 0;
+  padding: 8px 6px calc(10px + env(safe-area-inset-bottom, 0px));
+  background: rgba(255,255,255,0.62);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+  box-shadow: 0 -6px 30px rgba(31,41,55,0.14);
+  border-top: 1px solid rgba(255,255,255,0.7);
+  border-radius: 24px 24px 0 0;
+  border-bottom: none;
+  z-index: 9000;
+  gap: 2px;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+html.theme-app .city-tabs::-webkit-scrollbar { display: none; }
+html.theme-app .tab-btn {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  min-width: 58px;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 16px;
+  padding: 7px 6px;
+  color: var(--text-light);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+}
+html.theme-app .tab-btn::before {
+  font-size: 21px;
+  line-height: 1;
+}
+html.theme-app .tab-btn[data-city="houston"]::before    { content: '🏙️'; }
+html.theme-app .tab-btn[data-city="drive"]::before       { content: '🚗'; }
+html.theme-app .tab-btn[data-city="atlanta"]::before     { content: '🍑'; }
+html.theme-app .tab-btn[data-city="dc"]::before          { content: '🏛️'; }
+html.theme-app .tab-btn[data-city="matches"]::before     { content: '⚽'; }
+html.theme-app .tab-btn[data-city="tripmap"]::before     { content: '🗺️'; }
+html.theme-app .tab-btn[data-city="america250"]::before  { content: '🎆'; }
+html.theme-app .tab-btn:hover {
+  background: var(--info-bg) !important;
+  color: var(--accent-light);
+}
+html.theme-app .tab-btn.active {
+  background: var(--info-bg) !important;
+  color: var(--accent) !important;
+  font-weight: 700;
+  box-shadow: none !important;
+}
+/* רווח בתחתית כדי שהבר לא יסתיר תוכן + הרמת כפתור הצ'אט מעל הבר */
+html.theme-app .container { padding-bottom: 96px; }
+html.theme-app #chat-fab { bottom: 92px; }
+/* הסתרת האימוג'י הכפול בטקסט של שתי הלשוניות שכבר כללו אותו */
+html.theme-app .tab-btn[data-city="tripmap"],
+html.theme-app .tab-btn[data-city="america250"] { font-size: 0; }
+html.theme-app .tab-btn[data-city="tripmap"]::after  { content: 'מפת המסע'; font-size: 10px; }
+html.theme-app .tab-btn[data-city="america250"]::after { content: 'אמריקה 250'; font-size: 10px; }
+
+/* ===== תמה: Lookbook / Editorial — מגזין הרפתקה יוקרתי (בהשראת Droneland) ===== */
+html.theme-lookbook {
+  --bg: #f6f2ea;
+  --bg-paper: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #efe9dd;
+  --accent: #bf5e3a;        /* חימר / טרהקוטה */
+  --accent-2: #a94e2e;
+  --accent-light: #9a4527;
+  --text: #181613;
+  --text-muted: #6f675c;
+  --text-light: #9c9487;
+  --border: #e7e0d2;
+  --border-strong: #d8cdb9;
+  --info-bg: #f1ece1;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --shadow-card: 0 18px 44px -26px rgba(24,22,19,0.5);
+  --serif: 'Frank Ruhl Libre', serif;
+}
+html.theme-lookbook body { background: var(--bg); color: var(--text); font-weight: 400; }
+html.theme-lookbook #city-bg,
+html.theme-lookbook #floating-icons,
+html.theme-lookbook body::after { display: none; }
+html.theme-lookbook #city-overlay { background: var(--bg); }
+
+/* כותרת מצומצמת — ה-Hero תופס את הבמה */
+html.theme-lookbook header { text-align: center; padding-top: 14px; margin-bottom: 0; }
+html.theme-lookbook header::before,
+html.theme-lookbook header::after { display: none; }
+html.theme-lookbook header .pretitle,
+html.theme-lookbook header h1,
+html.theme-lookbook header .subtitle,
+html.theme-lookbook header .divider { display: none; }
+html.theme-lookbook .theme-switcher { justify-content: center; }
+
+/* ===== Hero ===== */
+.lookbook-hero { display: none; }
+html.theme-lookbook #lookbook-hero { display: flex; }
+html.theme-lookbook .lookbook-hero {
+  position: relative;
+  margin: 10px 0 42px;
+  border-radius: 16px;
+  overflow: hidden;
+  min-height: 470px;
+  align-items: flex-end;
+  box-shadow: 0 34px 70px -34px rgba(24,22,19,0.62);
+}
+html.theme-lookbook .lh-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  background-image: linear-gradient(135deg, #2b2a28 0%, #4a4036 52%, #8a6647 100%);
+  transition: opacity 0.6s ease;
+}
+html.theme-lookbook .lh-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(18,16,14,0.88) 0%, rgba(18,16,14,0.42) 46%, rgba(18,16,14,0.12) 100%);
+}
+html.theme-lookbook .lh-content { position: relative; z-index: 2; width: 100%; padding: 0 28px 32px; color: #f6f2ea; }
+html.theme-lookbook .lh-kicker {
+  font-size: 11px; letter-spacing: 4px; font-weight: 600; text-transform: uppercase;
+  color: #e7c9b2; margin-bottom: 16px; display: flex; align-items: center; gap: 11px;
+}
+html.theme-lookbook .lh-kicker::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+html.theme-lookbook .lh-title {
+  font-family: var(--serif); font-weight: 900; font-size: 64px; line-height: 0.93;
+  letter-spacing: -2px; margin: 0 0 18px; color: #fff;
+}
+html.theme-lookbook .lh-sub { font-size: 14px; line-height: 1.55; color: #ddd0c1; margin: 0 0 24px; max-width: 330px; }
+html.theme-lookbook .lh-meta {
+  display: flex; gap: 26px; flex-wrap: wrap;
+  border-top: 1px solid rgba(246,242,234,0.22); padding-top: 18px;
+}
+html.theme-lookbook .lh-meta > div { display: flex; flex-direction: column; gap: 4px; }
+html.theme-lookbook .lh-meta-num { font-family: var(--serif); font-size: 26px; font-weight: 800; color: #fff; line-height: 1; }
+html.theme-lookbook .lh-meta-lbl { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #c9bdae; }
+
+/* ===== ניווט עליון — לשוניות עורכיות עם קו תחתון ===== */
+html.theme-lookbook .city-tabs {
+  background: transparent; border: none; border-bottom: 1px solid var(--border-strong);
+  border-radius: 0; box-shadow: none; gap: 2px; padding: 0; margin: 0 0 6px;
+  flex-wrap: wrap; justify-content: center;
+}
+html.theme-lookbook .tab-btn {
+  background: none; border: none; box-shadow: none; border-radius: 0;
+  padding: 12px 14px; color: var(--text-muted); font-size: 13px; font-weight: 600;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+html.theme-lookbook .tab-btn:hover { color: var(--text); }
+html.theme-lookbook .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+
+/* בוחר ימים — גלולות נקיות */
+html.theme-lookbook .day-tabs { gap: 8px; flex-wrap: wrap; margin: 20px 0 26px; }
+html.theme-lookbook .day-tab {
+  background: var(--surface); border: 1px solid var(--border-strong); border-radius: 999px;
+  padding: 8px 17px; font-weight: 600; font-size: 13px; color: var(--text-muted);
+}
+html.theme-lookbook .day-tab:hover { border-color: var(--accent); color: var(--text); }
+html.theme-lookbook .day-tab.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+/* ===== כותרת יום — עורכית גדולה ===== */
+html.theme-lookbook .day-header {
+  position: relative; padding: 6px 0 18px; margin-bottom: 22px;
+  border-bottom: 1px solid var(--border-strong);
+}
+html.theme-lookbook .day-header h2 {
+  font-family: var(--serif); font-weight: 900; font-size: 42px; line-height: 1.02;
+  letter-spacing: -1px; color: var(--text); margin: 0;
+}
+html.theme-lookbook .day-header .day-sub {
+  font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--accent); font-weight: 600; margin-top: 10px;
+}
+
+/* תקציר היום — ציטוט מגזין */
+html.theme-lookbook .summary-box {
+  background: transparent; border: none; border-right: 2px solid var(--accent); border-radius: 0;
+  padding: 2px 18px; margin: 0 0 26px; font-family: var(--serif); font-style: italic;
+  font-size: 17px; line-height: 1.7; color: var(--text);
+}
+
+/* תוויות מקטע — מיקרו-טיפוגרפיה + קו שיער */
+html.theme-lookbook .section-label {
+  text-transform: uppercase; letter-spacing: 2.5px; font-size: 11px; font-weight: 600;
+  color: var(--text-muted); display: flex; align-items: center; gap: 12px; margin: 34px 0 18px;
+}
+html.theme-lookbook .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border-strong); }
+
+/* ===== כרטיסי אטרקציה — תמונה סוחפת + כותרת serif ===== */
+html.theme-lookbook .attraction-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  overflow: hidden; box-shadow: var(--shadow-card); margin-bottom: 28px;
+}
+html.theme-lookbook .card-img-wrap { transition: none; }
+html.theme-lookbook .card-img-wrap.loaded { max-height: 240px; margin-bottom: 0; }
+html.theme-lookbook .card-img { height: 240px; }
+html.theme-lookbook .attraction-card:first-of-type .card-img-wrap.loaded { max-height: 320px; }
+html.theme-lookbook .attraction-card:first-of-type .card-img { height: 320px; }
+html.theme-lookbook .card-header { padding: 20px 22px; }
+html.theme-lookbook .card-title {
+  font-family: var(--serif); font-weight: 800; font-size: 25px; letter-spacing: -0.5px; color: var(--text);
+}
+html.theme-lookbook .card-details { padding: 0 22px 20px; }
+
 </style>
 </head>
 <body>
 
 <!-- מסך פתיחה -->
 <div id="splash-screen">
-  <svg class="splash-ball" id="splash-ball" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <radialGradient id="ballGrad" cx="35%" cy="30%" r="65%">
-        <stop offset="0%"   stop-color="#ffffff"/>
-        <stop offset="65%"  stop-color="#eeeeee"/>
-        <stop offset="100%" stop-color="#bbbbbb"/>
-      </radialGradient>
-      <clipPath id="ballClip"><circle cx="50" cy="50" r="46"/></clipPath>
-    </defs>
-    <circle cx="50" cy="50" r="46" fill="url(#ballGrad)" stroke="#999" stroke-width="1.5"/>
-    <g clip-path="url(#ballClip)" fill="#111111">
-      <polygon points="50,33 62,42 57,57 43,57 38,42"/>
-      <polygon points="50,4  63,14 58,28 42,28 37,14"/>
-      <polygon points="84,26 92,40 80,52 66,47 65,32"/>
-      <polygon points="94,58 86,73 72,73 67,59 78,48"/>
-      <polygon points="70,91 56,96 46,85 52,71 66,70"/>
-      <polygon points="30,91 16,85 22,71 36,70 44,85"/>
-      <polygon points="6,58  14,73 28,73 33,59 22,48"/>
-      <polygon points="16,26  8,40 20,52 34,47 35,32"/>
-    </g>
-    <ellipse cx="36" cy="32" rx="9" ry="6" fill="rgba(255,255,255,0.45)" transform="rotate(-25,36,32)"/>
-    <circle cx="50" cy="50" r="46" fill="none" stroke="#888" stroke-width="1.5"/>
-  </svg>
-  <div class="splash-greeting">שלום דר! 👋</div>
-  <div class="splash-items">
-    <div class="splash-item">
-      <div class="splash-icon">✈️</div>
-      <div>
-        <div class="splash-label">טיסה לארה"ב</div>
-        <div class="splash-count" id="splash-flight"></div>
+  <!-- סרטון פתיחה (מתחלף 1:1 בכל כניסה). מושתק כדי שינוגן אוטומטית בכל הדפדפנים -->
+  <video class="splash-video" id="splash-video" muted playsinline autoplay preload="auto"></video>
+  <!-- שכבה כהה לקריאוּת הטקסט — מופיעה רק אחרי שהסרטון מסתיים -->
+  <div class="splash-veil"></div>
+  <!-- המלל מופיע רק אחרי שהסרטון נגמר -->
+  <div class="splash-content">
+    <div class="splash-greeting">שלום דר! 👋</div>
+    <div class="splash-items">
+      <div class="splash-item">
+        <div class="splash-icon">✈️</div>
+        <div>
+          <div class="splash-label">טיסה לארה"ב</div>
+          <div class="splash-count" id="splash-flight"></div>
+        </div>
       </div>
-    </div>
-    <div class="splash-item">
-      <div class="splash-icon">🏟</div>
-      <div>
-        <div class="splash-label">משחק 1 · NRG Stadium יוסטון</div>
-        <div class="splash-count" id="splash-match1"></div>
+      <div class="splash-item">
+        <div class="splash-icon">🏟</div>
+        <div>
+          <div class="splash-label">משחק 1 · NRG Stadium יוסטון</div>
+          <div class="splash-count" id="splash-match1"></div>
+        </div>
       </div>
-    </div>
-    <div class="splash-item">
-      <div class="splash-icon">🏟</div>
-      <div>
-        <div class="splash-label">משחק 2 · Mercedes-Benz Stadium אטלנטה</div>
-        <div class="splash-count" id="splash-match2"></div>
+      <div class="splash-item">
+        <div class="splash-icon">🏟</div>
+        <div>
+          <div class="splash-label">משחק 2 · Mercedes-Benz Stadium אטלנטה</div>
+          <div class="splash-count" id="splash-match2"></div>
+        </div>
       </div>
     </div>
   </div>
-  <button class="splash-skip" onclick="hideSplash()">דלג</button>
+  <button class="splash-skip" onclick="hideSplash()">דלג ←</button>
 </div>
 
 <div id="city-bg"></div>
@@ -1346,12 +2028,28 @@ html.theme-newspaper .day-tab.active { background:#000; color:#f2ece0; border-co
   <h1>חוברת המסלול שלכם</h1>
   <div class="subtitle">25 ביוני – 5 ביולי 2026 · יוסטון → אטלנטה → וושינגטון → ניו יורק</div>
   <div class="theme-switcher">
-    <button class="theme-btn active-theme" data-theme="vintage"  onclick="setTheme('vintage')"  title="וינטג' חם"></button>
-    <button class="theme-btn"              data-theme="neon"      onclick="setTheme('neon')"      title="נאון לילי"></button>
-    <button class="theme-btn"              data-theme="newspaper" onclick="setTheme('newspaper')" title="עיתון ספורט"></button>
+    <button class="theme-btn active-theme" data-theme="lookbook" onclick="setTheme('lookbook')" title="מודרני · מגזין"><span>מודרני</span></button>
+    <button class="theme-btn"              data-theme="vintage" onclick="setTheme('vintage')" title="מקורי · וינטג'"><span>מקורי</span></button>
   </div>
   <div class="divider"></div>
 </header>
+
+<!-- Hero בסגנון Lookbook (מוצג רק בתמה "מודרני") -->
+<section id="lookbook-hero" class="lookbook-hero">
+  <div class="lh-bg"></div>
+  <div class="lh-overlay"></div>
+  <div class="lh-content">
+    <div class="lh-kicker">מונדיאל 2026 · ארצות הברית</div>
+    <h1 class="lh-title">המסע<br>אל הגביע</h1>
+    <p class="lh-sub">11 ימים · 4 ערים · יוסטון → אטלנטה → וושינגטון → ניו יורק</p>
+    <div class="lh-meta">
+      <div><span class="lh-meta-num">11</span><span class="lh-meta-lbl">ימים</span></div>
+      <div><span class="lh-meta-num">4</span><span class="lh-meta-lbl">ערים</span></div>
+      <div><span class="lh-meta-num">2</span><span class="lh-meta-lbl">משחקים</span></div>
+      <div><span class="lh-meta-num">25.6—5.7</span><span class="lh-meta-lbl">2026</span></div>
+    </div>
+  </div>
+</section>
 
 <div style="text-align: center; margin-bottom: 16px;">
   <button id="geoBtn" onclick="findNearMe()" style="background: var(--accent-2); color: white; border: none; padding: 10px 22px; border-radius: 24px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; box-shadow: 0 2px 6px rgba(212, 99, 42, 0.3); display: inline-flex; align-items: center; gap: 8px;">
@@ -4939,13 +5637,38 @@ function initSplash() {
       el.textContent = 'עבר';
     }
   });
-  // כדור מתפוצץ אחרי 0.9 שניות, טקסט מופיע ב-1.15 שניות
-  setTimeout(() => {
-    const ball = document.getElementById('splash-ball');
-    if (ball) ball.classList.add('explode');
-  }, 900);
-  // מסך נעלם אחרי 4 שניות (1.5s אנימציה + 2.5s קריאה)
-  setTimeout(hideSplash, 4000);
+  // ===== סרטון פתיחה =====
+  const splash = document.getElementById('splash-screen');
+  const video  = document.getElementById('splash-video');
+
+  let revealed = false;
+  function revealSplash() {           // חושף את המלל + כפתור הדילוג
+    if (revealed) return;
+    revealed = true;
+    if (splash) splash.classList.add('revealed');
+  }
+
+  if (video) {
+    // בחירת סרטון מתחלפת 1:1 — פעם splash-1, פעם splash-2
+    const last = parseInt(localStorage.getItem('mundial_splash_vid') || '0', 10);
+    const idx  = last === 1 ? 2 : 1;
+    localStorage.setItem('mundial_splash_vid', String(idx));
+    video.src = `videos/splash-${idx}.mp4`;
+
+    // המלל עולה רק כשהסרטון נגמר
+    video.addEventListener('ended', revealSplash);
+    // אם הסרטון לא נטען (אין קובץ/דפדפן חוסם) — חושפים בכל זאת
+    video.addEventListener('error', () => setTimeout(revealSplash, 300));
+
+    const p = video.play();
+    if (p && p.catch) p.catch(() => {}); // התעלמות מחסימת autoplay של הדפדפן
+
+    // גיבוי ביטחון: אם 'ended' לא נורה תוך ~6.5 שניות — חושפים בכל זאת
+    setTimeout(revealSplash, 6500);
+  } else {
+    revealSplash();
+  }
+  // אין הסתרה אוטומטית — דר מדלג ידנית אחרי שהסרטון מסתיים
 }
 
 function hideSplash() {
@@ -5143,15 +5866,55 @@ async function handleMessage(text) {
 // בורר תמות
 function setTheme(theme) {
   const html = document.documentElement;
-  html.classList.remove('theme-neon', 'theme-newspaper');
+  html.classList.remove('theme-neon', 'theme-newspaper', 'theme-editorial', 'theme-app', 'theme-lookbook');
   if (theme !== 'vintage') html.classList.add(`theme-${theme}`);
   localStorage.setItem('mundial_theme', theme);
   document.querySelectorAll('.theme-btn').forEach(btn =>
     btn.classList.toggle('active-theme', btn.dataset.theme === theme)
   );
 }
-const savedTheme = localStorage.getItem('mundial_theme');
-if (savedTheme) setTheme(savedTheme);
+// ברירת מחדל: תמת "אפליקציה" המודרנית (אלא אם המשתמש בחר אחרת בעבר)
+let savedTheme = localStorage.getItem('mundial_theme');
+if (savedTheme === 'app') savedTheme = 'lookbook'; // מעבר: "מודרני" הוא עכשיו ה-Lookbook
+setTheme(savedTheme || 'lookbook');
+
+// טעינת תמונת רקע ל-Hero (תמת Lookbook) — נופל בחזרה לגרדיאנט אם נכשל
+(function loadLookbookHero(){
+  const bg = document.querySelector('#lookbook-hero .lh-bg');
+  if (!bg) return;
+  fetchWikiImage('Houston Texas downtown skyline').then(src => {
+    if (!src) return;
+    const im = new Image();
+    im.onload = () => { bg.style.backgroundImage = `url("${src}")`; };
+    im.src = src;
+  }).catch(() => {});
+})();
+
+// בורר ימים מתקפל (תמת אפליקציה): לחיצה על היום הנוכחי פותחת את רשימת כל הימים; בחירה סוגרת
+(function(){
+  const dpc = document.getElementById('day-tabs-container');
+  if (!dpc) return;
+  dpc.addEventListener('click', function(e){
+    if (!document.documentElement.classList.contains('theme-app')) return;
+    const tab = e.target.closest('.day-tab');
+    if (!tab) return;
+    if (!dpc.classList.contains('dp-open')) {
+      // מצב סגור: הלחיצה (על היום הנוכחי) רק פותחת את הרשימה — בלי להחליף יום
+      e.stopPropagation();
+      e.preventDefault();
+      dpc.classList.add('dp-open');
+    } else {
+      // מצב פתוח: נבחר יום — תן למעבר הרגיל לקרות, והרשימה תיסגר
+      dpc.classList.remove('dp-open');
+    }
+  }, true); // capture — רץ לפני מחליף-היום של הכפתור
+  // סגירה בלחיצה מחוץ לבורר
+  document.addEventListener('click', function(e){
+    if (dpc.classList.contains('dp-open') && !e.target.closest('#day-tabs-container')) {
+      dpc.classList.remove('dp-open');
+    }
+  });
+})();
 
 // שלב 11 - רישום Service Worker לגיבוי אופליין
 if ('serviceWorker' in navigator) {
