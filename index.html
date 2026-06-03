@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#5c3a2e">
 <link rel="manifest" href="manifest.json">
+<!-- כיסוי-אתחול: אם ברירת המחדל היא האפליקציה, מסך שחור מהפיקסל הראשון —
+     מונע "הצצה" לגרסת המודרני לפני שהאפליקציה עולה (תחושת גרסה-על-גרסה) -->
+<script>try{var _p=localStorage.getItem('mundial_pref');if(!_p||_p==='app')document.documentElement.classList.add('boot-app');}catch(e){}</script>
+<style>html.boot-app::before{content:"";position:fixed;inset:0;background:#000;z-index:99998;}</style>
 <title>חוברת המסלול - מונדיאל 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5886,6 +5890,8 @@ function openApp(skipSplash, fromUser) {
     frame.setAttribute('src', skipSplash ? 'app-mockup.html#nosplash' : 'app-mockup.html');
   }
   wrap.classList.add('show');
+  // האפליקציה כבר מכסה (אטום) — אפשר להסיר את כיסוי-האתחול השחור
+  document.documentElement.classList.remove('boot-app');
   document.body.style.overflow = 'hidden';
   // שומרים "בחירה מפורשת" רק כשהמשתמש לחץ בעצמו — לא בפתיחה האוטומטית
   if (fromUser) { try { localStorage.setItem('mundial_pref', 'app'); } catch (e) {} }
@@ -5898,6 +5904,8 @@ function chooseTheme(theme) {
 function closeApp() {
   const wrap = document.getElementById('app-frame-wrap');
   if (!wrap) return;
+  // יציאה מהאפליקציה → מסירים את הכיסוי השחור כדי לחשוף את האתר
+  document.documentElement.classList.remove('boot-app');
   wrap.classList.remove('show');
   document.body.style.overflow = '';
 }
