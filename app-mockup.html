@@ -1,0 +1,3502 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mundial 2026 — App Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&family=Frank+Ruhl+Libre:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+/* ===========================================================
+   Mundial 2026 — iOS Soft-UI App Mockup (Main Dashboard)
+   קובץ mockup עצמאי. לא נוגע באתר החי.
+   =========================================================== */
+:root{
+  --bg:#eef1f6;
+  --card:#ffffff;
+  --ink:#0f172a;
+  --ink-2:#1e293b;
+  --muted:#7c879b;
+  --line:#eef0f5;
+  --accent:#3b5bfe;
+  --accent-ink:#2440e8;
+  --accent-soft:#e9edff;
+  --green:#16a34a;
+  --amber:#f59e0b;
+  --rose:#fb7185;
+  --shadow-card:0 14px 34px -16px rgba(23,33,68,0.22);
+  --shadow-sm:0 6px 18px -8px rgba(23,33,68,0.16);
+  --radius-xl:30px;
+  --radius-lg:24px;
+  --radius-md:18px;
+  --radius-sm:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  font-family:'Heebo',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:
+    radial-gradient(60% 50% at 80% 0%, #dfe7ff 0%, transparent 60%),
+    radial-gradient(50% 40% at 10% 100%, #e7e0ff 0%, transparent 55%),
+    #e3e7f0;
+  color:var(--ink);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  padding:28px 16px;
+}
+
+/* ===== מסגרת אפליקציה (טלפון) על דסקטופ ===== */
+.phone{
+  position:relative;
+  width:100%;
+  max-width:412px;
+  height:872px;
+  max-height:calc(100vh - 40px);
+  background:var(--bg);
+  border-radius:46px;
+  box-shadow:
+    0 50px 120px -30px rgba(23,33,68,0.45),
+    0 0 0 11px #0b1220,
+    0 0 0 13px #20283c;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+/* פס מצב iOS */
+.statusbar{
+  flex-shrink:0;
+  height:52px;
+  padding:0 30px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:15px;
+  font-weight:700;
+  color:var(--ink);
+}
+.statusbar .sb-icons{display:flex;align-items:center;gap:7px;}
+.statusbar .sb-icons svg{display:block;}
+.notch{
+  position:absolute;
+  top:14px;left:50%;transform:translateX(-50%);
+  width:120px;height:30px;background:#0b1220;border-radius:18px;z-index:5;
+}
+
+/* אזור גלילה */
+.screen{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:6px 20px 120px;
+  scrollbar-width:none;
+}
+.screen::-webkit-scrollbar{display:none;}
+
+/* ===== הדר עליון ===== */
+.topbar{
+  display:flex;align-items:center;gap:12px;
+  padding:8px 2px 18px;
+}
+.avatar{
+  width:46px;height:46px;border-radius:16px;flex-shrink:0;
+  background:linear-gradient(135deg,#3b5bfe,#7c8cff);
+  color:#fff;font-weight:800;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow-sm);
+}
+.greet{flex:1;min-width:0;line-height:1.25;}
+.greet .hello{font-size:13px;color:var(--muted);font-weight:500;}
+.greet .name{font-size:18px;font-weight:800;color:var(--ink);}
+.icon-btn{
+  width:42px;height:42px;border-radius:13px;flex-shrink:0;
+  background:var(--card);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--ink-2);cursor:pointer;position:relative;
+  box-shadow:var(--shadow-sm);transition:transform .12s ease;
+}
+.icon-btn:active{transform:scale(.93);}
+.icon-btn .dot{
+  position:absolute;top:9px;left:11px;width:8px;height:8px;border-radius:50%;
+  background:var(--rose);border:2px solid var(--card);
+}
+
+/* ===== כרטיס Hero — המשחק הבא ===== */
+.hero{
+  position:relative;overflow:hidden;
+  border-radius:var(--radius-xl);
+  padding:22px 22px 20px;
+  color:#fff;
+  background:linear-gradient(135deg,#3b5bfe 0%,#5b6dff 45%,#8a6cff 100%);
+  box-shadow:0 22px 40px -18px rgba(59,91,254,0.7);
+  margin-bottom:22px;
+}
+.hero::after{
+  content:'';position:absolute;left:-40px;top:-50px;
+  width:180px;height:180px;border-radius:50%;
+  background:rgba(255,255,255,0.12);
+}
+.hero::before{
+  content:'';position:absolute;left:30px;bottom:-70px;
+  width:150px;height:150px;border-radius:50%;
+  background:rgba(255,255,255,0.08);
+}
+.hero-top{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;}
+.hero-tag{
+  font-size:11px;font-weight:700;letter-spacing:.5px;
+  background:rgba(255,255,255,0.2);padding:6px 12px;border-radius:999px;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.hero-live{width:7px;height:7px;border-radius:50%;background:#7CFFB0;box-shadow:0 0 0 4px rgba(124,255,176,.25);}
+.hero-cd{font-size:12px;font-weight:600;opacity:.9;}
+.hero-title{position:relative;z-index:1;font-size:25px;font-weight:800;margin:16px 0 4px;}
+.hero-sub{position:relative;z-index:1;font-size:13px;opacity:.92;display:flex;align-items:center;gap:7px;}
+.hero-foot{
+  position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;
+  margin-top:18px;
+}
+.hero-date{display:flex;align-items:center;gap:10px;}
+.hero-date .d-num{font-size:22px;font-weight:800;line-height:1;}
+.hero-date .d-lbl{font-size:11px;opacity:.85;}
+.hero-cta{
+  background:#fff;color:var(--accent-ink);border:none;
+  font-family:inherit;font-weight:700;font-size:13px;
+  padding:11px 18px;border-radius:14px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;
+  box-shadow:0 8px 18px -8px rgba(0,0,0,.4);transition:transform .12s;
+}
+.hero-cta:active{transform:scale(.95);}
+
+/* ===== מזג אוויר ===== */
+.wx{
+  display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
+  background:rgba(255,255,255,.92);color:var(--ink);padding:4px 9px;border-radius:999px;
+}
+.cc-top .wx{box-shadow:0 2px 6px rgba(0,0,0,.18);}
+.dh-wx{margin-inline-start:6px;font-size:11px;font-weight:700;color:var(--accent-ink);background:var(--accent-soft);padding:3px 9px;border-radius:999px;}
+
+/* ===== כפתורי פעולה מהירה (בית) ===== */
+.quick-actions{display:flex;gap:10px;margin-bottom:22px;}
+.qa-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:inherit;font-size:13px;font-weight:700;padding:13px;border-radius:var(--radius-md);
+  border:none;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .12s;
+}
+.qa-btn:active{transform:scale(.96);}
+.qa-btn.near{background:var(--accent);color:#fff;box-shadow:0 10px 22px -10px rgba(59,91,254,.8);}
+.qa-btn.now{background:var(--card);color:var(--ink);border:1px solid var(--line);}
+.qa-btn svg{width:18px;height:18px;}
+
+/* ===== צ'אט דר-בוט ===== */
+#chat-fab{
+  position:absolute;left:18px;bottom:94px;z-index:25;
+  width:56px;height:56px;border-radius:20px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#3b5bfe,#8a6cff);color:#fff;font-size:26px;
+  box-shadow:0 14px 30px -10px rgba(59,91,254,.8);transition:transform .15s;
+  display:flex;align-items:center;justify-content:center;
+}
+#chat-fab:active{transform:scale(.92);}
+#chat-window{
+  position:absolute;left:14px;right:14px;bottom:94px;top:70px;z-index:40;
+  background:var(--bg);border-radius:26px;box-shadow:0 30px 60px -20px rgba(23,33,68,.5);
+  display:none;flex-direction:column;overflow:hidden;border:1px solid var(--line);
+}
+#chat-window.open{display:flex;}
+.chat-head{
+  background:linear-gradient(135deg,#3b5bfe,#7c6cff);color:#fff;padding:15px 18px;
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.chat-head .ch-av{width:36px;height:36px;border-radius:12px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:20px;}
+.chat-head .ch-t{flex:1;}
+.chat-head .ch-t b{font-size:15px;font-weight:800;display:block;}
+.chat-head .ch-t span{font-size:11px;opacity:.85;}
+.chat-head button{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;}
+.chat-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scrollbar-width:none;}
+.chat-body::-webkit-scrollbar{display:none;}
+.cmsg{max-width:82%;padding:10px 13px;border-radius:16px;font-size:13px;line-height:1.55;}
+.cmsg.bot{background:var(--card);border:1px solid var(--line);align-self:flex-start;border-radius:5px 16px 16px 16px;}
+.cmsg.user{background:var(--accent);color:#fff;align-self:flex-end;border-radius:16px 5px 16px 16px;}
+.chat-quick{display:flex;gap:7px;overflow-x:auto;padding:8px 12px;border-top:1px solid var(--line);flex-shrink:0;scrollbar-width:none;}
+.chat-quick::-webkit-scrollbar{display:none;}
+.qr-btn{flex-shrink:0;background:var(--accent-soft);color:var(--accent-ink);border:none;font-family:inherit;font-size:12px;font-weight:600;padding:8px 13px;border-radius:999px;cursor:pointer;white-space:nowrap;}
+.chat-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);flex-shrink:0;}
+.chat-input-row input{flex:1;border:1px solid var(--line);border-radius:14px;padding:10px 13px;font-family:inherit;font-size:13px;background:var(--card);}
+.chat-input-row input:focus{outline:none;border-color:var(--accent);}
+.chat-input-row button{background:var(--accent);color:#fff;border:none;width:42px;border-radius:13px;font-size:17px;cursor:pointer;}
+
+/* ===== פס משחק הבא — קומפקטי ===== */
+.match-strip{
+  display:flex;align-items:center;gap:12px;
+  background:linear-gradient(135deg,#2b3a8f 0%,#3b5bfe 100%);
+  color:#fff;border-radius:var(--radius-md);
+  padding:12px 15px;margin-bottom:22px;
+  box-shadow:0 14px 28px -16px rgba(59,91,254,0.75);
+  cursor:pointer;transition:transform .12s ease;
+}
+.match-strip:active{transform:scale(.98);}
+.ms-ic{
+  width:40px;height:40px;border-radius:12px;flex-shrink:0;
+  background:rgba(255,255,255,0.18);
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.ms-info{flex:1;min-width:0;line-height:1.3;}
+.ms-info .ms-t{font-size:13.5px;font-weight:700;}
+.ms-info .ms-s{font-size:11.5px;opacity:.88;margin-top:1px;}
+.ms-cd{text-align:center;flex-shrink:0;}
+.ms-cd b{font-size:17px;font-weight:800;line-height:1;display:block;}
+.ms-cd span{font-size:10px;opacity:.85;}
+
+/* ===== אטרקציות שאסור לפספס — רשימה ===== */
+.feat-card{
+  display:flex;align-items:center;gap:13px;background:var(--card);
+  border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:11px;margin-bottom:12px;box-shadow:var(--shadow-sm);cursor:pointer;
+  transition:transform .12s ease;
+}
+.feat-card:active{transform:scale(.985);}
+.feat-img{
+  width:64px;height:64px;flex-shrink:0;border-radius:16px;overflow:hidden;
+  background:#d3dcf0 center/cover no-repeat;position:relative;
+}
+.feat-info{flex:1;min-width:0;}
+.feat-info .ft-t{font-size:14.5px;font-weight:700;color:var(--ink);}
+.feat-info .ft-s{font-size:12px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.feat-city{font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);}
+.feat-r{font-size:12px;font-weight:700;color:var(--amber);flex-shrink:0;}
+
+/* ===== כותרת מקטע ===== */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin:4px 2px 14px;}
+.sec-head h2{font-size:17px;font-weight:800;color:var(--ink);}
+.sec-head a{font-size:13px;color:var(--accent);font-weight:600;text-decoration:none;cursor:pointer;}
+
+/* ===== רשת קיצורי דרך ===== */
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:26px;}
+.q-tile{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:14px 6px 11px;text-align:center;cursor:pointer;
+  box-shadow:var(--shadow-sm);transition:transform .12s ease;
+}
+.q-tile:active{transform:translateY(2px) scale(.97);}
+.q-ic{
+  width:44px;height:44px;margin:0 auto 8px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+}
+.q-ic.c1{background:#e9edff;}
+.q-ic.c2{background:#e7f8ef;}
+.q-ic.c3{background:#fef0e7;}
+.q-ic.c4{background:#fdeaf1;}
+.q-tile span{font-size:11.5px;font-weight:600;color:var(--ink-2);}
+
+/* ===== ערים — גלילה אופקית ===== */
+.city-scroll{
+  display:flex;gap:14px;overflow-x:auto;padding:2px 2px 16px;margin:0 -20px 22px;
+  padding-inline:20px;scroll-snap-type:x mandatory;scrollbar-width:none;
+}
+.city-scroll::-webkit-scrollbar{display:none;}
+.city-card{
+  position:relative;flex:0 0 176px;height:230px;border-radius:var(--radius-lg);
+  overflow:hidden;cursor:pointer;scroll-snap-align:start;
+  box-shadow:var(--shadow-card);background:#c9d2e8;
+  transition:transform .15s ease;
+}
+.city-card:active{transform:scale(.97);}
+.city-card .cc-bg{position:absolute;inset:0;background-size:cover;background-position:center;}
+.city-card .cc-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,12,28,.86) 0%,rgba(8,12,28,.15) 55%,rgba(8,12,28,.05) 100%);}
+.city-card .cc-top{position:absolute;top:12px;right:12px;left:12px;display:flex;justify-content:space-between;align-items:flex-start;z-index:2;}
+.city-card .cc-emoji{font-size:24px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.4));}
+.city-card .cc-pill{background:rgba(255,255,255,.92);color:var(--ink);font-size:10.5px;font-weight:700;padding:5px 9px;border-radius:999px;}
+.city-card .cc-body{position:absolute;bottom:0;right:0;left:0;padding:14px;z-index:2;color:#fff;}
+.city-card .cc-name{font-size:18px;font-weight:800;}
+.city-card .cc-meta{font-size:11.5px;opacity:.9;margin-top:2px;display:flex;align-items:center;gap:6px;}
+
+/* ===== אירועים קרובים — רשימה ===== */
+.event-card{
+  display:flex;align-items:center;gap:14px;background:var(--card);
+  border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:14px;margin-bottom:12px;box-shadow:var(--shadow-sm);cursor:pointer;
+  transition:transform .12s ease;
+}
+.event-card:active{transform:scale(.985);}
+.ev-date{
+  width:58px;height:62px;flex-shrink:0;border-radius:16px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--accent-soft);color:var(--accent-ink);
+}
+.ev-date .ev-d{font-size:22px;font-weight:800;line-height:1;}
+.ev-date .ev-m{font-size:11px;font-weight:600;margin-top:3px;}
+.ev-info{flex:1;min-width:0;}
+.ev-info .ev-t{font-size:15px;font-weight:700;color:var(--ink);}
+.ev-info .ev-s{font-size:12.5px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.ev-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;background:#e7f8ef;color:var(--green);}
+.ev-go{width:34px;height:34px;border-radius:11px;background:#f4f6fb;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;}
+
+/* ===== בר ניווט תחתון ===== */
+.tabbar{
+  position:absolute;left:14px;right:14px;bottom:14px;
+  height:68px;background:rgba(255,255,255,0.86);
+  backdrop-filter:blur(18px) saturate(160%);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.7);
+  border-radius:26px;
+  box-shadow:0 18px 40px -16px rgba(23,33,68,0.4);
+  display:flex;align-items:center;justify-content:space-around;
+  padding:0 8px;z-index:20;
+}
+.tab{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  color:var(--muted);font-size:10px;font-weight:600;cursor:pointer;
+  padding:8px 10px;border-radius:16px;transition:color .15s;
+}
+.tab svg{width:24px;height:24px;}
+.tab.active{color:var(--accent);}
+.tab.active .tab-ic{
+  background:var(--accent);color:#fff;border-radius:13px;
+  width:46px;height:34px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 10px 18px -8px rgba(59,91,254,.8);margin-bottom:1px;
+}
+.tab .tab-ic{width:46px;height:34px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+
+/* ===== Bottom Sheet (overlay לעיר) ===== */
+.sheet-backdrop{
+  position:absolute;inset:0;background:rgba(10,15,30,0.5);
+  opacity:0;pointer-events:none;transition:opacity .28s ease;z-index:30;
+  backdrop-filter:blur(2px);
+}
+.sheet-backdrop.open{opacity:1;pointer-events:auto;}
+.sheet{
+  position:absolute;left:0;right:0;bottom:0;z-index:31;
+  background:var(--bg);border-radius:30px 30px 46px 46px;
+  padding:10px 22px 30px;
+  transform:translateY(102%);transition:transform .34s cubic-bezier(.22,1,.36,1);
+  max-height:82%;overflow-y:auto;scrollbar-width:none;
+}
+.sheet::-webkit-scrollbar{display:none;}
+.sheet.open{transform:translateY(0);}
+.sheet-grip{width:42px;height:5px;border-radius:99px;background:#cfd6e6;margin:6px auto 14px;}
+.sheet-hero{height:150px;border-radius:22px;overflow:hidden;position:relative;margin-bottom:16px;box-shadow:var(--shadow-card);}
+.sheet-hero .sh-bg{position:absolute;inset:0;background-size:cover;background-position:center;}
+.sheet-hero .sh-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,12,28,.8),transparent 60%);}
+.sheet-hero .sh-t{position:absolute;bottom:14px;right:16px;color:#fff;}
+.sheet-hero .sh-t b{font-size:22px;font-weight:800;display:block;}
+.sheet-hero .sh-t span{font-size:12px;opacity:.9;}
+.sheet-stats{display:flex;gap:10px;margin-bottom:16px;}
+.stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;text-align:center;box-shadow:var(--shadow-sm);}
+.stat b{font-size:19px;font-weight:800;color:var(--ink);display:block;}
+.stat span{font-size:11px;color:var(--muted);}
+.sheet h3{font-size:15px;font-weight:800;margin:6px 2px 10px;}
+.poi{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:11px 13px;margin-bottom:9px;box-shadow:var(--shadow-sm);}
+.poi .poi-ic{width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.poi .poi-i{flex:1;}
+.poi .poi-i b{font-size:13.5px;font-weight:700;color:var(--ink);}
+.poi .poi-i span{font-size:11.5px;color:var(--muted);}
+.poi .poi-r{font-size:12px;font-weight:700;color:var(--amber);}
+
+/* ===== מסכים מרובים ===== */
+.screen{display:none;}
+.screen.active{display:block;}
+
+/* כותרת מסך */
+.page-head{padding:8px 2px 16px;}
+.page-head .ph-k{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.4px;}
+.page-head .ph-t{font-size:24px;font-weight:800;color:var(--ink);margin-top:2px;}
+.page-head .ph-s{font-size:12.5px;color:var(--muted);margin-top:3px;}
+
+/* מסנן ערים במסלול */
+.day-filter{display:flex;gap:8px;overflow-x:auto;margin:0 -20px 18px;padding:2px 20px 4px;scrollbar-width:none;}
+.day-filter::-webkit-scrollbar{display:none;}
+.df-chip{
+  flex-shrink:0;background:var(--card);border:1px solid var(--line);
+  color:var(--ink-2);font-family:inherit;font-size:12.5px;font-weight:600;
+  padding:8px 15px;border-radius:999px;cursor:pointer;box-shadow:var(--shadow-sm);
+  transition:all .14s;
+}
+.df-chip.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 8px 16px -8px rgba(59,91,254,.7);}
+
+/* ציר זמן של ימים */
+.day-block{position:relative;padding-right:34px;margin-bottom:8px;}
+.day-block::before{
+  content:'';position:absolute;right:13px;top:30px;bottom:-8px;width:2px;
+  background:linear-gradient(to bottom,var(--accent) 0%,#dbe2f5 100%);
+}
+.day-block:last-child::before{display:none;}
+.day-node{
+  position:absolute;right:4px;top:6px;width:20px;height:20px;border-radius:50%;
+  background:var(--accent);border:4px solid var(--bg);z-index:1;
+  box-shadow:0 0 0 2px var(--accent);
+}
+.day-head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;}
+.day-head .dh-n{font-size:16px;font-weight:800;color:var(--ink);}
+.day-head .dh-date{font-size:12.5px;color:var(--muted);font-weight:600;}
+.day-head .dh-city{margin-inline-start:auto;font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);}
+
+/* כרטיס אטרקציה במסלול — נפתח בלחיצה */
+.day-att{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-md);
+  margin-bottom:10px;box-shadow:var(--shadow-sm);cursor:pointer;overflow:hidden;
+  transition:box-shadow .15s ease;
+}
+.day-att.open{box-shadow:0 16px 34px -16px rgba(23,33,68,0.3);border-color:#dbe2f5;}
+.da-row{display:flex;align-items:center;gap:12px;padding:10px 12px;}
+.day-att:active .da-row{transform:scale(.99);}
+.da-ic{
+  width:42px;height:42px;flex-shrink:0;border-radius:12px;
+  background:var(--accent-soft);display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+}
+.da-info{flex:1;min-width:0;}
+.da-info b{font-size:13.5px;font-weight:700;color:var(--ink);display:block;}
+.da-info .da-meta{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-top:2px;flex-wrap:wrap;}
+.da-rate{color:var(--amber);font-weight:700;}
+.da-dist{font-size:10px;font-weight:700;color:var(--accent-ink);background:var(--accent-soft);padding:2px 7px;border-radius:999px;}
+.da-chev{flex-shrink:0;color:var(--muted);transition:transform .25s ease;}
+.day-att.open .da-chev{transform:rotate(180deg);}
+
+/* פאנל פרטים (נפתח) */
+.da-detail{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+.day-att.open .da-detail{max-height:520px;}
+.da-detail-in{padding:0 12px 14px;}
+.da-img{
+  width:100%;height:140px;border-radius:14px;overflow:hidden;
+  background:#d3dcf0 center/cover no-repeat;margin-bottom:12px;position:relative;
+}
+.da-img.empty::after{content:'טוען תמונה…';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#8b97ad;font-size:12px;}
+.da-desc{font-size:12.5px;line-height:1.75;color:var(--ink-2);margin-bottom:12px;}
+.da-desc strong{color:var(--ink);font-weight:800;}
+.da-hours{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-2);margin-bottom:10px;}
+.da-hours .hr-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+.da-tips{margin-bottom:12px;}
+.da-tips .tp-h{font-size:11.5px;font-weight:700;color:var(--muted);margin-bottom:6px;}
+.da-tips li{font-size:12.5px;color:var(--ink-2);list-style:none;display:flex;gap:7px;margin-bottom:5px;}
+.da-tips li::before{content:'✓';color:var(--accent);font-weight:800;}
+.da-acts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.da-act{
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  text-decoration:none;cursor:pointer;padding:9px 4px;border-radius:13px;
+  background:#f6f8fc;border:1px solid var(--line);transition:transform .12s;
+}
+.da-act:active{transform:scale(.94);}
+.da-act .ac-ic{
+  width:32px;height:32px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;color:#fff;
+}
+.da-act .ac-ic svg{width:17px;height:17px;}
+.da-act span{font-size:10.5px;font-weight:600;color:var(--ink-2);}
+.da-act.waze   .ac-ic{background:#33ccff;}
+.da-act.gmaps  .ac-ic{background:#2bb673;}
+.da-act.photos .ac-ic{background:#f59e0b;}
+.da-act.web    .ac-ic{background:#6366f1;}
+
+/* ===== כרטיסי ברים ===== */
+.bar-card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:15px 16px;margin-bottom:13px;box-shadow:var(--shadow-card);
+}
+.bar-card.fest{background:linear-gradient(135deg,#fff7ed,#ffedd5);border-color:#fed7aa;}
+.bc-top{display:flex;align-items:flex-start;gap:11px;margin-bottom:9px;}
+.bc-ic{
+  width:46px;height:46px;border-radius:14px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:23px;
+  background:#fff3e8;border:1px solid #fde4cf;
+}
+.bar-card.fest .bc-ic{background:#fff;border-color:#fed7aa;}
+.bc-h{flex:1;min-width:0;}
+.bc-name{font-size:15.5px;font-weight:800;color:var(--ink);line-height:1.25;}
+.bc-tags{font-size:11.5px;color:var(--ink-2);font-weight:600;margin-top:2px;}
+.bc-rec{
+  flex-shrink:0;align-self:center;font-size:10.5px;font-weight:800;
+  padding:4px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap;
+}
+.bar-card.fest .bc-rec{background:#ea580c;color:#fff;}
+.bc-desc{font-size:13px;line-height:1.55;color:var(--ink-2);margin-bottom:12px;}
+.bc-acts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+/* בלוק ערב משולב בתוך המסלול (גרסה ב') */
+.evening-block{margin:6px 0 4px;}
+.evening-head{
+  display:flex;align-items:center;gap:8px;margin:2px 0 12px;
+  font-size:14px;font-weight:800;color:var(--ink);
+}
+.evening-head .eh-line{flex:1;height:1px;background:var(--line);}
+
+/* ===== מסך מפה ===== */
+#map{
+  height:calc(100% - 150px);min-height:360px;width:100%;
+  border-radius:var(--radius-lg);overflow:hidden;
+  box-shadow:var(--shadow-card);border:1px solid var(--line);
+}
+.leaflet-container{font-family:'Heebo',sans-serif;background:#e8edf5;}
+.map-pin{
+  width:34px;height:34px;border-radius:50% 50% 50% 6px;transform:rotate(45deg);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 10px -2px rgba(0,0,0,.4);border:2px solid #fff;
+}
+.map-pin span{transform:rotate(-45deg);font-size:15px;}
+.map-pin.att{background:#f59e0b;}
+.map-pin.hotel{background:#5c3a2e;}
+.map-pin.stad{background:var(--accent);}
+.map-pin.city{background:#a94e2e;width:40px;height:40px;}
+.map-pin.city span{font-size:18px;}
+.map-legend{display:flex;gap:14px;justify-content:center;margin-top:12px;flex-wrap:wrap;}
+.lg-item{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-2);font-weight:600;}
+.lg-dot{width:12px;height:12px;border-radius:4px;}
+
+/* ===== מסך משחקים ===== */
+.mday{margin-bottom:20px;}
+.mday-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:0 2px;}
+.mday-head .md-date{font-size:15px;font-weight:800;color:var(--ink);}
+.mday-head .md-day{font-size:12px;color:var(--muted);font-weight:600;}
+.mday-head .md-city{margin-inline-start:auto;font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);}
+.mday-note{font-size:11.5px;color:var(--accent-ink);background:var(--accent-soft);border-radius:10px;padding:7px 11px;margin-bottom:10px;font-weight:600;}
+.mtch{
+  display:flex;align-items:center;gap:11px;background:var(--card);
+  border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:11px 13px;margin-bottom:8px;box-shadow:var(--shadow-sm);
+}
+.mtch.ours{border:2px solid var(--accent);background:linear-gradient(135deg,#f3f6ff,#fff);}
+.mtch.big{border-inline-start:4px solid var(--amber);}
+.mt-time{
+  width:54px;flex-shrink:0;text-align:center;border-inline-end:1px solid var(--line);padding-inline-end:10px;
+}
+.mt-time b{font-size:14px;font-weight:800;color:var(--ink);display:block;line-height:1;}
+.mt-time span{font-size:9.5px;color:var(--muted);}
+.mt-info{flex:1;min-width:0;}
+.mt-info .mt-teams{font-size:13.5px;font-weight:700;color:var(--ink);}
+.mt-info .mt-venue{font-size:11.5px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.mt-tier{font-size:9.5px;font-weight:700;padding:3px 8px;border-radius:999px;background:#eef0f5;color:var(--ink-2);}
+.mt-tier.ko{background:#fff0e7;color:#c2410c;}
+.mt-flag{font-size:10px;font-weight:800;color:var(--accent-ink);background:var(--accent-soft);padding:3px 8px;border-radius:999px;flex-shrink:0;}
+
+/* ===== מסך פרופיל (שמור — לא בשימוש) ===== */
+.prof-hero{
+  background:linear-gradient(135deg,#3b5bfe,#7c6cff);color:#fff;
+  border-radius:var(--radius-xl);padding:24px 20px;text-align:center;
+  margin-bottom:18px;box-shadow:0 20px 38px -18px rgba(59,91,254,.7);position:relative;overflow:hidden;
+}
+.prof-hero::after{content:'';position:absolute;left:-30px;top:-40px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.12);}
+.prof-av{
+  width:74px;height:74px;border-radius:24px;margin:0 auto 12px;position:relative;z-index:1;
+  background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:800;border:2px solid rgba(255,255,255,.4);
+}
+.prof-name{font-size:21px;font-weight:800;position:relative;z-index:1;}
+.prof-sub{font-size:13px;opacity:.9;margin-top:3px;position:relative;z-index:1;}
+.prof-cd{
+  display:inline-flex;align-items:center;gap:7px;margin-top:14px;position:relative;z-index:1;
+  background:rgba(255,255,255,.2);padding:8px 16px;border-radius:999px;font-size:13px;font-weight:700;
+}
+.prof-card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:16px;margin-bottom:14px;box-shadow:var(--shadow-sm);
+}
+.prof-card h3{font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.travelers{display:flex;gap:10px;flex-wrap:wrap;}
+.trav{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:54px;}
+.trav .tv-av{width:46px;height:46px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--accent-soft);}
+.trav span{font-size:11px;color:var(--muted);font-weight:600;}
+.info-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);}
+.info-row:last-child{border-bottom:none;}
+.info-row .ir-ic{width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.info-row .ir-i{flex:1;}
+.info-row .ir-i b{font-size:13.5px;font-weight:700;color:var(--ink);display:block;}
+.info-row .ir-i span{font-size:11.5px;color:var(--muted);}
+.info-row .ir-link{font-size:12px;color:var(--accent);font-weight:700;text-decoration:none;}
+/* בורר עיצוב */
+.theme-pick{display:flex;gap:8px;}
+.tp-opt{
+  flex:1;text-align:center;padding:12px 6px;border-radius:14px;cursor:pointer;
+  border:2px solid var(--line);font-size:12px;font-weight:700;color:var(--ink-2);transition:all .14s;
+}
+.tp-opt .tp-sw{width:100%;height:30px;border-radius:8px;margin-bottom:7px;}
+.tp-opt.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink);}
+.tp-opt .sw1{background:linear-gradient(135deg,#5c3a2e,#d4632a);}
+.tp-opt .sw2{background:linear-gradient(135deg,#bf5e3a,#f6f2ea);}
+.tp-opt .sw3{background:linear-gradient(135deg,#3b5bfe,#8a6cff);}
+
+/* ===== מסך פתיחה (הועתק 1:1 מהאתר החי, מותאם לתוך מסגרת הטלפון) ===== */
+#splash-screen{
+  position:absolute; inset:0; z-index:9999;
+  background:linear-gradient(145deg,#3d1f10 0%,#6b3320 40%,#c25a20 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:28px; padding:32px; border-radius:46px; overflow:hidden;
+  animation:splashIn .5s ease forwards;
+}
+#splash-screen.hiding{ animation:splashOut .6s ease forwards; }
+@keyframes splashIn{ from{opacity:0;transform:scale(1.03);} to{opacity:1;transform:scale(1);} }
+@keyframes splashOut{ from{opacity:1;transform:scale(1);} to{opacity:0;transform:scale(.97);} }
+.splash-video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; background:#000; }
+.splash-veil{
+  position:absolute; inset:0; z-index:1;
+  background:linear-gradient(to top,rgba(20,10,5,.92) 0%,rgba(20,10,5,.55) 45%,rgba(20,10,5,.25) 100%);
+  opacity:0; pointer-events:none;
+}
+#splash-screen.revealed .splash-veil{ animation:splashFade .6s ease forwards; }
+.splash-content{
+  position:relative; z-index:2; display:flex; flex-direction:column; align-items:center;
+  gap:24px; width:100%; opacity:0; transform:translateY(12px); pointer-events:none;
+}
+#splash-screen.revealed .splash-content{ animation:splashRise .55s ease forwards; pointer-events:auto; }
+@keyframes splashFade{ from{opacity:0;} to{opacity:1;} }
+@keyframes splashRise{ from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+.splash-greeting{ font-family:'Frank Ruhl Libre',serif; font-size:30px; color:#fff; text-align:center; letter-spacing:1px; }
+.splash-items{ display:flex; flex-direction:column; gap:14px; width:100%; max-width:320px; }
+.splash-item{
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:14px;
+  padding:13px 18px; display:flex; align-items:center; gap:14px; color:#fff;
+}
+.splash-icon{ font-size:25px; flex-shrink:0; }
+.splash-label{ font-size:12.5px; opacity:.8; margin-bottom:2px; }
+.splash-count{ font-family:'Frank Ruhl Libre',serif; font-size:21px; font-weight:700; color:#ffd89b; }
+.splash-count.today-text{ color:#ffe066; font-size:19px; }
+.splash-skip{
+  position:absolute; bottom:24px; left:24px; z-index:3;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.45); color:#fff;
+  font-size:13px; padding:8px 18px; border-radius:20px; cursor:pointer; font-family:inherit;
+  opacity:0; pointer-events:none; transition:color .2s,border-color .2s,background .2s;
+}
+#splash-screen.revealed .splash-skip{ animation:splashFade .5s ease forwards; pointer-events:auto; }
+.splash-skip:hover{ background:rgba(0,0,0,.55); border-color:rgba(255,255,255,.9); }
+
+/* ===== מתג 3 גרסאות (מקורי / מודרני / אפליקציה) ===== */
+.ver-switch{ display:flex; gap:6px; padding:5px; margin:0 0 4px; background:#e9edf5; border-radius:999px; }
+.ver-btn{
+  flex:1; text-align:center; padding:8px 4px; border:none; cursor:pointer;
+  font-family:inherit; font-size:12px; font-weight:700; color:var(--muted);
+  background:transparent; border-radius:999px; transition:all .15s;
+}
+.ver-btn.active{ background:#fff; color:var(--accent-ink); box-shadow:var(--shadow-sm); }
+/* הנחיה: אצבע שמצביעה על מתג הגרסאות — שהמשתמש ידע שאפשר לחזור לגרסה המוכרת */
+.ver-hint{
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  margin:-1px 0 8px; font-size:12.5px; font-weight:700;
+  color:var(--accent-2,#bf5e3a); text-align:center;
+  transition:opacity .4s ease, max-height .4s ease;
+  overflow:hidden; max-height:40px;
+}
+.ver-hint.hide{ opacity:0; max-height:0; margin:0; pointer-events:none; }
+.ver-hint .vh-finger{ font-size:17px; display:inline-block; animation:vhBounce 1s ease-in-out infinite; }
+@keyframes vhBounce{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-4px); } }
+
+/* ===== סימון "היום" על יום במסלול ===== */
+.day-block.today .day-head{ position:relative; }
+.day-block.today .dh-n{ color:var(--accent-ink); }
+.today-badge{
+  display:inline-block; margin-inline-start:7px; font-size:10px; font-weight:800;
+  color:#fff; background:var(--accent); padding:2px 9px; border-radius:999px; vertical-align:middle;
+}
+
+/* תווית "Mockup" קטנה */
+.mock-flag{
+  position:fixed;top:10px;right:12px;z-index:99;
+  background:#0b1220;color:#fff;font-size:11px;font-weight:600;
+  padding:6px 12px;border-radius:999px;font-family:'Heebo',sans-serif;
+  opacity:.8;
+}
+@media(max-width:480px){.mock-flag{display:none;}}
+</style>
+</head>
+<body>
+
+<div class="mock-flag">Mockup · Dashboard — לא משפיע על האתר החי</div>
+
+<div class="phone">
+
+  <!-- מסך פתיחה (זהה לאתר החי — אותם סרטונים וספירה לאחור) -->
+  <div id="splash-screen">
+    <video class="splash-video" id="splash-video" muted playsinline autoplay preload="auto"></video>
+    <div class="splash-veil"></div>
+    <div class="splash-content">
+      <div class="splash-greeting">שלום דר! 👋</div>
+      <div class="splash-items">
+        <div class="splash-item">
+          <div class="splash-icon">✈️</div>
+          <div>
+            <div class="splash-label">טיסה לארה"ב</div>
+            <div class="splash-count" id="splash-flight"></div>
+          </div>
+        </div>
+        <div class="splash-item">
+          <div class="splash-icon">🏟</div>
+          <div>
+            <div class="splash-label">משחק 1 · NRG Stadium יוסטון</div>
+            <div class="splash-count" id="splash-match1"></div>
+          </div>
+        </div>
+        <div class="splash-item">
+          <div class="splash-icon">🏟</div>
+          <div>
+            <div class="splash-label">משחק 2 · Mercedes-Benz Stadium אטלנטה</div>
+            <div class="splash-count" id="splash-match2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="splash-skip" onclick="hideSplash()">דלג ←</button>
+  </div>
+
+  <div class="notch"></div>
+
+  <!-- פס מצב -->
+  <div class="statusbar">
+    <span>9:41</span>
+    <div class="sb-icons">
+      <!-- signal -->
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="1" fill="#0f172a"/><rect x="5" y="4" width="3" height="8" rx="1" fill="#0f172a"/><rect x="10" y="2" width="3" height="10" rx="1" fill="#0f172a"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#0f172a"/></svg>
+      <!-- wifi -->
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><path d="M8.5 11.5l2-2.4a3 3 0 00-4 0l2 2.4z" fill="#0f172a"/><path d="M3.5 6.2a8 8 0 0110 0" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round"/><path d="M5.6 8.4a5 5 0 015.8 0" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <!-- battery -->
+      <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="1" y="1" width="21" height="11" rx="3" stroke="#0f172a" stroke-opacity=".4" stroke-width="1.2"/><rect x="2.5" y="2.5" width="16" height="8" rx="1.6" fill="#0f172a"/><rect x="23" y="4.5" width="2" height="4" rx="1" fill="#0f172a" fill-opacity=".4"/></svg>
+    </div>
+  </div>
+
+  <!-- מסך בית -->
+  <div class="screen active" id="screen-home" data-tab="בית">
+
+    <!-- הדר -->
+    <div class="topbar">
+      <div class="avatar">ד</div>
+      <div class="greet">
+        <div class="hello">בוקר טוב 👋</div>
+        <div class="name">דר</div>
+      </div>
+      <button class="icon-btn" title="חיפוש">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      </button>
+      <button class="icon-btn" title="התראות"><span class="dot"></span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+      </button>
+    </div>
+
+    <!-- מתג בין 3 הגרסאות -->
+    <div class="ver-switch">
+      <button class="ver-btn" onclick="switchVersion('vintage')">מקורי</button>
+      <button class="ver-btn" onclick="switchVersion('lookbook')">מודרני</button>
+      <button class="ver-btn active" onclick="switchVersion('app')">אפליקציה</button>
+    </div>
+    <!-- הנחיה: אפשר לחזור לגרסה הקודמת והמוכרת -->
+    <div class="ver-hint" id="verHint">
+      <span class="vh-finger">👆</span>
+      <span class="vh-text">אפשר לחזור לגרסה הקודמת והמוכרת</span>
+    </div>
+
+    <!-- פס משחק הבא (קומפקטי) -->
+    <div class="match-strip">
+      <div class="ms-ic">⚽</div>
+      <div class="ms-info">
+        <div class="ms-t">המשחק הבא · NRG Stadium</div>
+        <div class="ms-s">📍 יוסטון · 29 ביוני · 13:00</div>
+      </div>
+      <div class="ms-cd"><b id="hero-cd">28</b><span>ימים</span></div>
+    </div>
+
+    <!-- כפתורי פעולה מהירה -->
+    <div class="quick-actions">
+      <button class="qa-btn near" onclick="findNearMe()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        מה קרוב אליי?
+      </button>
+      <button class="qa-btn now" onclick="whatToDoNow()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        מה עושים עכשיו?
+      </button>
+    </div>
+
+    <!-- ערים — הסקשן הראשי -->
+    <div class="sec-head"><h2>הערים שלך</h2><a>הצג הכל</a></div>
+    <div class="city-scroll" id="city-scroll">
+      <div class="city-card" data-city="houston" data-q="Houston Texas downtown skyline" data-emoji="🏙️" data-name="יוסטון" data-dates="25–29 ביוני" data-att="32" data-days="5">
+        <div class="cc-bg"></div><div class="cc-grad"></div>
+        <div class="cc-top"><span class="cc-emoji">🏙️</span><span class="cc-pill">5 ימים</span></div>
+        <div class="cc-body"><div class="cc-name">יוסטון</div><div class="cc-meta">📅 25–29 ביוני · 32 אתרים</div></div>
+      </div>
+      <div class="city-card" data-city="atlanta" data-q="Atlanta Georgia skyline" data-emoji="🍑" data-name="אטלנטה" data-dates="30 יוני–1 יולי" data-att="20" data-days="2">
+        <div class="cc-bg"></div><div class="cc-grad"></div>
+        <div class="cc-top"><span class="cc-emoji">🍑</span><span class="cc-pill">2 ימים</span></div>
+        <div class="cc-body"><div class="cc-name">אטלנטה</div><div class="cc-meta">📅 30 יוני · 20 אתרים</div></div>
+      </div>
+      <div class="city-card" data-city="dc" data-q="Washington DC capitol monument" data-emoji="🏛️" data-name="וושינגטון" data-dates="1–3 יולי" data-att="24" data-days="3">
+        <div class="cc-bg"></div><div class="cc-grad"></div>
+        <div class="cc-top"><span class="cc-emoji">🏛️</span><span class="cc-pill">3 ימים</span></div>
+        <div class="cc-body"><div class="cc-name">וושינגטון</div><div class="cc-meta">📅 1–3 יולי · 24 אתרים</div></div>
+      </div>
+      <div class="city-card" data-city="ny" data-q="New York City Manhattan skyline" data-emoji="🗽" data-name="ניו יורק" data-dates="3–5 יולי" data-att="—" data-days="2">
+        <div class="cc-bg"></div><div class="cc-grad"></div>
+        <div class="cc-top"><span class="cc-emoji">🗽</span><span class="cc-pill">2 ימים</span></div>
+        <div class="cc-body"><div class="cc-name">ניו יורק</div><div class="cc-meta">📅 3–5 יולי</div></div>
+      </div>
+    </div>
+
+    <!-- קיצורי דרך -->
+    <div class="sec-head"><h2>קיצורי דרך</h2></div>
+    <div class="quick">
+      <div class="q-tile"><div class="q-ic c1">🏙️</div><span>ערים</span></div>
+      <div class="q-tile"><div class="q-ic c3">🗺️</div><span>מפת המסע</span></div>
+      <div class="q-tile"><div class="q-ic c4">🍸</div><span>ברים</span></div>
+      <div class="q-tile"><div class="q-ic c2">⚽</div><span>משחקים</span></div>
+    </div>
+
+    <!-- אטרקציות שאסור לפספס (מודעת-עיר: לפי העיר של היום הנוכחי) -->
+    <div class="sec-head"><h2 id="feat-title">אטרקציות שאסור לפספס</h2><a id="feat-all">הצג הכל</a></div>
+    <div id="feat-list"></div>
+
+  </div><!-- /screen-home -->
+
+  <!-- מסך מסלול -->
+  <div class="screen" id="screen-trip" data-tab="מסלול">
+    <div class="page-head">
+      <div class="ph-k">11 ימים · 4 ערים</div>
+      <div class="ph-t">המסלול שלך</div>
+      <div class="ph-s">25 ביוני – 5 ביולי 2026</div>
+    </div>
+    <div class="day-filter" id="day-filter">
+      <button class="df-chip active" data-f="all">הכל</button>
+      <button class="df-chip" data-f="houston">יוסטון</button>
+      <button class="df-chip" data-f="atlanta">אטלנטה</button>
+      <button class="df-chip" data-f="dc">וושינגטון</button>
+      <button class="df-chip" data-f="ny">ניו יורק</button>
+    </div>
+    <div id="days-list"></div>
+  </div><!-- /screen-trip -->
+
+  <!-- מסך מפה -->
+  <div class="screen" id="screen-map" data-tab="מפה">
+    <div class="page-head">
+      <div class="ph-k">מפת המסע</div>
+      <div class="ph-t">איפה הכל נמצא</div>
+      <div class="ph-s">אטרקציות, אצטדיון ומלון על המפה</div>
+    </div>
+    <div class="day-filter" id="map-filter">
+      <button class="df-chip active" data-f="houston">יוסטון</button>
+      <button class="df-chip" data-f="atlanta">אטלנטה</button>
+      <button class="df-chip" data-f="dc">וושינגטון</button>
+      <button class="df-chip" data-f="ny">ניו יורק</button>
+      <button class="df-chip" data-f="all">כל הערים</button>
+    </div>
+    <div id="map"></div>
+    <div class="map-legend">
+      <div class="lg-item"><span class="lg-dot" style="background:#f59e0b;"></span>אטרקציה</div>
+      <div class="lg-item"><span class="lg-dot" style="background:#5c3a2e;"></span>מלון</div>
+      <div class="lg-item"><span class="lg-dot" style="background:#3b5bfe;"></span>אצטדיון</div>
+    </div>
+  </div><!-- /screen-map -->
+
+  <!-- מסך משחקים -->
+  <div class="screen" id="screen-matches" data-tab="משחקים">
+    <div class="page-head">
+      <div class="ph-k">מונדיאל 2026</div>
+      <div class="ph-t">משחקים בולטים</div>
+      <div class="ph-s">המשחקים החשובים בכל יום של הטיול</div>
+    </div>
+    <div id="matches-list"></div>
+  </div><!-- /screen-matches -->
+
+  <!-- מסך ברים (גרסה א' — לשונית נפרדת) -->
+  <div class="screen" id="screen-bars" data-tab="ברים">
+    <div class="page-head">
+      <div class="ph-k">ערב בעיר 🍻</div>
+      <div class="ph-t">ברים ו-Fan Fest</div>
+      <div class="ph-s">המקומות הכי טובים לצפות במשחקים</div>
+    </div>
+    <div class="day-filter" id="bars-filter">
+      <button class="df-chip active" data-f="houston">יוסטון</button>
+      <button class="df-chip" data-f="atlanta">אטלנטה</button>
+      <button class="df-chip" data-f="dc">וושינגטון</button>
+    </div>
+    <div id="bars-list"></div>
+  </div><!-- /screen-bars -->
+
+  <!-- בר ניווט תחתון -->
+  <nav class="tabbar">
+    <div class="tab active"><div class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></div>בית</div>
+    <div class="tab"><div class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2.4"/><circle cx="18" cy="5" r="2.4"/><path d="M8.2 18C14 18 16 14 16 9.5V7"/><path d="M15.8 6L18 3.5 20.2 6"/></svg></div>מסלול</div>
+    <div class="tab"><div class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4L3 6.5v13L9 17l6 2.5 6-2.5v-13L15 7 9 4z"/><path d="M9 4v13M15 7v12.5"/></svg></div>מפה</div>
+    <div class="tab"><div class="tab-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18" stroke-width="1.3"/></svg></div>משחקים</div>
+  </nav>
+
+  <!-- צ'אט דר-בוט -->
+  <button id="chat-fab" onclick="toggleChat()" title="דר-בוט">🤖</button>
+  <div id="chat-window">
+    <div class="chat-head">
+      <div class="ch-av">🤖</div>
+      <div class="ch-t"><b>דר-בוט</b><span>העוזר האישי שלך לטיול</span></div>
+      <button onclick="toggleChat()">✕</button>
+    </div>
+    <div class="chat-body" id="chat-body"></div>
+    <div class="chat-quick">
+      <button class="qr-btn" onclick="sendQuick('🍔 המבורגר קרוב')">🍔 המבורגר</button>
+      <button class="qr-btn" onclick="sendQuick('☕ קפה קרוב')">☕ קפה</button>
+      <button class="qr-btn" onclick="sendQuick('🍺 בר קרוב')">🍺 בר</button>
+      <button class="qr-btn" onclick="sendQuick('מה מומלץ לי היום?')">📍 מה היום?</button>
+      <button class="qr-btn" onclick="sendQuick('טיפ על העיר')">💡 טיפ</button>
+      <button class="qr-btn" onclick="sendQuick('מה להכין לטיול?')">🎒 להכין</button>
+    </div>
+    <div class="chat-input-row">
+      <input id="chat-input" placeholder="שאל את דר-בוט..." onkeydown="if(event.key==='Enter')sendChatMessage()"/>
+      <button onclick="sendChatMessage()">➤</button>
+    </div>
+  </div>
+
+  <!-- Bottom Sheet לעיר -->
+  <div class="sheet-backdrop" id="backdrop"></div>
+  <div class="sheet" id="sheet">
+    <div class="sheet-grip"></div>
+    <div class="sheet-hero">
+      <div class="sh-bg" id="sh-bg"></div><div class="sh-grad"></div>
+      <div class="sh-t"><b id="sh-name">יוסטון</b><span id="sh-dates">25–29 ביוני 2026</span></div>
+    </div>
+    <div class="sheet-stats">
+      <div class="stat"><b id="sh-days">5</b><span>ימים</span></div>
+      <div class="stat"><b id="sh-att">32</b><span>אתרים</span></div>
+      <div class="stat"><b>1</b><span>משחק</span></div>
+    </div>
+    <h3>אטרקציות מובילות</h3>
+    <div id="sh-poi"></div>
+  </div>
+
+</div><!-- /phone -->
+
+<script>
+/* ספירה לאחור למשחק הראשון (29/06/2026) */
+(function(){
+  var d=Math.round((new Date('2026-06-29')-new Date(new Date().toDateString()))/864e5);
+  var el=document.getElementById('hero-cd');
+  if(el) el.textContent = d>0?d:(d===0?'0':'—');
+})();
+
+/* טעינת תמונות אמיתיות לכרטיסי הערים (Wikipedia) — שיפור הדרגתי */
+async function wikiImg(q){
+  try{
+    var r=await fetch('https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch='+encodeURIComponent(q)+'&format=json&origin=*&srlimit=1');
+    var j=await r.json(); if(!j.query.search.length) return null;
+    var r2=await fetch('https://en.wikipedia.org/w/api.php?action=query&titles='+encodeURIComponent(j.query.search[0].title)+'&prop=pageimages&format=json&origin=*&pithumbsize=600&piprop=thumbnail');
+    var j2=await r2.json(); var p=Object.values(j2.query.pages)[0];
+    return p&&p.thumbnail?p.thumbnail.source:null;
+  }catch(e){return null;}
+}
+document.querySelectorAll('.city-card').forEach(async function(card){
+  var src=await wikiImg(card.dataset.q);
+  if(src){ var im=new Image(); im.onload=function(){ card.querySelector('.cc-bg').style.backgroundImage='url("'+src+'")'; }; im.src=src; }
+});
+
+/* דמו אטרקציות לכל עיר (לתצוגת ה-overlay) */
+var POI={
+  houston:[['🍖','Pinkerton\'s Barbecue','BBQ אגדי','4.7'],['🚀','Space Center Houston','נאס"א','4.6'],['🏟️','Daikin Park','בייסבול','4.7']],
+  atlanta:[['🥤','World of Coca-Cola','מוזיאון','4.5'],['🐟','Georgia Aquarium','אקווריום ענק','4.6'],['🍑','Ponce City Market','אוכל','4.6']],
+  dc:[['🏛️','Lincoln Memorial','אנדרטה','4.8'],['🏛️','Capitol','הקפיטול','4.7'],['🖼️','Smithsonian','מוזיאונים','4.8']],
+  ny:[['🗽','Statue of Liberty','פסל החירות','4.7'],['🌳','Central Park','פארק','4.8'],['🏙️','Times Square','כיכר','4.6']]
+};
+var sheet=document.getElementById('sheet'), backdrop=document.getElementById('backdrop');
+function openCity(card){
+  var c=card.dataset;
+  document.getElementById('sh-name').textContent=c.name;
+  document.getElementById('sh-dates').textContent=c.dates+' 2026';
+  document.getElementById('sh-days').textContent=c.days;
+  document.getElementById('sh-att').textContent=c.att;
+  var bg=document.getElementById('sh-bg');
+  var inner=card.querySelector('.cc-bg').style.backgroundImage;
+  bg.style.backgroundImage=inner||'linear-gradient(135deg,#3b5bfe,#8a6cff)';
+  bg.style.background = inner?bg.style.backgroundImage:'linear-gradient(135deg,#3b5bfe,#8a6cff)';
+  bg.style.backgroundSize='cover'; bg.style.backgroundPosition='center';
+  var list=POI[c.city]||[];
+  document.getElementById('sh-poi').innerHTML=list.map(function(p){
+    return '<div class="poi"><div class="poi-ic">'+p[0]+'</div><div class="poi-i"><b>'+p[1]+'</b><br><span>'+p[2]+'</span></div><div class="poi-r">★ '+p[3]+'</div></div>';
+  }).join('');
+  sheet.classList.add('open'); backdrop.classList.add('open');
+}
+/* (ה-bottom-sheet הישן הושבת — לחיצה על עיר מובילה עכשיו למסך המסלול) */
+backdrop.addEventListener('click',function(){ sheet.classList.remove('open'); backdrop.classList.remove('open'); });
+
+/* אטרקציות שאסור לפספס — מודעת-עיר: מציג את האטרקציות המדורגות-גבוה
+   מהעיר של היום הנוכחי (לפני הטיול — יוסטון, העיר הראשונה).
+   נבנה מאותו מקור נתונים יחיד (DAYS) ורץ אחרי שהוא מוגדר. */
+var CITY_LABEL={houston:'יוסטון',atlanta:'אטלנטה',dc:'וושינגטון',ny:'ניו יורק'};
+function currentCity(){
+  var i=(typeof tripTodayIdx==='function')?tripTodayIdx():-1;
+  return (i>=0 && DAYS[i])?DAYS[i].city:'houston';
+}
+function renderFeat(){
+  var box=document.getElementById('feat-list'); if(!box||typeof DAYS==='undefined') return;
+  var cityKey=currentCity();
+  var title=document.getElementById('feat-title');
+  if(title) title.textContent='אטרקציות שאסור לפספס · '+(CITY_LABEL[cityKey]||'');
+  var seen={}, items=[];
+  DAYS.forEach(function(d){ if(d.city!==cityKey) return;
+    d.atts.forEach(function(a){ if(seen[a.n]) return; seen[a.n]=1; items.push(a); });
+  });
+  items.sort(function(x,y){ return (parseFloat(y.r)||0)-(parseFloat(x.r)||0); });
+  items=items.slice(0,6);
+  box.innerHTML='';
+  items.forEach(function(f){
+    var el=document.createElement('div'); el.className='feat-card';
+    el.innerHTML='<div class="feat-img"></div>'+
+      '<div class="feat-info"><div class="ft-t">'+f.n+'</div>'+
+      '<div class="ft-s"><span class="feat-city">'+(CITY_LABEL[cityKey]||'')+'</span> '+(f.c||'')+'</div></div>'+
+      '<div class="feat-r">★ '+(f.r||'')+'</div>';
+    el.addEventListener('click',function(){
+      if(window.showItinerary) window.showItinerary(cityKey);
+      if(typeof goTab==='function') goTab('מסלול');
+    });
+    box.appendChild(el);
+    wikiImg(f.q).then(function(src){
+      if(src){ var im=new Image(); im.onload=function(){ el.querySelector('.feat-img').style.backgroundImage='url("'+src+'")'; }; im.src=src; }
+    });
+  });
+}
+
+/* ===== מסך מסלול — ימים + אטרקציות לפי מיקום ===== */
+/* הערה: נתוני דמו לתצוגת המבנה. אחרי אישור נחבר את התוכן האמיתי מהחוברת. */
+/* ===== מזג אוויר חי (Open-Meteo — חינמי, ללא מפתח) ===== */
+var WX_COORDS={houston:[29.76,-95.37],atlanta:[33.75,-84.39],dc:[38.89,-77.03],ny:[40.71,-74.0]};
+var wxCache={};
+function wxEmoji(c){
+  if(c===0) return '☀️';
+  if(c<=3) return '🌤️';
+  if(c<=48) return '🌫️';
+  if(c<=67) return '🌧️';
+  if(c<=77) return '❄️';
+  if(c<=82) return '🌦️';
+  if(c<=86) return '🌨️';
+  return '⛈️';
+}
+function getWx(key){
+  if(wxCache[key]) return Promise.resolve(wxCache[key]);
+  var co=WX_COORDS[key]; if(!co) return Promise.resolve(null);
+  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+co[0]+'&longitude='+co[1]+'&current=temperature_2m,weather_code')
+    .then(function(r){return r.json();})
+    .then(function(j){ var w={temp:Math.round(j.current.temperature_2m),code:j.current.weather_code}; wxCache[key]=w; return w; })
+    .catch(function(){return null;});
+}
+function fillDayWeather(){
+  document.querySelectorAll('.dh-wx').forEach(function(el){
+    if(el.dataset.done) return; var key=el.dataset.wxcity; if(!key) return;
+    getWx(key).then(function(w){ if(w){ el.textContent=wxEmoji(w.code)+' '+w.temp+'°'; el.dataset.done='1'; } });
+  });
+}
+/* מזג אוויר על כרטיסי הערים בבית */
+document.querySelectorAll('.city-card').forEach(function(card){
+  getWx(card.dataset.city).then(function(w){
+    if(!w) return; var meta=card.querySelector('.cc-meta'); if(!meta) return;
+    var s=document.createElement('span'); s.className='wx'; s.style.marginInlineStart='6px';
+    s.textContent=wxEmoji(w.code)+' '+w.temp+'°'; meta.appendChild(s);
+  });
+});
+
+/* ===== "מה קרוב אליי" + "מה עושים עכשיו" ===== */
+/* רשימת אטרקציות עם קואורדינטות — נבנית בלחיצה (MAPDATA מוגדר בהמשך) */
+function buildPOI(){
+  var arr=[]; var M=(typeof MAPDATA!=='undefined')?MAPDATA:{};
+  ['houston','atlanta','dc','ny'].forEach(function(k){
+    var d=M[k]; if(!d) return;
+    (d.atts||[]).forEach(function(a){ arr.push({name:a[2],lat:a[0],lng:a[1],city:k}); });
+    if(d.stad) arr.push({name:d.stad[2],lat:d.stad[0],lng:d.stad[1],city:k});
+    if(d.hotel) arr.push({name:d.hotel[2],lat:d.hotel[0],lng:d.hotel[1],city:k});
+  });
+  return arr;
+}
+function haversine(la1,lo1,la2,lo2){
+  var R=6371,dLa=(la2-la1)*Math.PI/180,dLo=(lo2-lo1)*Math.PI/180;
+  var a=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)*Math.sin(dLo/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function openResultSheet(title,sub,itemsHtml){
+  var sheet=document.getElementById('sheet'),backdrop=document.getElementById('backdrop');
+  sheet.innerHTML='<div class="sheet-grip"></div>'+
+    '<h3 style="font-size:18px;margin:2px 2px 4px;">'+title+'</h3>'+
+    '<p style="font-size:12.5px;color:var(--muted);margin:0 2px 14px;">'+sub+'</p>'+itemsHtml;
+  sheet.classList.add('open'); backdrop.classList.add('open');
+}
+function findNearMe(){
+  if(!navigator.geolocation){ openResultSheet('מה קרוב אליי','הדפדפן לא תומך במיקום',''); return; }
+  openResultSheet('📍 מאתר מיקום…','רגע, מבקש הרשאת מיקום','');
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var la=pos.coords.latitude,lo=pos.coords.longitude;
+    var list=buildPOI().map(function(p){return {p:p,d:haversine(la,lo,p.lat,p.lng)};}).sort(function(a,b){return a.d-b.d;}).slice(0,6);
+    var html=list.map(function(x){
+      var dist=x.d<1?Math.round(x.d*1000)+' מ׳':(x.d<50?x.d.toFixed(1)+' ק״מ':Math.round(x.d)+' ק״מ');
+      return '<div class="poi"><div class="poi-ic">📍</div><div class="poi-i"><b>'+x.p.name+'</b><br><span>'+CITY_HE(x.p.city)+'</span></div><div class="poi-r">'+dist+'</div></div>';
+    }).join('');
+    openResultSheet('📍 הכי קרוב אליך','לפי המיקום הנוכחי שלך · מהקרוב לרחוק',html);
+  },function(){ openResultSheet('📍 מה קרוב אליי','לא ניתנה הרשאת מיקום. אפשר להפעיל בהגדרות הדפדפן.',''); },{timeout:8000});
+}
+function CITY_HE(k){return {houston:'יוסטון',atlanta:'אטלנטה',dc:'וושינגטון',ny:'ניו יורק'}[k]||k;}
+function whatToDoNow(){
+  var h=new Date().getHours();
+  var slot,sub,ideas;
+  if(h<11){ slot='בוקר טוב ☀️'; sub='זמן מצוין למוזיאון או פארק לפני החום'; ideas=[['🚀','Space Center Houston','פתוח מ-10:00 — בואו בפתיחה'],['🌳','Buffalo Bayou Park','הליכת בוקר רגועה'],['☕','קפה מקומי','התחילו את היום נכון']]; }
+  else if(h<16){ slot='צהריים 🌤️'; sub='שיא החום — אטרקציות ממוזגות או אוכל'; ideas=[['🍖','Pinkerton\'s BBQ','ארוחת צהריים טקסנית'],['🛍️','The Galleria','קניות ממוזגות'],['🐟','Downtown Aquarium','חוויה מקורה']]; }
+  else if(h<20){ slot='אחר הצהריים 🌇'; sub='מתקרר — זמן לפארקים ולשקיעה'; ideas=[['🦇','Waugh Bat Colony','יציאת העטלפים בשקיעה'],['🌊','Buffalo Bayou','קו הרקיע בשקיעה'],['🏛️','POST Houston','גג עם נוף']]; }
+  else { slot='ערב 🌙'; sub='זמן לברים, אוכל ומשחקי מונדיאל'; ideas=[['🍺','Pitch 25','בר ספורט עם מסכי ענק'],['🎵','Neon Boots','האניק-טונק הטקסני'],['🍔','אוכל מאוחר','המבורגר/פיצה קרוב']]; }
+  var html=ideas.map(function(i){return '<div class="poi"><div class="poi-ic">'+i[0]+'</div><div class="poi-i"><b>'+i[1]+'</b><br><span>'+i[2]+'</span></div></div>';}).join('');
+  openResultSheet('⏰ '+slot,sub+' · '+('0'+h).slice(-2)+':00',html);
+}
+
+/* ===== צ'אט דר-בוט ===== */
+function toggleChat(){
+  var w=document.getElementById('chat-window'),fab=document.getElementById('chat-fab');
+  var open=w.classList.toggle('open'); fab.style.display=open?'none':'flex';
+  if(open && !w.dataset.init){ w.dataset.init='1'; addBot('היי דר! 👋 אני דר-בוט, העוזר שלך לטיול. אפשר לשאול אותי על אוכל קרוב, מה לעשות היום, טיפים לעיר ועוד. במה אפשר לעזור?'); }
+}
+function addBot(t){ var b=document.getElementById('chat-body'); var d=document.createElement('div'); d.className='cmsg bot'; d.innerHTML=t; b.appendChild(d); b.scrollTop=b.scrollHeight; }
+function addUser(t){ var b=document.getElementById('chat-body'); var d=document.createElement('div'); d.className='cmsg user'; d.textContent=t; b.appendChild(d); b.scrollTop=b.scrollHeight; }
+function sendQuick(t){ handleChat(t); }
+function sendChatMessage(){ var i=document.getElementById('chat-input'); var t=i.value.trim(); if(!t) return; i.value=''; handleChat(t); }
+function handleChat(t){
+  addUser(t);
+  setTimeout(function(){ addBot(botReply(t)); },350);
+}
+function botReply(t){
+  var s=t.toLowerCase();
+  if(/המבורגר|burger/.test(s)) return '🍔 קרוב אליך מומלצים: <b>Hopdoddy</b>, <b>Stanton\'s City Bites</b>. רוצה שאמצא לפי המיקום הנוכחי? לחץ על "מה קרוב אליי?" במסך הבית.';
+  if(/פיצה|pizza/.test(s)) return '🍕 לפיצה טובה ביוסטון: <b>Star Pizza</b> או <b>Pink\'s Pizza</b>. בניו יורק כמובן כל פינה 😉';
+  if(/קפה|coffee|☕/.test(s)) return '☕ בתי קפה מומלצים: <b>Blacksmith</b> (Montrose), <b>Agora</b>. בוקר טוב!';
+  if(/בר|beer|🍺/.test(s)) return '🍺 לערב מונדיאלי: <b>Pitch 25</b> (מגרש כדורגל בפנים!) או <b>Phoenix on Westheimer</b> — פאב בריטי אמיתי.';
+  if(/היום|מומלץ|לעשות/.test(s)) return 'תלוי בשעה! 😄 לחץ על "מה עושים עכשיו?" במסך הבית ואני אתאים המלצה לזמן ביום. כרגע אם אתה ביוסטון — Space Center בבוקר זה קלאסיקה.';
+  if(/טיפ|עיר/.test(s)) return '💡 טיפ: ביוסטון הכל מרוחק — שווה לשכור רכב. החניה ב-Space Center עולה 11$ נוספים, ובאזור הדאונטאון יש METRORail נוח.';
+  if(/להכין|לטיול|לארוז|לארוז/.test(s)) return '🎒 חשוב: דרכון בתוקף 6 חודשים, ESTA מאושר, כרטיסי המשחקים בארנק הדיגיטלי, מתאם תקע אמריקאי, ובגדים קלים — יוני בטקסס חם ולח (35°+).';
+  if(/מזג|אוויר|חם|גשם/.test(s)) return '🌤️ יוני-יולי בדרום ארה"ב חם ולח מאוד (32–36°). וושינגטון וניו יורק קצת יותר נוחות. מזג האוויר החי מופיע על כרטיסי הערים.';
+  if(/שלום|היי|הי|hello/.test(s)) return 'היי! 👋 איך אפשר לעזור עם הטיול?';
+  return 'שאלה טובה! 🤔 לצ\'אט חכם מלא (שעונה על הכל) צריך לחבר מפתח API — כרגע אני יודע לעזור עם אוכל קרוב, מה לעשות עכשיו, טיפים על הערים ומה להכין לטיול. נסה אחד מהכפתורים המהירים למעלה.';
+}
+
+/* כל אטרקציה: e=אייקון n=שם c=קטגוריה d=מרחק q=חיפוש-תמונה r=דירוג h=שעות info=תיאור tips=חובה-לראות */
+var DAYS=[
+ {
+  "n": "יום 1",
+  "date": "25 ביוני · ה׳",
+  "city": "houston",
+  "cityL": "יוסטון",
+  "area": "יום הנחיתה",
+  "atts": [
+   {
+    "e": "🍖",
+    "n": "Pinkerton's Barbecue",
+    "c": "BBQ · אוכל",
+    "d": "—",
+    "q": "Pinkerton's Barbecue Houston Texas",
+    "r": "4.5",
+    "h": "11:00-21:00",
+    "info": "אחד מ-50 הברביקיו הטובים בטקסס לפי Texas Monthly. ידוע במנות גדולות וטעמים מעוצמים. הקופאי חותך לך את הבשר מולך אישית, אווירה ידידותית, סופר נקי. תורים יכולים להיות ארוכים בעמדות שיא.",
+    "tips": [
+     "Beef rib ענק - הצלעה המפורסמת שמדברים עליה",
+     "Brisket עם שכבת bark מלוחה-פלפלית מושלמת",
+     "Glazed pork ribs - הצלעות המזוגגות שמומלצות בביקורות"
+    ],
+    "la": 29.7322553,
+    "ln": -95.4116624,
+    "w": "https://pinkertonsbarbecue.com/"
+   },
+   {
+    "e": "🍖",
+    "n": "Truth BBQ",
+    "c": "BBQ · אוכל",
+    "d": "—",
+    "q": "Truth BBQ Houston Heights",
+    "r": "4.5",
+    "h": "11:00-15:00, 17:00-20:00",
+    "info": "3,984 ביקורות עם דירוג 4.5. מומלץ להגיע 15 דק' לפני הפתיחה לעמדות שיא. first-come first-served. המקום בלב The Heights השכונה ההיפסטרית.",
+    "tips": [
+     "Pork ribs - הצלעות שמומלצות הכי הרבה בביקורות",
+     "Banana caramel slice cake - הקינוח המפורסם שלהם",
+     "אווירת ה-Heights - שכונה מעוצבת סביב המקום"
+    ],
+    "la": 29.7690777,
+    "ln": -95.3976086,
+    "w": "https://truthbbq.com/"
+   },
+   {
+    "e": "🍖",
+    "n": "The Pit Room",
+    "c": "BBQ · אוכל",
+    "d": "—",
+    "q": "The Pit Room barbecue Montrose Houston",
+    "r": "4.5",
+    "h": "07:00-10:30, 11:00-21:00",
+    "info": "הברביקיו עם הנגיעות המקסיקניות - טאקו וסינטה מפולפלת. 7,599 ביקורות - המקום הכי פופולרי בעיר. פתוח כל יום כולל שני, מצוין לימי הנחיתה. בלב Montrose.",
+    "tips": [
+     "Wagyu ribs - הצלעות הפרימיום שמייחדות את המקום",
+     "Venison sausage - נקניקיות אייל ייחודיות",
+     "הבר הצמוד עם קרוול'ש (Crawfish) - אווירה תוססת"
+    ],
+    "la": 29.7342056,
+    "ln": -95.3940574,
+    "w": "https://thepitroombbq.com/"
+   },
+   {
+    "e": "🌳",
+    "n": "Buffalo Bayou Park",
+    "c": "פארק · טבע",
+    "d": "—",
+    "q": "Buffalo Bayou Park Houston skyline",
+    "r": "4.7",
+    "h": "06:00-23:00",
+    "info": "דירוג 4.7 - אחד הפארקים האהובים בעיר. חניה זולה (~1.20$ לשעה) ב-Allen Parkway, יש גם שירותים ציבוריים. שבילי הליכה ואופניים לאורך הנהר, אזורי פיקניק.",
+    "tips": [
+     "נוף לקו הרקיע של יוסטון - הכי יפה בשקיעה",
+     "גשרי הליכה מודרניים על הנהר - תמונות מטורפות",
+     "Cistern - בור מים תת-קרקעי היסטורי (סיורים מודרכים)"
+    ],
+    "la": 29.763078,
+    "ln": -95.3761455,
+    "w": "https://buffalobayou.org/"
+   },
+   {
+    "e": "🌳",
+    "n": "Discovery Green",
+    "c": "פארק · מרכז העיר",
+    "d": "—",
+    "q": "Discovery Green Houston",
+    "r": "4.7",
+    "h": "06:00-23:00",
+    "info": "22,071 ביקורות עם 4.7 - פארק מאוד פעיל. כניסה חופשית. בזמן המונדיאל הוא משמש כ-FIFA Fan Festival הרשמי. בלב הדאון טאון, ליד מרכז הכנסים והאצטדיון.",
+    "tips": [
+     "FIFA Fan Festival - מסך ענק לכל משחקי המונדיאל",
+     "אגם עם סירות פדל וסירות מתנגשות (בתשלום)",
+     "אירועים יומיים - יוגה, קונצרטים, שווקים"
+    ],
+    "la": 29.7530669,
+    "ln": -95.359608,
+    "w": "https://www.discoverygreen.com/"
+   },
+   {
+    "e": "🌳",
+    "n": "Market Square Park + Downtown Walk",
+    "c": "מרכז העיר · פארק",
+    "d": "—",
+    "q": "Market Square Park Houston historic",
+    "r": "4.5",
+    "h": "פתוח 24/7",
+    "info": "פארק קטן בלב העיר ההיסטורית. הליכה רגלית של 30-60 דק' באזור. גורדי שחקים, פסלי רחוב, תחושה אורבנית.",
+    "tips": [
+     "פסל סטיוון אוסטין במרכז הפארק",
+     "ציורי קיר ענקיים ברחובות הסביבה",
+     "מסעדות וברים בערב באזור"
+    ],
+    "la": 29.762753,
+    "ln": -95.362518,
+    "w": "https://www.houstondowntown.com/"
+   },
+   {
+    "e": "🏙️",
+    "n": "Downtown Aquarium",
+    "c": "מרכז העיר",
+    "d": "—",
+    "q": "Downtown Aquarium Houston fish",
+    "r": "4.2",
+    "h": "11:00-20:00",
+    "info": "אקווריום עירוני קטן יחסית. נחמד למשפחות עם ילדים, אבל לא יוצא דופן. אופציה לערב פנימי ביום הנחיתה.",
+    "tips": [
+     "מנהרת כרישים",
+     "גלגל פריס מעל המתחם",
+     "מסעדה עם אקווריום מעל השולחנות"
+    ],
+    "la": 29.7642822,
+    "ln": -95.3674131,
+    "w": "https://www.aquariumrestaurants.com/downtownaquariumhouston/"
+   },
+   {
+    "e": "🍽️",
+    "n": "Shipley Do-Nuts (רשת)",
+    "c": "אוכל · ארוחת בוקר",
+    "d": "—",
+    "q": "Shipley Do-Nuts Houston Texas kolache donuts",
+    "r": "4.3",
+    "h": "מהבוקר המוקדם (שעות משתנות לפי סניף)",
+    "info": "רשת דונאטס טקסנית מ-1936. **מה שמייחד: ה-Kolache** - מאפה מורשת צ'כית-טקסנית, מתוק או מלוח. 50+ סניפים ביוסטון — הסיכה כאן על סניף N Main (Northside, ליד ההייטס). ארוחת בוקר מקומית אמיתית, ~$5-8 לאדם.",
+    "tips": [
+     "Kolache - מאפה טקסני-צ'כי עם נקניק, גבינה או ג'לי",
+     "Glazed donut - אפוי טרי, מרגיש אחרת לגמרי מדאנקין",
+     "Coffee combo - $5 לדונאט + קפה = ארוחת בוקר שלמה"
+    ],
+    "la": 29.7934973,
+    "ln": -95.3760784,
+    "w": "https://shipleydonuts.com/locations/tx/houston"
+   },
+   {
+    "e": "🍽️",
+    "n": "POST Houston",
+    "c": "אוכל · מרכז העיר · חוויה ייחודית",
+    "d": "—",
+    "q": "POST Houston food hall rooftop skylawn",
+    "r": "4.5",
+    "h": "11:00-22:00",
+    "info": "בית הדואר הישן של יוסטון (1962) שהוסב לאחד ה-Food Halls הכי שווים בארה\"ב. קומה עם דוכני שפים מקומיים, קומה של ברים, ו**גג עם פארק ציבורי ונוף מהמדהים לסקייליין**. ערב מושלם ביום ההגעה.",
+    "tips": [
+     "Skylawn - גג פתוח עם נוף 360° לסקייליין יוסטון",
+     "Food Hall - עשרות דוכני שפים מקומיים, כל מטבח",
+     "אירועים חיים בסוף שבוע: מוזיקה, שווקים, פופ-אפים"
+    ],
+    "la": 29.7660696,
+    "ln": -95.3645899,
+    "w": "https://www.posthtx.com/"
+   },
+   {
+    "e": "🍺",
+    "n": "Neon Boots Dancehall & Saloon",
+    "c": "בר · ערב · חוויה ייחודית",
+    "d": "—",
+    "q": "Neon Boots Dancehall Houston country line dancing",
+    "r": "4.4",
+    "h": "16:00-02:00",
+    "info": "ה-Honky Tonk הכי אמיתי ביוסטון. מוזיקה קאנטרי חיה, ריקוד כפרי (Line Dance), ברים. **אחת החוויות הטקסניות-האמריקאיות הכי אותנטיות.** שיעורי ריקוד בחינם בשעות מסוימות. כניסה ~$5.",
+    "tips": [
+     "Line Dancing - ריקוד כפרי קבוצתי, אפשר ללמוד מקרוב",
+     "Live Country Music - מוזיקה חיה רוב הלילות",
+     "בר קאובוי מלא: מגפיים, כובעים, ועוד מגפיים"
+    ],
+    "la": 29.814445,
+    "ln": -95.475974,
+    "w": "https://neonbootsclub.com/"
+   }
+  ]
+ },
+ {
+  "n": "יום 2",
+  "date": "26 ביוני · ו׳",
+  "city": "houston",
+  "cityL": "יוסטון",
+  "area": "NASA ומרכז העיר",
+  "atts": [
+   {
+    "e": "🏛️",
+    "n": "Space Center Houston",
+    "c": "מוזיאון · חוויה ייחודית · היסטוריה",
+    "d": "—",
+    "q": "Space Center Houston NASA",
+    "r": "4.6",
+    "h": "10:00-17:00",
+    "info": "דירוג 4.6 מ-53,089 ביקורות. מחיר כניסה ~50$ למבוגר. חניה 11$ נוספים. מומלץ להגיע פתיחה כדי לתפוס סיור טראם מוקדם (התורים מתארכים). אוכל מוגבל - שווה להביא משלכם.",
+    "tips": [
+     "סיור הטראם למרכז הבקרה ההיסטורי של אפולו",
+     "אגף Independence Plaza - שאטל אמיתי על נושאת מטוסים",
+     "Apollo Rocket Park - טיל סטורן V המקורי"
+    ],
+    "la": 29.551832,
+    "ln": -95.0981044,
+    "w": "https://spacecenter.org/"
+   },
+   {
+    "e": "📍",
+    "n": "NRG Stadium - משחק Cape Verde vs Saudi Arabia",
+    "c": "משחק כדורגל · חוויה ייחודית",
+    "d": "—",
+    "q": "NRG Stadium Houston",
+    "r": "4.6",
+    "h": "",
+    "info": "⚽ משחק קבוצות הערב ב-19:00 מקומי. אופציה לרכוש כרטיסים נוספים - חוויית אצטדיון מונדיאל אמיתית. רכבת METRORail Red Line עוצרת ישירות בתחנת NRG Park.",
+    "tips": [
+     "האצטדיון עם הגג הניתן לפתיחה",
+     "מועדוני הצדדים עם נוף ישיר למגרש",
+     "הפודי קורט המגוון - אוכל טקסני אמיתי"
+    ],
+    "la": 29.6847219,
+    "ln": -95.4107074,
+    "w": "https://www.nrgpark.com/"
+   },
+   {
+    "e": "🌳",
+    "n": "Buffalo Bayou Park (שקיעה)",
+    "c": "פארק · טבע",
+    "d": "—",
+    "q": "Buffalo Bayou Park Houston sunset",
+    "r": "4.7",
+    "h": "06:00-23:00",
+    "info": "הזמן הכי יפה לבקר - אחרי השקיעה. הקו רקיע של יוסטון מואר באורות. שיא יוסטוני אגדי.",
+    "tips": [
+     "קו הרקיע של יוסטון מואר - הזמן הכי יפה",
+     "הליכה בגשרים על הנהר עם תאורת לילה",
+     "Lost Lake - אגם קטן עם מסעדה ובאר"
+    ],
+    "la": 29.763078,
+    "ln": -95.3761455,
+    "w": "https://buffalobayou.org/"
+   },
+   {
+    "e": "🏟️",
+    "n": "Pitch 25",
+    "c": "בר ספורט · משחק כדורגל",
+    "d": "—",
+    "q": "Pitch 25 Houston soccer bar",
+    "r": "4.4",
+    "h": "11:00-02:00",
+    "info": "הבר הכי שווה לכדורגל ביוסטון, בבעלות שחקן הכדורגל לשעבר Brian Ching. במונדיאל זה הופך למקדש.",
+    "tips": [
+     "המגרש כדורגל בתוך המקום",
+     "50+ בירות בלחיצה",
+     "אזור הגינה החיצוני - נוף לאצטדיון Shell Energy"
+    ],
+    "la": 29.7515194,
+    "ln": -95.3546548,
+    "w": "https://www.pitch25.com/"
+   },
+   {
+    "e": "🏟️",
+    "n": "Phoenix on Westheimer",
+    "c": "בר ספורט · משחק כדורגל",
+    "d": "—",
+    "q": "Phoenix Westheimer Houston pub",
+    "r": "4.5",
+    "h": "16:00-02:00",
+    "info": "פאב בריטי קטן ושמח, האווירה הכי \"פאב כדורגל אירופי\" ביוסטון. במשחק גדול - שירים, צעקות, אוהדים אמיתיים.",
+    "tips": [
+     "אווירת פאב בריטי אותנטית",
+     "תפריט בריטי - fish and chips, מיט פיי",
+     "אוהדי הקבוצות האירופאיות שמתאספים שם"
+    ],
+    "la": 29.7424,
+    "ln": -95.4123
+   },
+   {
+    "e": "🏙️",
+    "n": "Discovery Green - Fan Fest",
+    "c": "מרכז העיר · משחק כדורגל",
+    "d": "—",
+    "q": "FIFA Fan Festival Houston Discovery Green",
+    "r": "4.7",
+    "h": "06:00-23:00",
+    "info": "ה-Fan Festival הרשמי של פיפ\"א. כניסה חופשית. אווירת חגיגה אמיתית בלב הדאון טאון.",
+    "tips": [
+     "מסך ענק חיצוני לצפייה במשחקים",
+     "מוזיקה חיה ו-DJ's בערב",
+     "אוכל בינלאומי מפודטראקים"
+    ],
+    "la": 29.7530669,
+    "ln": -95.359608,
+    "w": "https://www.discoverygreen.com/"
+   },
+   {
+    "e": "🏙️",
+    "n": "Houston Tunnel System",
+    "c": "חוויה ייחודית · מרכז העיר",
+    "d": "—",
+    "q": "Houston Tunnel System underground pedestrian city",
+    "r": "4.3",
+    "h": "",
+    "info": "רשת מנהרות אנדרגראונד של 11 ק\"מ שמחברת 95 בניינים בדאון טאון. נבנתה כי יוסטון חמה מדי לטייל בשמש. כיום: מסעדות, חנויות ובנקים מתחת לאדמה. חוויה סוריאליסטית. **רק ימי חול!**",
+    "tips": [
+     "11 ק\"מ של מנהרות ממוזגות מתחת לגורדי השחקים",
+     "דוכני אוכל זולים ממוזגים - ארוחת צהריים כמו מקומי",
+     "95 בניינים מחוברים - כל הדאון טאון מתחת לאדמה"
+    ],
+    "la": 29.7578,
+    "ln": -95.3623,
+    "w": "https://www.houstontx.gov/downtown/"
+   },
+   {
+    "e": "🎭",
+    "n": "IPIC Theaters Houston",
+    "c": "בידור · חוויה ייחודית",
+    "d": "—",
+    "q": "IPIC Theaters luxury cinema recliner pod waiter service",
+    "r": "4.5",
+    "h": "בהתאם לזמני הקרנה",
+    "info": "קולנוע יוקרה אמריקאי אחר לגמרי. ~$25-35 לכרטיס אבל כולל כיסא מלא-שכיבה ומלצר שמגיש אוכל. הרבה אמריקאים עושים מזה \"ערב יציאה רומנטי\". בלב הדאון טאון.",
+    "tips": [
+     "כיסאות פוד רכים שמתכופפים לשכיבה מלאה",
+     "שירות מלצר לכל כיסא - אוכל ובירה במהלך הסרט",
+     "Pods לזוגות - כיסאות כפולים עם שמיכה"
+    ],
+    "la": 29.76,
+    "ln": -95.3637,
+    "w": "https://www.ipic.com/"
+   },
+   {
+    "e": "🏟️",
+    "n": "Topgolf Houston — Webster",
+    "c": "ספורט · בידור · חוויה ייחודית",
+    "d": "—",
+    "q": "Topgolf Webster Houston golf entertainment bays",
+    "r": "4.4",
+    "h": "09:00-01:00",
+    "info": "מתחם בילוי שמשלב גולף, אוכל ובר — 3 קומות, ~102 בייים. חובטים כדורים עם שבב שעוקב אוטומטית ונותן ניקוד, מלצרים מגישים בין מכות. <strong>נמצא רק 2.6 מייל (~7 דק') מ-Space Center</strong> — שילוב מושלם לערב אחרי יום ה-NASA. ~$30-50 לשעה לבית. <strong>להזמין מקום מראש.</strong>",
+    "tips": [
+     "בייים קומתיים עם ספות ושירות מלצרים — מושלם ל-5 שחקנים",
+     "משחקים עם ניקוד אוטומטי — לא צריך לדעת לשחק גולף",
+     "אוכל ובירה במהלך המשחק — בילוי אמריקאי קלאסי"
+    ],
+    "la": 29.5177,
+    "ln": -95.1208,
+    "w": "https://topgolf.com/us/webster/"
+   }
+  ]
+ },
+ {
+  "n": "יום 3",
+  "date": "27 ביוני · ש׳",
+  "city": "houston",
+  "cityL": "יוסטון",
+  "area": "מרכז העיר וההיסטוריה",
+  "atts": [
+   {
+    "e": "🏛️",
+    "n": "Houston Museum of Natural Science",
+    "c": "מוזיאון · היסטוריה",
+    "d": "—",
+    "q": "Houston Museum Natural Science dinosaurs",
+    "r": "4.8",
+    "h": "09:00-17:30",
+    "info": "דירוג 4.8 מ-30,397 ביקורות - מהמוזיאונים הטובים בארה\"ב. כניסה רגילה ~25$, תערוכות מיוחדות בתוספת. כדאי להגיע פתיחה - אין תורים ארוכים בבוקר.",
+    "tips": [
+     "Butterfly Center - גן פרפרים חי עם אלפי פרפרים (15$ נוסף)",
+     "אגף הדינוזאורים עם שלדים מקוריים",
+     "תערוכת מצרים העתיקה עם מומיות אמיתיות"
+    ],
+    "la": 29.7220625,
+    "ln": -95.3895625,
+    "w": "https://www.hmns.org/"
+   },
+   {
+    "e": "🏛️",
+    "n": "Holocaust Museum Houston",
+    "c": "מוזיאון · היסטוריה",
+    "d": "—",
+    "q": "Holocaust Museum Houston",
+    "r": "4.8",
+    "h": "10:00-17:00",
+    "info": "מוזיאון השואה השלישי בגודלו בארה\"ב. כניסה ~19$. כבד אבל חשוב ומרגש. סגור ביום שני.",
+    "tips": [
+     "תערוכת הקבע \"Bearing Witness\"",
+     "תערוכת \"Human Rights\" - מאבקי זכויות אדם עכשוויים",
+     "הגן ההנצחה עם הפסל \"And Still I Rise\""
+    ],
+    "la": 29.7217,
+    "ln": -95.3848,
+    "w": "https://hmh.org/"
+   },
+   {
+    "e": "🏛️",
+    "n": "Buffalo Soldiers National Museum",
+    "c": "מוזיאון · היסטוריה",
+    "d": "—",
+    "q": "Buffalo Soldiers National Museum Houston",
+    "r": "4.7",
+    "h": "10:00-17:00",
+    "info": "מוזיאון מיוחד שמספר את סיפור החיילים האפרו-אמריקאים בצבא ארה\"ב מאז 1860. ייחודי, כניסה ~10$.",
+    "tips": [
+     "מדים מקוריים של חיילים שחורים מהמלחמה האזרחית",
+     "תערוכת חיילי באפלו בעידן הוויטנאם",
+     "סרט תיעודי על תפקיד החיילים השחורים"
+    ],
+    "la": 29.7373,
+    "ln": -95.3814,
+    "w": "https://buffalosoldiersmuseum.com/"
+   },
+   {
+    "e": "🌳",
+    "n": "Sam Houston Park",
+    "c": "היסטוריה · פארק",
+    "d": "—",
+    "q": "Sam Houston Park historic homes",
+    "r": "4.5",
+    "h": "10:00-16:00",
+    "info": "פארק היסטורי עם 8 בתים משומרים מהמאה ה-19. כניסה לפארק חינם, סיורים מודרכים בבתים בתשלום נמוך.",
+    "tips": [
+     "Kellum-Noble House - הבית הוויקטוריאני הכי ישן ביוסטון",
+     "St. John's Church - כנסיית עץ מ-1891",
+     "Pillot House - בית בעלים עשירים מהמאה ה-19"
+    ],
+    "la": 29.7589,
+    "ln": -95.3727,
+    "w": "https://heritagesociety.org/"
+   },
+   {
+    "e": "🍖",
+    "n": "The Pit Room",
+    "c": "BBQ · אוכל",
+    "d": "—",
+    "q": "The Pit Room barbecue Montrose Houston",
+    "r": "4.5",
+    "h": "07:00-21:00 (הפסקת בוקר 10:30-11:00)",
+    "info": "BBQ עם נגיעות מקסיקניות. 7,599 ביקורות. בלב Montrose. פתוח כל יום.",
+    "tips": [
+     "Wagyu ribs - הצלעות הפרימיום",
+     "Venison sausage - נקניקיות אייל",
+     "הבר הצמוד עם קרוול'ש"
+    ],
+    "la": 29.7342056,
+    "ln": -95.3940574,
+    "w": "https://thepitroombbq.com/"
+   },
+   {
+    "e": "🍖",
+    "n": "Truth BBQ",
+    "c": "BBQ · אוכל",
+    "d": "—",
+    "q": "Truth BBQ Houston brisket",
+    "r": "4.5",
+    "h": "11:00-20:00",
+    "info": "הזדמנות להשוואה אם לא הספקתם ביום הראשון. דירוג 4.5 מ-3,984 ביקורות.",
+    "tips": [
+     "Pork ribs מומלצים בביקורות",
+     "Banana caramel slice cake",
+     "אווירת The Heights"
+    ],
+    "la": 29.7690777,
+    "ln": -95.3976086,
+    "w": "https://truthbbq.com/"
+   },
+   {
+    "e": "🏙️",
+    "n": "Montrose Neighborhood",
+    "c": "מרכז העיר",
+    "d": "—",
+    "q": "Montrose Houston neighborhood",
+    "r": "4.6",
+    "h": "כל היום",
+    "info": "השכונה האומנותית-בוהמית של יוסטון. גלריות, חנויות וינטג', ברים נחמדים.",
+    "tips": [
+     "Westheimer Road - הרחוב הראשי עם הבוטיקים",
+     "Menil Collection - גלריית אומנות חינמית (מודרני)",
+     "גרפיטי וציורי קיר ברחבי השכונה"
+    ],
+    "la": 29.7398,
+    "ln": -95.3902
+   },
+   {
+    "e": "🛍️",
+    "n": "The Heights Neighborhood",
+    "c": "מרכז העיר · קניות",
+    "d": "—",
+    "q": "The Heights Houston 19th Street",
+    "r": "4.7",
+    "h": "כל היום",
+    "info": "שכונה היפסטרית. רחוב 19th הראשי הכי שווה לסיבוב.",
+    "tips": [
+     "19th Street - הרחוב הראשי עם בוטיקים",
+     "בתים ויקטוריאניים משופצים",
+     "Heights Mercantile - מרכז קניות בוטיקי"
+    ],
+    "la": 29.7902,
+    "ln": -95.3988
+   },
+   {
+    "e": "🌳",
+    "n": "Brazos Bend State Park",
+    "c": "טבע · פארק · חוויה ייחודית",
+    "d": "—",
+    "q": "Brazos Bend State Park alligators",
+    "r": "4.8",
+    "h": "07:00-22:00",
+    "info": "פארק טבע מטורף 50 דק' דרומה מיוסטון. **המקום הכי טוב לראות תנינים בטבע** בארה\"ב. שבילי הליכה קלים, מצפה כוכבים. כניסה ~7$ למבוגר. לא לוותר על קרם הגנה ודחיפה.",
+    "tips": [
+     "תנינים על שפת המסלולים - לראות מקרוב!",
+     "George Observatory - מצפה כוכבים (סופ\"ש בערב)",
+     "מסלול 40-Acre Lake הקצר עם נוף לאגם"
+    ],
+    "la": 29.3819,
+    "ln": -95.6044,
+    "w": "https://tpwd.texas.gov/state-parks/brazos-bend"
+   },
+   {
+    "e": "📜",
+    "n": "San Jacinto Battleground",
+    "c": "היסטוריה · אנדרטה",
+    "d": "—",
+    "q": "San Jacinto Monument Battleground Texas",
+    "r": "4.7",
+    "h": "09:00-18:00",
+    "info": "30 דק' מזרחית ליוסטון. האנדרטה הגבוהה בעולם, גבוהה אפילו ממונומנט וושינגטון! מקום הקרב המכריע על עצמאות טקסס ב-1836. כניסה לפארק חינמית, עליה לתצפית ~7$.",
+    "tips": [
+     "אובליסק הגבוה בעולם (172 מ') - תצפית מהפסגה",
+     "USS Texas - ספינת קרב משוחזרת מ-1914",
+     "מוזיאון הקרב לעצמאות טקסס"
+    ],
+    "la": 29.7497,
+    "ln": -95.0808,
+    "w": "https://tpwd.texas.gov/state-parks/san-jacinto-battleground"
+   },
+   {
+    "e": "🍽️",
+    "n": "Kemah Boardwalk",
+    "c": "מרכז העיר · אוכל",
+    "d": "—",
+    "q": "Kemah Boardwalk waterfront Texas",
+    "r": "4.5",
+    "h": "11:00-22:00",
+    "info": "45 דק' דרומית-מזרחית מיוסטון. טיילת חוף עם מסעדות אוכל ים, חנויות, ונוף ליאכטות. **שימו לב:** יש שם גם פארק שעשועים קטן - אפשר להתעלם ממנו. אווירה קלילה לערב.",
+    "tips": [
+     "הטיילת על שפת מפרץ Galveston Bay",
+     "מסעדות עם נוף לסירות וים",
+     "אטרקציות שיט - סיורי דולפינים"
+    ],
+    "la": 29.5454,
+    "ln": -95.0235,
+    "w": "https://www.kemahboardwalk.com/"
+   },
+   {
+    "e": "🏛️",
+    "n": "San Jacinto Battleground + USS Texas",
+    "c": "היסטוריה · מוזיאון",
+    "d": "—",
+    "q": "USS Texas Battleship San Jacinto",
+    "r": "4.7",
+    "h": "10:00-17:00",
+    "info": "**אלטרנטיבה לוויתור על USS Alabama במובייל!** ספינת קרב היסטורית קרובה ליוסטון. כניסה משולבת לאובליסק ולספינה.",
+    "tips": [
+     "ספינת הקרב USS Texas - היחידה ששרדה משתי מלחמות העולם",
+     "תצפית מאובליסק (172 מ')",
+     "מוזיאון מאחורי הקלעים של עצמאות טקסס"
+    ],
+    "la": 29.7497,
+    "ln": -95.0808,
+    "w": "https://battleshiptexas.org/"
+   },
+   {
+    "e": "🛍️",
+    "n": "The Galleria Houston",
+    "c": "קניות · מרכז העיר",
+    "d": "—",
+    "q": "The Galleria Houston ice rink",
+    "r": "4.5",
+    "h": "10:00-21:00",
+    "info": "הקניון הגדול בטקסס! 25 דק' מהמלון. 400+ חנויות, מותגי יוקרה ומותגים פופולריים. זירת חלקה על קרח בפנים - חוויה ייחודית בלב טקסס.",
+    "tips": [
+     "זירת החלקה על קרח בלב הקניון",
+     "מותגי יוקרה: Gucci, Prada, Louis Vuitton",
+     "Waterwall Park הסמוך - מבנה מים אייקוני"
+    ],
+    "la": 29.7397,
+    "ln": -95.464,
+    "w": "https://www.simon.com/mall/the-galleria"
+   },
+   {
+    "e": "🛍️",
+    "n": "Traders Village Houston",
+    "c": "קניות · חוויה ייחודית",
+    "d": "—",
+    "q": "Traders Village Houston flea market Latin",
+    "r": "4.3",
+    "h": "07:00-18:00",
+    "info": "ה-Flea Market הגדול בהיוסטון - 5,000+ מוכרים בשטח של 120 דונם. מוצרים מכל העולם, מציאות, אווירת שוק לטיני אמריקאי אמיתית. **פתוח שבת-ראשון בלבד!** חוויה תרבותית שאי אפשר לפספס. כ-30 דקות מערבה.",
+    "tips": [
+     "יריד ענק עם 5,000+ דוכנים - הכל מוכרים, הכל ממכרים",
+     "אוכל רחוב לטיני: tacos, elote, churros - 100% אותנטי",
+     "מציאות, כלים, בגדים, תכשיטים - שכונת שוק אמיתית"
+    ],
+    "la": 29.89511,
+    "ln": -95.60785,
+    "w": "https://www.tradersvillage.com/houston/"
+   },
+   {
+    "e": "📍",
+    "n": "Buffalo Bayou Park Cistern",
+    "c": "חוויה ייחודית · אדריכלות",
+    "d": "—",
+    "q": "Buffalo Bayou Park Cistern Houston underground columns",
+    "r": "4.7",
+    "h": "10:00-16:00",
+    "info": "מאגר מים עתיק מ-1926 מתחת לקרקע, 100×100 מטר. נסגר אחרי הוריקן קטרינה, נפתח כאתר תרבות. **שתיקה מוחלטת + 221 עמודי בטון** = תחושת קתדרלה עתיקה. ~$7 לכרטיס עם סיור. **שבת 27/06 - פתוח!**",
+    "tips": [
+     "221 עמודי בטון זהים - נוף קתדרלי שלא תשכחו",
+     "אקוסטיקה מטורפת - כל קול מהדהד 17 שניות",
+     "אור שמחלחל מלמעלה - תמונות שלא ייאמנו"
+    ],
+    "la": 29.7613,
+    "ln": -95.3791,
+    "w": "https://buffalobayou.org/visit/destination/the-cistern/"
+   },
+   {
+    "e": "🌳",
+    "n": "Waugh Drive Bat Colony",
+    "c": "טבע · חוויה ייחודית",
+    "d": "—",
+    "q": "Waugh Drive Bridge bat colony Houston Texas",
+    "r": "4.6",
+    "h": "",
+    "info": "250,000 עטלפי מקסיקן-פריי-טייל חיים מתחת לגשר Waugh Drive. בשקיעה הם יוצאים לצוד - **ענן שחור ענק** מסתחרר מעל הנהר למשך 10-15 דקות. חינמי לחלוטין. אחת ה\"תופעות\" הטבעיות הכי מיוחדות בטקסס.",
+    "tips": [
+     "ענן של 250,000 עטלפים יוצא מתחת לגשר בבת אחת",
+     "תצוגת טבע מדהימה - חינם לחלוטין",
+     "הגשר עצמו עם מוזאיקות עטלפים"
+    ],
+    "la": 29.7589,
+    "ln": -95.3924
+   },
+   {
+    "e": "🍽️",
+    "n": "The Original Ninfa's on Navigation",
+    "c": "אוכל · Tex-Mex · מקומי",
+    "d": "—",
+    "q": "Original Ninfa's on Navigation Houston fajitas",
+    "r": "4.5",
+    "h": "10:00-22:00",
+    "info": "מוסד יוסטוני מ-1973 ב-East End — כאן נולדו ה-fajitas שכבשו את אמריקה. מקומיים אוהבים את זה לא בגלל היסטוריה אלא כי האוכל באמת מצוין. תור בשעות שיא, שווה את ההמתנה.",
+    "tips": [
+     "Fajitas - המקום שבו ה-fajitas נולדו (1973), \"Mama Ninfa\" המציאה אותם",
+     "Tableside guacamole - גוואקמולי טרי שמכינים מולכם",
+     "מרגריטות + אווירת East End אותנטית — מוסד יוסטוני אמיתי"
+    ],
+    "la": 29.7569085,
+    "ln": -95.3425309,
+    "w": "https://ninfas.com/ninfas-on-navigation/"
+   },
+   {
+    "e": "🍺",
+    "n": "Saint Arnold Brewing Company",
+    "c": "בר · בירה · מקומי",
+    "d": "—",
+    "q": "Saint Arnold Brewing Company Houston beer garden",
+    "r": "4.6",
+    "h": "10:00-23:00",
+    "info": "המבשלה העתיקה ביותר בטקסס (1994) — מוסד מקומי אמיתי. ה-Beer Garden הענק הוא מקום מפגש אהוב על יוסטונים, אווירה משפחתית וכיפית. מושלם לערב קליל אחרי יום במרכז.",
+    "tips": [
+     "Beer Garden ענק תחת כיפת השמיים — אווירת משפחות וחברים",
+     "Saint Arnold Lawnmower — הבירה הקלאסית של יוסטון לחום הטקסני",
+     "מטבח Restaurant & Beer Garden עם אוכל פאב מצוין"
+    ],
+    "la": 29.7710985,
+    "ln": -95.3484117,
+    "w": "https://www.saintarnold.com/beer-garden/"
+   },
+   {
+    "e": "🍽️",
+    "n": "Mai's Restaurant — Midtown Vietnamese",
+    "c": "אוכל · ויטנאמי · מקומי",
+    "d": "—",
+    "q": "Mais Restaurant Midtown Houston Vietnamese pho",
+    "r": "4.3",
+    "h": "11:00-03:00",
+    "info": "ליוסטון יש קהילה ויטנאמית ענקית, ו-Mai's ב-Midtown הוא מוסד מאז 1978. מקום שמקומיים מגיעים אליו, במיוחד בסופ\"ש כשפתוח עד 3 בלילה (סגור בימי ראשון). אוכל אמיתי במחירים הוגנים.",
+    "tips": [
+     "Pho — מרק ויטנאמי קלאסי, נחמה אמיתית",
+     "Vermicelli bowls וספרינג-רולס טריים",
+     "פתוח עד מאוחר בסופ\"ש — מקום אהוב על מקומיים אחרי בילוי"
+    ],
+    "la": 29.7397,
+    "ln": -95.3776,
+    "w": "https://maishouston.com/"
+   },
+   {
+    "e": "🏟️",
+    "n": "Daikin Park — בית ה-Astros",
+    "c": "ספורט · אצטדיון · מקומי",
+    "d": "—",
+    "q": "Daikin Park Houston Astros stadium",
+    "r": "4.7",
+    "h": "",
+    "info": "אצטדיון הבייסבול של יוסטון בלב מרכז העיר, עם גג נפתח. נקרא בעבר Minute Maid Park — שונה ל-Daikin Park בינואר 2025. אם ה-Astros משחקים בבית בתאריכים שלכם — זו אחת החוויות האמריקאיות הכי אותנטיות. בדקו את לוח המשחקים מראש. גם בלי משחק יש סיורים.",
+    "tips": [
+     "משחק בייסבול של ה-Houston Astros — חוויה אמריקאית קלאסית",
+     "הגג הנפתח והרכבת ההיסטורית מעל היציע",
+     "אוכל אצטדיון טקסני — נאצ'וס, hot dogs ענקיים, בירה מקומית"
+    ],
+    "la": 29.757017,
+    "ln": -95.356209,
+    "w": "https://www.mlb.com/astros/ballpark"
+   }
+  ]
+ },
+ {
+  "n": "יום 4",
+  "date": "28 ביוני · א׳",
+  "city": "houston",
+  "cityL": "יוסטון",
+  "area": "אאוטלטים ויום רגוע",
+  "atts": [
+   {
+    "e": "🛍️",
+    "n": "Houston Premium Outlets (Cypress)",
+    "c": "אאוטלט · קניות",
+    "d": "—",
+    "q": "Houston Premium Outlets Cypress",
+    "r": "4.5",
+    "h": "11:00-19:00",
+    "info": "דירוג 4.5 מ-17,353 ביקורות. 45 דק' צפונה. 145 חנויות פתוחות. שווה להגיע בבוקר לנצל קור יחסי.",
+    "tips": [
+     "Nike Factory Store - מבחר ענק במחירי אאוטלט",
+     "Coach & Michael Kors - מותגי יוקרה בהנחות",
+     "Polo Ralph Lauren - מותג שאהוב מאוד בארה\"ב"
+    ],
+    "la": 29.9967906,
+    "ln": -95.7567342,
+    "w": "https://www.premiumoutlets.com/outlet/houston"
+   },
+   {
+    "e": "🛍️",
+    "n": "Katy Mills",
+    "c": "אאוטלט · קניות",
+    "d": "—",
+    "q": "Katy Mills mall Texas",
+    "r": "4.4",
+    "h": "11:00-19:00",
+    "info": "30 דק' מערבה. אאוטלט סגור וממוזג. אופציה למי שמעדיף קור או יום גשום.",
+    "tips": [
+     "Bass Pro Shops הענק - חוויה בפני עצמה",
+     "אקווריום הדגים בתוך החנות",
+     "175 חנויות ממוזגות"
+    ],
+    "la": 29.7858,
+    "ln": -95.8233,
+    "w": "https://www.simon.com/mall/katy-mills"
+   },
+   {
+    "e": "🛍️",
+    "n": "Harwin Outlet Mall",
+    "c": "אאוטלט · קניות",
+    "d": "—",
+    "q": "Harwin Drive Houston shopping",
+    "r": "4.2",
+    "h": "11:00-18:00",
+    "info": "אאוטלט קטן יותר אבל אגדה מקומית - חנויות אסיאתיות. לא לחוויית מותגים גדולים.",
+    "tips": [
+     "תכשיטים במחירים שווים מאוד",
+     "אביזרי טלפון וסלולר",
+     "בגדים ונעליים בסטיילים אסיאתיים"
+    ],
+    "la": 29.7167,
+    "ln": -95.5103
+   },
+   {
+    "e": "🛍️",
+    "n": "The Heights Neighborhood",
+    "c": "מרכז העיר · קניות",
+    "d": "—",
+    "q": "The Heights Houston 19th Street",
+    "r": "4.7",
+    "h": "כל היום",
+    "info": "שכונה היפסטרית עם חנויות בוטיק, ברביקיו, ברים.",
+    "tips": [
+     "19th Street - בוטיקים מקסימים",
+     "Heights Mercantile - מרכז קניות בוטיקי",
+     "בתים ויקטוריאניים משופצים"
+    ],
+    "la": 29.7902,
+    "ln": -95.3988
+   },
+   {
+    "e": "🏙️",
+    "n": "Montrose Neighborhood",
+    "c": "מרכז העיר",
+    "d": "—",
+    "q": "Montrose Houston neighborhood",
+    "r": "4.6",
+    "h": "כל היום",
+    "info": "אזור אומנותי-בוהמי. גלריות, חנויות וינטג', ברים, ציורי קיר ענקיים.",
+    "tips": [
+     "Westheimer Road - הרחוב הראשי",
+     "Menil Collection - גלריה חינמית",
+     "גרפיטי וציורי קיר"
+    ],
+    "la": 29.7398,
+    "ln": -95.3902
+   },
+   {
+    "e": "🌳",
+    "n": "Buffalo Bayou Park",
+    "c": "פארק · טבע",
+    "d": "—",
+    "q": "Buffalo Bayou Park Houston skyline",
+    "r": "4.7",
+    "h": "06:00-23:00",
+    "info": "הליכה רגועה לסיום היום בשקיעה. דירוג 4.7.",
+    "tips": [
+     "נוף לקו הרקיע בשקיעה",
+     "גשרי הליכה מודרניים",
+     "אזורי פיקניק שקטים"
+    ],
+    "la": 29.763078,
+    "ln": -95.3761455,
+    "w": "https://buffalobayou.org/"
+   },
+   {
+    "e": "🛍️",
+    "n": "The Galleria Houston",
+    "c": "קניות · מרכז העיר",
+    "d": "—",
+    "q": "The Galleria Houston ice rink",
+    "r": "4.5",
+    "h": "11:00-19:00",
+    "info": "הקניון הגדול בטקסס. 400+ חנויות, מותגי יוקרה. 25 דק' מהמלון. אופציה לקניות יוקרה לעומת אאוטלטים.",
+    "tips": [
+     "זירת החלקה על קרח בלב הקניון",
+     "מותגי יוקרה: Gucci, Prada, Louis Vuitton",
+     "Waterwall Park הסמוך - מבנה מים אייקוני"
+    ],
+    "la": 29.7397,
+    "ln": -95.464,
+    "w": "https://www.simon.com/mall/the-galleria"
+   },
+   {
+    "e": "🍽️",
+    "n": "Kemah Boardwalk",
+    "c": "מרכז העיר · אוכל",
+    "d": "—",
+    "q": "Kemah Boardwalk waterfront Texas",
+    "r": "4.5",
+    "h": "11:00-21:00",
+    "info": "45 דק' דרומית-מזרחית. טיילת חוף נחמדה לערב, אוכל ים, נוף ליאכטות. אווירה רגועה.",
+    "tips": [
+     "הטיילת על שפת מפרץ Galveston Bay",
+     "מסעדות עם נוף לסירות וים",
+     "אווירת ערב על המים"
+    ],
+    "la": 29.5454,
+    "ln": -95.0235,
+    "w": "https://www.kemahboardwalk.com/"
+   },
+   {
+    "e": "🍽️",
+    "n": "Brenham + Blue Bell Creameries",
+    "c": "חוויה ייחודית · אוכל",
+    "d": "—",
+    "q": "Blue Bell Creameries Brenham Texas",
+    "r": "4.7",
+    "h": "סגור",
+    "info": "שעה וחצי צפונה. מפעל הגלידה האהובה בטקסס. **שימו לב - המפעל סגור ביום ראשון!** טוב יותר ליום בוקר חזק.",
+    "tips": [
+     "סיור במפעל הגלידה Blue Bell - האגדה של טקסס",
+     "טעימות גלידה חופשיות בסוף הסיור",
+     "מרכז העיר Brenham ההיסטורית"
+    ],
+    "la": 30.1669,
+    "ln": -96.3977,
+    "w": "https://www.bluebell.com/"
+   },
+   {
+    "e": "🛍️",
+    "n": "Bass Pro Shops - Katy Mills",
+    "c": "קניות · חוויה ייחודית",
+    "d": "—",
+    "q": "Bass Pro Shops giant store aquarium fishing hunting",
+    "r": "4.6",
+    "h": "09:00-20:00",
+    "info": "חנות ציוד ספורט וציד שהיא **אטרקציה תיירותית בפני עצמה**. כגודל קניון, עם אקווריום חי, אזור נשקייה, ספינות מוטוריות, וציורי מוזיאון טבע. לא צריך לקנות כלום - רק להיות בפנים. בתוך Katy Mills.",
+    "tips": [
+     "אקווריום ענק בתוך החנות עם דגי נהרות ואגמי טקסס",
+     "כלי נשק, ציוד ציד, ספינות - עולם אמריקאי אחר לגמרי",
+     "גודל של קניון קטן - חנות אחת"
+    ],
+    "la": 29.7891,
+    "ln": -95.825,
+    "w": "https://stores.basspro.com/us/tx/katy.html"
+   },
+   {
+    "e": "🛍️",
+    "n": "Cavender's Boot City",
+    "c": "קניות · חוויה ייחודית",
+    "d": "—",
+    "q": "Cavender's Boot City cowboy boots hat Texas western",
+    "r": "4.5",
+    "h": "12:00-18:00",
+    "info": "רשת ביגוד מערבי-טקסני. מאות זוגות מגפיים, כובעי קאובוי, חגורות. אפילו אם לא קונים - החוויה של לנסות כובע קאובוי היא חובה. יש סניפים ברחבי יוסטון, הכי נוח בדרך לאאוטלטים.",
+    "tips": [
+     "מגפיים קאובוי - מאות דגמים, מ-$60 ועד $500+",
+     "כובעי קאובוי - מתאימים לראש בחנות, עיצוב לפי בחירה",
+     "חגורות עם אבזמים גדולים - Texas Style אמיתי"
+    ],
+    "la": 29.784,
+    "ln": -95.6022,
+    "w": "https://www.cavenders.com/"
+   },
+   {
+    "e": "🛍️",
+    "n": "Spec's Wines Spirits & Finer Foods",
+    "c": "אוכל · קניות",
+    "d": "—",
+    "q": "Spec's liquor store Houston Texas wine spirits",
+    "r": "4.7",
+    "h": "10:00-21:00",
+    "info": "חנות האלכוהול-גורמה הכי גדולה בטקסס. 24,000 שקמ' של בורבון, וויסקי, יין ואוכל. מחירים הרבה יותר טובים מכל מקום אחר. הסניף המרכזי בדאון טאון. מוכרים גם מוצרי ישראל!",
+    "tips": [
+     "Texas Bourbon Wall - מאות בקבוקי בורבון מקומיים",
+     "Israeli Whiskey & Vodka - מוצרים ישראליים שמוכרים שם",
+     "גבינות ואוכל גורמה מיובא - פינות מפתיעות"
+    ],
+    "la": 29.745,
+    "ln": -95.3683,
+    "w": "https://specsonline.com/"
+   },
+   {
+    "e": "🍽️",
+    "n": "HEB Plus / Central Market",
+    "c": "אוכל · חוויה ייחודית",
+    "d": "—",
+    "q": "HEB grocery store Texas BBQ supermarket",
+    "r": "4.7",
+    "h": "06:00-00:00",
+    "info": "סופרמרקט הכי אהוב בטקסס - **ממש דת מקומית**. H-E-B Plus הוא הגרסה הגדולה עם בר BBQ, דלפק דגים, מאפייה, ועשרות מוצרי טקסס מקומיים. Central Market (גרסת פרמיום) אפילו מרשים יותר.",
+    "tips": [
+     "Texas BBQ counter - brisket ריחני חם בסופרמרקט רגיל",
+     "HEB Brand - מוצרים טקסניים שלא קיימים מחוץ למדינה",
+     "מחלקת Tex-Mex - סלסות, טורטיות טריות, צ'ילי"
+    ],
+    "la": 29.763,
+    "ln": -95.4237,
+    "w": "https://www.heb.com/"
+   },
+   {
+    "e": "🍽️",
+    "n": "Texas Roadhouse",
+    "c": "אוכל · חוויה ייחודית",
+    "d": "—",
+    "q": "Texas Roadhouse restaurant bread rolls peanuts floor",
+    "r": "4.4",
+    "h": "11:00-22:00",
+    "info": "רשת מסעדה אמריקאית קלאסית. לא בהכרח \"הכי טוב\" - אלא חוויה שמייצגת אמריקה: לחם חינמי, בוטנים שמשליכים לרצפה, מוזיקה קאנטרי. Ribeye + כל הבאים ב-~$25-30. אמריקה כמו שצריך.",
+    "tips": [
+     "לחם חמאה חינמי עם חמאה ממותקת - מגיע אוטומטית לשולחן",
+     "קליפות בוטנים על הרצפה - מסורת אמריקאית: לזרוק לרצפה",
+     "Ribeye ב-$20 + Rolls טריות אפויות"
+    ],
+    "la": 29.746,
+    "ln": -95.387,
+    "w": "https://www.texasroadhouse.com/"
+   },
+   {
+    "e": "🛍️",
+    "n": "T.J. Maxx & Marshalls",
+    "c": "קניות · מותגים",
+    "d": "—",
+    "q": "TJ Maxx Marshalls off-price clothing store brands",
+    "r": "4.3",
+    "h": "11:00-20:00",
+    "info": "שתי הרשתות שייכות לאותה חברה ונחשבות **הכי טובות בקטגוריית ה-Off-Price** - נקיות ומסודרות יחסית. Ralph Lauren ב-$25, נעלי עור איטלקיות ב-$40. **The Runway:** בסניפי שכונות יוקרה יש מחלקה סגולה שמביאה עודפי Gucci, Prada ו-Balenciaga - תחפשו שלט סגול עם אותיות זהב.",
+    "tips": [
+     "Ralph Lauren, Tommy Hilfiger, Calvin Klein - ב-30%-60% הנחה",
+     "Under Armour ו-Nike - בגדי ספורט של מותגים במחיר של no-name",
+     "⭐ The Runway (סניפי שכונות עשירות) - Gucci, Prada, Balenciaga בהנחות מטורפות"
+    ],
+    "la": 29.784,
+    "ln": -95.59,
+    "w": "https://www.tjmaxx.com/"
+   },
+   {
+    "e": "🛍️",
+    "n": "Ross - Dress for Less",
+    "c": "קניות · מותגים",
+    "d": "—",
+    "q": "Ross Dress for Less discount clothing store Nike",
+    "r": "4.2",
+    "h": "11:00-20:00",
+    "info": "**הכי זולה בפער** מבין כל חנויות ה-Off-Price. החנות נראית לפעמים כמו מחסן בלגן - אבל זה המחיר. חולצות טי של מותגים ב-$7-10, ג'ינס Levi's ב-$20. **טיפ מנצח:** מזוודות Samsonite ב-~$60 - יש לכם מה לעשות איתן לחזרה.",
+    "tips": [
+     "Nike, Adidas, Puma ב-$15-25 לחולצה - הכי זול שתמצאו",
+     "Levi's ג'ינס ב-$20, חגורות וגרביים מותגים בחבילות",
+     "מזוודות Samsonite / American Tourister בחצי מחיר - **לחזרה הביתה**"
+    ],
+    "la": 29.783,
+    "ln": -95.588,
+    "w": "https://www.rossstores.com/"
+   },
+   {
+    "e": "🛍️",
+    "n": "Burlington",
+    "c": "קניות · מותגים",
+    "d": "—",
+    "q": "Burlington coat factory clothing store bargain",
+    "r": "4.2",
+    "h": "10:00-21:00",
+    "info": "בעבר התמחו במעילים, היום חנות כלבו ענקית לכל דבר. חנויות ענקיות עם מבחר מטורף של ג'קטים, בגדי יום-יום ובגדי ילדים. המחירים קרובים ל-Ross. טובה במיוחד אם קונים לכל המשפחה.",
+    "tips": [
+     "ג'קטים ומעילים - ההתמחות המקורית שלהם, מחיר מטורף",
+     "בגדי ילדים ומשפחה - מבחר הכי רחב",
+     "גודל חנות כמו סופרמרקט - כדאי להגיע עם רשימה"
+    ],
+    "la": 29.782,
+    "ln": -95.587,
+    "w": "https://www.burlington.com/"
+   }
+  ]
+ },
+ {
+  "n": "יום 5",
+  "date": "29 ביוני · ב׳",
+  "city": "houston",
+  "cityL": "יוסטון",
+  "area": "יום משחק + יציאה",
+  "atts": [
+   {
+    "e": "📍",
+    "n": "NRG Stadium - משחק שמינית הגמר",
+    "c": "משחק כדורגל · חוויה ייחודית",
+    "d": "—",
+    "q": "NRG Stadium Houston",
+    "r": "4.6",
+    "h": "",
+    "info": "🎯 המשחק שלכם! Round of 32: מנצחת בית C נגד סגנית בית F. בית C: ברזיל, מרוקו, האיטי, סקוטלנד. בית F: הולנד, יפן, תוניסיה. **יש סיכוי גבוה לראות את ברזיל**. דירוג 4.6.",
+    "tips": [
+     "הגג הניתן לפתיחה - אחד הבודדים בעולם",
+     "מסך הענק - מהגדולים בארה\"ב",
+     "הפודי קורט עם אוכל טקסני אותנטי"
+    ],
+    "la": 29.6847219,
+    "ln": -95.4107074,
+    "w": "https://www.nrgpark.com/"
+   },
+   {
+    "e": "🛍️",
+    "n": "Tanger Outlets Texas City",
+    "c": "אאוטלט · קניות",
+    "d": "—",
+    "q": "Tanger Outlets Texas City",
+    "r": "4.4",
+    "h": "10:00-21:00",
+    "info": "45 דק' דרומה. רק אם נשאר זמן בבוקר לפני המשחק.",
+    "tips": [
+     "Nike, Adidas, Under Armour",
+     "Coach Factory + Kate Spade",
+     "Tommy Hilfiger - בחירה רחבה"
+    ],
+    "la": 29.4118,
+    "ln": -94.969,
+    "w": "https://www.tangeroutlet.com/texascity"
+   },
+   {
+    "e": "📍",
+    "n": "יציאה לאטלנטה",
+    "c": "חוויה ייחודית",
+    "d": "—",
+    "q": "I-10 Texas Louisiana drive",
+    "r": "",
+    "h": "",
+    "info": "אחרי המשחק - חזרה למלון, איסוף חפצים, ויציאה. נסיעה ישירה עם עצירה ללינה באמצע הדרך.",
+    "tips": [],
+    "la": 29.6847,
+    "ln": -95.4107
+   }
+  ]
+ },
+ {
+  "n": "יום 6",
+  "date": "30 ביוני · ג׳",
+  "city": "atlanta",
+  "cityL": "אטלנטה",
+  "area": "יום ההגעה",
+  "atts": [
+   {
+    "e": "🌳",
+    "n": "Centennial Olympic Park + FIFA Fan Festival",
+    "c": "פארק · משחק כדורגל",
+    "d": "—",
+    "q": "Centennial Olympic Park Atlanta fountains",
+    "r": "4.6",
+    "h": "07:00-23:00",
+    "info": "דירוג 4.6 מ-15,708 ביקורות. הפארק המרכזי של אטלנטה, נבנה לאולימפיאדת 1996. במהלך המונדיאל - **ה-FIFA Fan Festival הרשמי באטלנטה**. כניסה חופשית.",
+    "tips": [
+     "Fountain of Rings - מזרקת הטבעות האולימפיות",
+     "FIFA Fan Festival - הפסטיבל הרשמי במונדיאל",
+     "אנדרטאות אולימפיאדת 1996"
+    ],
+    "la": 33.760463,
+    "ln": -84.3930831,
+    "w": "https://www.gwcca.org/centennial-park"
+   },
+   {
+    "e": "🏛️",
+    "n": "National Center for Civil and Human Rights",
+    "c": "מוזיאון · היסטוריה",
+    "d": "—",
+    "q": "National Center Civil Human Rights Atlanta",
+    "r": "4.8",
+    "h": "10:00-17:00",
+    "info": "דירוג 4.8 מ-3,945 ביקורות - אחד המוזיאונים הכי חזקים בארה\"ב. 5 דק' מהאצטדיון. ~20$ לאדם.",
+    "tips": [
+     "תערוכת ה-Lunch Counter - חוויית סימולציה מטלטלת",
+     "תערוכת מרטין לותר קינג ממורהאוס קולג'",
+     "תערוכת Broken Promises - תקופת הרקונסטרוקציה"
+    ],
+    "la": 33.7640278,
+    "ln": -84.3930722,
+    "w": "https://www.civilandhumanrights.org/"
+   },
+   {
+    "e": "🍽️",
+    "n": "Ponce City Market + BeltLine",
+    "c": "אוכל · מרכז העיר",
+    "d": "—",
+    "q": "Ponce City Market Atlanta BeltLine",
+    "r": "4.6",
+    "h": "10:00-21:00",
+    "info": "דירוג 4.6 מ-16,766 ביקורות. מקום מאוד פעיל. ה-BeltLine הסמוך - מסלול 35 ק\"מ סביב העיר. אפשר אופניים או קורקינטים חשמליים.",
+    "tips": [
+     "Central Food Hall - שוק אוכל ענק",
+     "Skyline Park - גג עם משחקים ונוף לעיר (בתשלום)",
+     "Atlanta BeltLine Eastside Trail הסמוך"
+    ],
+    "la": 33.7727683,
+    "ln": -84.3655967,
+    "w": "https://poncecitymarket.com/"
+   },
+   {
+    "e": "🍖",
+    "n": "Fox Bros Bar-B-Q",
+    "c": "BBQ · אוכל",
+    "d": "—",
+    "q": "Fox Bros Bar-B-Q Atlanta Georgia",
+    "r": "4.5",
+    "h": "11:00-21:00",
+    "info": "BBQ סגנון טקסי באטלנטה. צלעות מעולות, brisket לח, ה-Frito Pie שלהם אגדי.",
+    "tips": [
+     "Frito Pie - המנה המפורסמת שלהם",
+     "Brisket ב-Texas style",
+     "הבר עם בירות מקומיות"
+    ],
+    "la": 33.757,
+    "ln": -84.3528,
+    "w": "https://foxbrosbbq.com/"
+   },
+   {
+    "e": "🍖",
+    "n": "Lewis Barbecue Atlanta",
+    "c": "BBQ · אוכל",
+    "d": "—",
+    "q": "Lewis Barbecue Charleston South Carolina",
+    "r": "4.6",
+    "h": "11:00-20:00",
+    "info": "סניף של מסעדה מצ'רלסטון שזכתה בכוכבים. brisket יוצא דופן. סגור ביום שני.",
+    "tips": [
+     "Brisket - שמומלץ באופן מטורף",
+     "Mac and Cheese - הסייד הטוב ביותר",
+     "אווירת המקום החדשנית"
+    ],
+    "la": 33.7985,
+    "ln": -84.3688,
+    "w": "https://lewisbarbecue.com/"
+   },
+   {
+    "e": "🏟️",
+    "n": "The Brewhouse Cafe",
+    "c": "בר ספורט · משחק כדורגל",
+    "d": "—",
+    "q": "Brewhouse Cafe Atlanta soccer bar",
+    "r": "4.3",
+    "h": "11:00-00:00",
+    "info": "הבר הכדורגלני המוביל באטלנטה. בלב Little Five Points - שכונה בוהמית.",
+    "tips": [
+     "מסכים מותאמים למשחקים בינלאומיים",
+     "Fish and Chips באמת טוב",
+     "שכונת Little Five Points הבוהמית סביב"
+    ],
+    "la": 33.7651,
+    "ln": -84.3489
+   },
+   {
+    "e": "🌳",
+    "n": "Piedmont Park",
+    "c": "פארק · טבע",
+    "d": "—",
+    "q": "Piedmont Park Atlanta skyline",
+    "r": "4.8",
+    "h": "06:00-23:00",
+    "info": "דירוג 4.8 מ-17,861 ביקורות - הפארק הכי אהוב באטלנטה. \"הסנטרל פארק של אטלנטה\" במידטאון.",
+    "tips": [
+     "Lake Clara Meer - נוף לקו הרקיע מעל האגם",
+     "Atlanta Botanical Garden הסמוך",
+     "מסלולי הליכה מסודרים, אופניים להשכרה"
+    ],
+    "la": 33.7879265,
+    "ln": -84.3721682,
+    "w": "https://piedmontpark.org/"
+   },
+   {
+    "e": "🛍️",
+    "n": "Atlantic Station",
+    "c": "קניות · מרכז העיר",
+    "d": "—",
+    "q": "Atlantic Station Atlanta shopping",
+    "r": "4.3",
+    "h": "11:00-20:00",
+    "info": "אזור מסחרי מודרני - חנויות, מסעדות, IMAX. נחמד לערב קליל.",
+    "tips": [
+     "H&M, Zara, Old Navy ענקיים",
+     "IMAX Theatre",
+     "Pinkbox - מוזיקה חיה בערב"
+    ],
+    "la": 33.7906,
+    "ln": -84.397,
+    "w": "https://www.atlanticstation.com/"
+   },
+   {
+    "e": "🍽️",
+    "n": "Sweet Auburn Curb Market",
+    "c": "אוכל · מרכז העיר",
+    "d": "—",
+    "q": "Sweet Auburn Curb Market Atlanta",
+    "r": "4.5",
+    "h": "08:00-18:00",
+    "info": "שוק עירוני היסטורי משנת 1924. דוכני אוכל, אוכל דרומי אותנטי במחירים שווים. סגור ביום ראשון.",
+    "tips": [
+     "Grindhouse Killer Burgers - מהבורגרים הטובים בעיר",
+     "Bell Street Burritos",
+     "Miss Dee's - אוכל סוללי דרומי"
+    ],
+    "la": 33.7548,
+    "ln": -84.3795,
+    "w": "https://thecurbmarket.com/"
+   },
+   {
+    "e": "🏙️",
+    "n": "Jackson Street Bridge",
+    "c": "חוויה ייחודית · מרכז העיר",
+    "d": "—",
+    "q": "Jackson Street Bridge Atlanta skyline Walking Dead",
+    "r": "4.7",
+    "h": "פתוח 24/7",
+    "info": "נקודת הצילום הכי מפורסמת באטלנטה. מהגשר ההיסטורי יש נוף מושלם לקו הרקיע. **מיקום The Walking Dead** - ריק גריימס רכב על הסוס ב-2010 בדיוק כאן. חינמי, 5 דק' מהמרכז. חייבים לצלם.",
+    "tips": [
+     "הנוף הכי מצולם לסקייליין אטלנטה",
+     "מיקום The Walking Dead - הסצנה האייקונית מהפרק הראשון",
+     "גשר רכבת היסטורי - חינם לחלוטין"
+    ],
+    "la": 33.7537,
+    "ln": -84.3775
+   },
+   {
+    "e": "🏙️",
+    "n": "Krog Street Tunnel + Atlanta BeltLine",
+    "c": "אומנות רחוב · מרכז העיר",
+    "d": "—",
+    "q": "Krog Street Tunnel Atlanta graffiti art BeltLine",
+    "r": "4.7",
+    "h": "פתוח 24/7",
+    "info": "מנהרת גרפיטי אייקונית - כל מ\"ר מכוסה אומנות. מוביל ישירות ל-Atlanta BeltLine, שביל ירוק של 35 ק\"מ סביב העיר עם עשרות ציורי קיר ענקיים. **האטרקציה המקומית האמיתית של אטלנטה.**",
+    "tips": [
+     "מנהרת גרפיטי - כל קיר מכוסה אומנות רחוב",
+     "BeltLine Eastside Trail - שביל 6 ק\"מ עם ציורי קיר ענקיים",
+     "Krog Street Market הסמוך - אוכל ובירה מקומית"
+    ],
+    "la": 33.7518,
+    "ln": -84.3618,
+    "w": "https://beltline.org/"
+   },
+   {
+    "e": "🍽️",
+    "n": "Buford Highway - Food Street",
+    "c": "אוכל · חוויה ייחודית",
+    "d": "—",
+    "q": "Buford Highway Atlanta international food Vietnamese Korean",
+    "r": "4.7",
+    "h": "מסעדות פתוחות ~11:00-22:00",
+    "info": "רחוב אוכל בינלאומי - 8 ק\"מ של מסעדות ממדינות שונות: ויאטנמי, קוריאני, מקסיקני, סיני, לאוסי. ה-\"Little Asia\" של אטלנטה. **המקומיים אוהבים את זה יותר מדאון טאון.** 15-20 דקות מהעיר.",
+    "tips": [
+     "Pho Dai Loi - פו וייטנאמי מדורג מהטובים בעיר",
+     "Maiz Mexican Cantina - מקסיקני אמיתי, לא רשת",
+     "BBQ קוריאני - galbi ובולגוגי ליד הגריל"
+    ],
+    "la": 33.832,
+    "ln": -84.3222
+   },
+   {
+    "e": "🛍️",
+    "n": "T.J. Maxx Buckhead - The Runway",
+    "c": "קניות · מותגים · יוקרה",
+    "d": "—",
+    "q": "TJ Maxx The Runway luxury designer brands discount",
+    "r": "4.4",
+    "h": "09:30-21:30",
+    "info": "**זה הסניף המיוחד.** Buckhead היא השכונה העשירה של אטלנטה - ולכן סניף TJ Maxx פה מביא עודפים של **Gucci, Prada, Balenciaga, Givenchy** במחירים מצחיקים. חפשו את המחלקה \"The Runway\" - שלט סגול עם אותיות זהב בתוך החנות.",
+    "tips": [
+     "⭐ The Runway - שלט סגול-זהב, חפשו אותו מיד בכניסה",
+     "Gucci, Prada, Balenciaga, Givenchy - עודפים של מותגי על",
+     "Buckhead = שכונה העשירה של אטלנטה = ה-Runway הכי עשיר"
+    ],
+    "la": 33.8431,
+    "ln": -84.3718,
+    "w": "https://www.tjmaxx.com/"
+   },
+   {
+    "e": "🛍️",
+    "n": "Nordstrom Rack",
+    "c": "קניות · מותגים · יוקרה",
+    "d": "—",
+    "q": "Nordstrom Rack off-price designer store shoes",
+    "r": "4.4",
+    "h": "09:30-21:00",
+    "info": "חנות האאוטלט הרשמית של Nordstrom היוקרתי. **יקרה קצת יותר מ-Ross ו-Marshalls** - אבל רמת המותגים גבוהה בהרבה. נעליים זה ה-DNA שלהם: מאות דגמים של מותגים לכל עונה שעברה. תלבושות עסקיות, חליפות, ועליונות - הכי כדאי בקטגוריה הזו.",
+    "tips": [
+     "נעליים - הכח של Nordstrom Rack, מאות דגמים מעונה שעברה",
+     "חליפות ועסקי - Hugo Boss, Calvin Klein ב-50%-70% הנחה",
+     "Clear the Rack - מכירות מיוחדות עם הנחה נוספת על מחירי Rack"
+    ],
+    "la": 33.842,
+    "ln": -84.37,
+    "w": "https://www.nordstromrack.com/"
+   },
+   {
+    "e": "🍽️",
+    "n": "Mary Mac's Tea Room",
+    "c": "אוכל · דרומי · מקומי",
+    "d": "—",
+    "q": "Mary Macs Tea Room Atlanta southern food",
+    "r": "4.5",
+    "h": "11:00-21:00",
+    "info": "מוסד אטלנטי מ-1945 — \"חדר האוכל של אטלנטה\". אוכל דרומי אותנטי (Soul Food) שמקומיים אוכלים דורות. לא תיירותי-מזויף, הדבר האמיתי. מנה חובה למי שרוצה לטעום את הדרום.",
+    "tips": [
+     "Fried chicken ו-collard greens — אוכל דרומי (Soul Food) קלאסי",
+     "Pot likker עם corn muffin — מנה היסטורית שמגישים מאז 1945",
+     "Peach cobbler — קינוח הדרום האולטימטיבי"
+    ],
+    "la": 33.7726,
+    "ln": -84.3788,
+    "w": "https://marymacs.com/"
+   },
+   {
+    "e": "🍺",
+    "n": "SweetWater Brewing Company",
+    "c": "בר · בירה · מקומי",
+    "d": "—",
+    "q": "SweetWater Brewing Company Atlanta taproom",
+    "r": "4.5",
+    "h": "11:30-21:00",
+    "info": "המבשלה הגדולה והאהובה של אטלנטה (1997). ה-Taproom הוא מקום מפגש מקומי אמיתי — פתוח כל יום בשבוע. מושלם לערב קליל ב-30/06.",
+    "tips": [
+     "SweetWater 420 — הבירה הסמלית של אטלנטה",
+     "Taproom ואזור חיצוני — אווירת מקומיים אחרי העבודה",
+     "סיורי מבשלה (בדקו זמינות מראש)"
+    ],
+    "la": 33.8083882,
+    "ln": -84.3810174,
+    "w": "https://www.sweetwaterbrew.com/taproom/"
+   },
+   {
+    "e": "🛍️",
+    "n": "Little Five Points",
+    "c": "שכונה · קניות · מקומי",
+    "d": "—",
+    "q": "Little Five Points Atlanta street art shops",
+    "r": "4.5",
+    "h": "חנויות ~11:00-19:00, ברים עד מאוחר",
+    "info": "השכונה האקלקטית והאלטרנטיבית של אטלנטה — חנויות יד שנייה, תקליטים, גרפיטי, ברים וקפה. כאן מבלים מקומיים צעירים, לא תיירים. מקום מעולה להסתובב בו ולהרגיש את הצד הבוהמייני של העיר.",
+    "tips": [
+     "חנויות vintage ו-yard records — אוצרות יד שנייה",
+     "גרפיטי ואמנות רחוב — לב הסצנה האלטרנטיבית של אטלנטה",
+     "הפסל של פרצוף הגולגולת מעל The Vortex — אייקון מקומי"
+    ],
+    "la": 33.7648,
+    "ln": -84.349
+   }
+  ]
+ },
+ {
+  "n": "יום 7",
+  "date": "1 ביולי · ד׳",
+  "city": "atlanta",
+  "cityL": "אטלנטה",
+  "area": "משחק + טיסה לוושינגטון",
+  "atts": [
+   {
+    "e": "📍",
+    "n": "בוקר רגוע במלון",
+    "c": "",
+    "d": "—",
+    "q": "Atlanta hotel breakfast",
+    "r": "",
+    "h": "",
+    "info": "ארוחת בוקר, אריזה, צ'ק-אאוט מאוחר.",
+    "tips": [],
+    "la": 33.7553,
+    "ln": -84.4005
+   },
+   {
+    "e": "🏛️",
+    "n": "National Center for Civil and Human Rights",
+    "c": "מוזיאון · היסטוריה",
+    "d": "—",
+    "q": "National Center Civil Human Rights Atlanta",
+    "r": "4.8",
+    "h": "10:00-17:00",
+    "info": "אם לא הספקתם אתמול: פותח ב-10:00, 5 דק' מהאצטדיון.",
+    "tips": [
+     "תערוכת ה-Lunch Counter",
+     "תערוכת מ.ל.ק.",
+     "גלריית Broken Promises"
+    ],
+    "la": 33.7640278,
+    "ln": -84.3930722,
+    "w": "https://www.civilandhumanrights.org/"
+   },
+   {
+    "e": "📍",
+    "n": "Mercedes-Benz Stadium - שמינית הגמר",
+    "c": "משחק כדורגל · חוויה ייחודית",
+    "d": "—",
+    "q": "Mercedes-Benz Stadium Atlanta",
+    "r": "4.7",
+    "h": "",
+    "info": "דירוג 4.7 מ-34,969 ביקורות - מהאצטדיונים הכי חדשניים בעולם. שעת המשחק: 12:00. הגעה מומלצת: 10:00. **MARTA** עוצר ב-GWCC/CNN Center Station ו-Vine City Station.",
+    "tips": [
+     "הגג המקופל הייחודי - מבנה מעוצב כמו דיאפרגמה",
+     "מסך 360° עגול - 58 מטר רוחב",
+     "מחירי האוכל הזולים - hot dog ב-2$"
+    ],
+    "la": 33.7553232,
+    "ln": -84.4005905,
+    "w": "https://mercedesbenzstadium.com/"
+   },
+   {
+    "e": "🏛️",
+    "n": "World of Coca-Cola",
+    "c": "מוזיאון · מרכז העיר",
+    "d": "—",
+    "q": "World of Coca-Cola Atlanta",
+    "r": "4.4",
+    "h": "10:00-17:00",
+    "info": "דירוג 4.4 מ-35,776 ביקורות. אופציה לפני הטיסה. כניסה ~18$ למבוגר.",
+    "tips": [
+     "חדר טעימות - 100+ משקאות מכל העולם",
+     "הכספת הסודית עם פורמולת קוקה-קולה",
+     "הסרט תלת-ממד 4D על תולדות החברה"
+    ],
+    "la": 33.7625564,
+    "ln": -84.392436,
+    "w": "https://www.worldofcoca-cola.com/"
+   },
+   {
+    "e": "🏙️",
+    "n": "Georgia Aquarium",
+    "c": "חוויה ייחודית · מרכז העיר",
+    "d": "—",
+    "q": "Georgia Aquarium whale shark",
+    "r": "4.6",
+    "h": "09:00-21:00 (משתנה)",
+    "info": "דירוג 4.6 מ-88,825 ביקורות - מהאקווריומים הטובים בעולם. אחד הבודדים שמחזיק כרישי לוויתן. כניסה ~50$.",
+    "tips": [
+     "Ocean Voyager - מנהרת 30 מטר מתחת לכרישי לוויתן",
+     "תצוגת דולפינים - מופע יומי",
+     "תצוגת פינגווינים אנטארקטיים"
+    ],
+    "la": 33.763382,
+    "ln": -84.3951098,
+    "w": "https://www.georgiaaquarium.org/"
+   },
+   {
+    "e": "📍",
+    "n": "נסיעה לשדה התעופה",
+    "c": "",
+    "d": "—",
+    "q": "Atlanta Hartsfield Jackson airport",
+    "r": "",
+    "h": "",
+    "info": "חזרה למלון, נסיעה ל-ATL airport. ATL הוא אחד מהשדות העמוסים בעולם - להגיע 2 שעות לפני.",
+    "tips": [],
+    "la": 33.6407,
+    "ln": -84.4277
+   }
+  ]
+ },
+ {
+  "n": "יום 8",
+  "date": "1 ביולי · ד׳",
+  "city": "dc",
+  "cityL": "וושינגטון",
+  "area": "הגעה מאוחרת",
+  "atts": [
+   {
+    "e": "📜",
+    "n": "Lincoln Memorial (סיבוב לילה)",
+    "c": "אנדרטה · היסטוריה",
+    "d": "—",
+    "q": "Lincoln Memorial Washington DC night",
+    "r": "4.8",
+    "h": "פתוח 24 שעות",
+    "info": "דירוג 4.8 מ-54,064 ביקורות. פתוח 24 שעות. בלילה מוארת ופחות צפופה. **חוויה אגדית בלילה**.",
+    "tips": [
+     "פסל לינקולן הענק (5.8 מ') - מואר בלילה",
+     "נאומי לינקולן חרוטים על הקירות",
+     "נוף ל-Reflecting Pool ול-Washington Monument"
+    ],
+    "la": 38.8892686,
+    "ln": -77.050176,
+    "w": "https://www.nps.gov/linc"
+   },
+   {
+    "e": "📜",
+    "n": "WWII Memorial (לילה)",
+    "c": "אנדרטה · היסטוריה",
+    "d": "—",
+    "q": "WWII Memorial Washington DC night",
+    "r": "4.8",
+    "h": "פתוח 24 שעות",
+    "info": "אנדרטת מלחמת העולם השנייה. בדרך הליכה ל-Lincoln Memorial.",
+    "tips": [
+     "56 העמודים - כל מדינה ב-USA",
+     "קיר ה-Freedom Wall עם 4,000 הכוכבים",
+     "המזרקות המרכזיות מוארות בלילה"
+    ],
+    "la": 38.8895,
+    "ln": -77.0404,
+    "w": "https://www.nps.gov/wwii"
+   },
+   {
+    "e": "🌳",
+    "n": "הליכה ב-National Mall",
+    "c": "פארק · מרכז העיר",
+    "d": "—",
+    "q": "National Mall Washington DC night",
+    "r": "4.7",
+    "h": "פתוח 24 שעות",
+    "info": "הליכה לאורך הפס הירוק האייקוני בלילה.",
+    "tips": [
+     "הליכה בין האנדרטאות בלילה",
+     "גורדי שחקים מוארים של הקפיטול",
+     "אווירה רגועה ללא קהל היום"
+    ],
+    "la": 38.8895,
+    "ln": -77.0353,
+    "w": "https://www.nps.gov/nama"
+   }
+  ]
+ },
+ {
+  "n": "יום 9",
+  "date": "2 ביולי · ה׳",
+  "city": "dc",
+  "cityL": "וושינגטון",
+  "area": "יום מלא בוושינגטון",
+  "atts": [
+   {
+    "e": "📜",
+    "n": "Washington Monument",
+    "c": "אנדרטה · תצפית",
+    "d": "—",
+    "q": "Washington Monument National Mall",
+    "r": "4.7",
+    "h": "09:00-17:00 (תצפית)",
+    "info": "דירוג 4.7 מ-24,170 ביקורות. כרטיסים חינמיים ל-תצפית ב-1$ - **חובה להזמין מראש**. נוף מטורף ל-National Mall.",
+    "tips": [
+     "תצפית מקומה 169 מ' עם נוף 360",
+     "מבט מבחוץ - האובליסק כולו",
+     "אזור הדגלים מסביב - 50 דגלי המדינות"
+    ],
+    "la": 38.8894838,
+    "ln": -77.0352791,
+    "w": "https://www.nps.gov/wamo"
+   },
+   {
+    "e": "📜",
+    "n": "Lincoln Memorial",
+    "c": "אנדרטה · היסטוריה",
+    "d": "—",
+    "q": "Lincoln Memorial Washington DC",
+    "r": "4.8",
+    "h": "24 שעות",
+    "info": "דירוג 4.8 - האייקון של DC.",
+    "tips": [
+     "פסל לינקולן הענק",
+     "מקום הנאום \"I Have a Dream\"",
+     "מדרגות לאזור Reflecting Pool"
+    ],
+    "la": 38.8892686,
+    "ln": -77.050176,
+    "w": "https://www.nps.gov/linc"
+   },
+   {
+    "e": "📜",
+    "n": "Vietnam Veterans Memorial",
+    "c": "אנדרטה · היסטוריה",
+    "d": "—",
+    "q": "Vietnam Veterans Memorial Wall",
+    "r": "4.8",
+    "h": "24 שעות",
+    "info": "קיר שחור עם השמות. מעוצב על-ידי מאיה לין. עוצמתי.",
+    "tips": [
+     "הקיר השחור עם 58,318 שמות",
+     "פסל \"The Three Soldiers\"",
+     "פסל אישה אחות מהמלחמה"
+    ],
+    "la": 38.8913,
+    "ln": -77.0476,
+    "w": "https://www.nps.gov/vive"
+   },
+   {
+    "e": "📜",
+    "n": "Korean War Memorial",
+    "c": "אנדרטה · היסטוריה",
+    "d": "—",
+    "q": "Korean War Memorial DC",
+    "r": "4.8",
+    "h": "24 שעות",
+    "info": "פסלי חיילים בשטח מטעה. מרשים.",
+    "tips": [
+     "19 פסלי חיילים בשדה",
+     "קיר ההנצחה עם השמות",
+     "בריכת הזיכרון השחורה"
+    ],
+    "la": 38.8879,
+    "ln": -77.0476,
+    "w": "https://www.nps.gov/kowa"
+   },
+   {
+    "e": "🏛️",
+    "n": "Smithsonian Air and Space Museum",
+    "c": "מוזיאון · חוויה ייחודית",
+    "d": "—",
+    "q": "Smithsonian Air Space Museum DC",
+    "r": "4.6",
+    "h": "10:00-17:30",
+    "info": "דירוג 4.6 מ-47,950 ביקורות. חינמי לחלוטין. **דורש כרטיס חינמי מראש** באתר. אם אהבת NASA ביוסטון - זה האח הגדול.",
+    "tips": [
+     "מטוס האחים רייט המקורי (Wright Flyer)",
+     "אפולו 11 Command Module - חזר מהירח",
+     "Spirit of St. Louis - של לינדברג"
+    ],
+    "la": 38.8882063,
+    "ln": -77.0198164,
+    "w": "https://airandspace.si.edu/"
+   },
+   {
+    "e": "🏛️",
+    "n": "Smithsonian Natural History",
+    "c": "מוזיאון",
+    "d": "—",
+    "q": "Smithsonian Natural History Museum DC",
+    "r": "4.7",
+    "h": "10:00-17:30",
+    "info": "חינמי. אחד המוזיאונים הטובים בעולם.",
+    "tips": [
+     "יהלום ההופ - 45.52 קראט מקוללים",
+     "דינוזאורים - שלדי ענק",
+     "אגף הימים - לוויתן בגודל מלא"
+    ],
+    "la": 38.8913,
+    "ln": -77.0261,
+    "w": "https://naturalhistory.si.edu/"
+   },
+   {
+    "e": "🏛️",
+    "n": "Smithsonian American History",
+    "c": "מוזיאון · היסטוריה",
+    "d": "—",
+    "q": "Smithsonian American History Museum",
+    "r": "4.6",
+    "h": "10:00-17:30",
+    "info": "חינמי. חוויה אמריקאית קלאסית.",
+    "tips": [
+     "הדגל המקורי שהשרה את ההמנון האמריקאי",
+     "נעלי דורות'י מ\"הקוסם מארץ עוץ\"",
+     "אגף הפרזידנטים"
+    ],
+    "la": 38.8911,
+    "ln": -77.0301,
+    "w": "https://americanhistory.si.edu/"
+   },
+   {
+    "e": "🏛️",
+    "n": "African American History Museum",
+    "c": "מוזיאון · היסטוריה",
+    "d": "—",
+    "q": "African American History Museum DC",
+    "r": "4.8",
+    "h": "10:00-17:30",
+    "info": "דירוג 4.8 - חזק במיוחד. **דורש כרטיס חינמי מראש**. חינמי.",
+    "tips": [
+     "אגף העבדות - שרשראות מקוריות, ארון קבורה",
+     "אגף Hip-Hop - כובע של LL Cool J",
+     "מטוס של החיילים השחורים מטסקיגי"
+    ],
+    "la": 38.891,
+    "ln": -77.0327,
+    "w": "https://nmaahc.si.edu/"
+   },
+   {
+    "e": "🏛️",
+    "n": "International Spy Museum",
+    "c": "מוזיאון · חוויה ייחודית",
+    "d": "—",
+    "q": "International Spy Museum Washington DC",
+    "r": "4.5",
+    "h": "09:00-19:00",
+    "info": "מוזיאון ריגול עם תערוכות אינטראקטיביות. בתשלום ~26$.",
+    "tips": [
+     "\"משימת ריגול\" אינטראקטיבית",
+     "נעל-מקליט של ה-KGB",
+     "אגף ג'יימס בונד"
+    ],
+    "la": 38.887,
+    "ln": -77.0228,
+    "w": "https://www.spymuseum.org/"
+   },
+   {
+    "e": "📜",
+    "n": "Capitol Hill (חיצוני)",
+    "c": "היסטוריה · אנדרטה",
+    "d": "—",
+    "q": "US Capitol Building Washington DC",
+    "r": "4.7",
+    "h": "",
+    "info": "מבט מבחוץ + תמונות. סיורים מודרכים בפנים דורשים תיאום מראש.",
+    "tips": [
+     "הכיפה המפורסמת",
+     "גגות המבנים הצדדיים",
+     "הגנים הסביב"
+    ],
+    "la": 38.8898,
+    "ln": -77.0091,
+    "w": "https://www.visitthecapitol.gov/"
+   },
+   {
+    "e": "🏛️",
+    "n": "Library of Congress",
+    "c": "מוזיאון · היסטוריה",
+    "d": "—",
+    "q": "Library of Congress interior reading room",
+    "r": "4.8",
+    "h": "08:30-16:30",
+    "info": "דירוג 4.8 - מהמקומות הכי יפים בעיר. חינמי. **סגור ביום ראשון**.",
+    "tips": [
+     "Main Reading Room - אולם הקריאה האייקוני",
+     "תקרת זהב Great Hall",
+     "תנ\"ך גוטנברג המקורי"
+    ],
+    "la": 38.8887,
+    "ln": -77.0047,
+    "w": "https://www.loc.gov/"
+   },
+   {
+    "e": "📜",
+    "n": "Arlington National Cemetery",
+    "c": "היסטוריה · אנדרטה",
+    "d": "—",
+    "q": "Arlington National Cemetery Virginia",
+    "r": "4.8",
+    "h": "08:00-17:00",
+    "info": "דירוג 4.8. **טקס חילופי המשמר כל שעה**. 15 דק' מעבר לפוטומק. חינמי.",
+    "tips": [
+     "טקס חילופי המשמר ב-Tomb of the Unknown Soldier",
+     "קבר ג'ון פ. קנדי עם להבת אש נצח",
+     "בית רוברט E. לי על ההר"
+    ],
+    "la": 38.8783,
+    "ln": -77.0687,
+    "w": "https://www.arlingtoncemetery.mil/"
+   },
+   {
+    "e": "🏟️",
+    "n": "Tom's Watch Bar Navy Yard",
+    "c": "בר ספורט · משחק כדורגל",
+    "d": "—",
+    "q": "Toms Watch Bar Navy Yard DC",
+    "r": "4.8",
+    "h": "11:00-23:00",
+    "info": "דירוג 4.8 מ-2,700+ ביקורות - **מהברים הספורטיים הטובים בעיר**.",
+    "tips": [
+     "מסך הענק רצפה-לתקרה",
+     "תפריט מצוין - בורגרים, סלטים",
+     "הפטיו החיצוני"
+    ],
+    "la": 38.8754,
+    "ln": -77.0073,
+    "w": "https://tomswatchbar.com/"
+   }
+  ]
+ },
+ {
+  "n": "יום 10",
+  "date": "3 ביולי · ו׳",
+  "city": "dc",
+  "cityL": "וושינגטון",
+  "area": "בוקר וושינגטון + רכבת לניו יורק",
+  "atts": [
+   {
+    "e": "📜",
+    "n": "Capitol Hill",
+    "c": "היסטוריה",
+    "d": "—",
+    "q": "US Capitol Building Washington DC",
+    "r": "4.7",
+    "h": "",
+    "info": "5 דק' מ-Union Station.",
+    "tips": [
+     "הכיפה",
+     "המבנים הצדדיים",
+     "הגנים סביב"
+    ],
+    "la": 38.8898,
+    "ln": -77.0091,
+    "w": "https://www.visitthecapitol.gov/"
+   },
+   {
+    "e": "🏛️",
+    "n": "Library of Congress",
+    "c": "מוזיאון · היסטוריה",
+    "d": "—",
+    "q": "Library of Congress interior",
+    "r": "4.8",
+    "h": "08:30-16:30",
+    "info": "5 דק' מ-Union Station, חינמי. דירוג 4.8.",
+    "tips": [
+     "Main Reading Room",
+     "Great Hall",
+     "תנ\"ך גוטנברג"
+    ],
+    "la": 38.8887,
+    "ln": -77.0047,
+    "w": "https://www.loc.gov/"
+   },
+   {
+    "e": "🏙️",
+    "n": "Union Station",
+    "c": "מרכז העיר",
+    "d": "—",
+    "q": "Union Station Washington DC interior",
+    "r": "4.5",
+    "h": "05:00-00:00",
+    "info": "תחנת הרכבת ההיסטורית - אדריכלות מטורפת.",
+    "tips": [
+     "אולם ראשי בסגנון ביאוז-ארטס",
+     "מסעדות וחנויות בתחנה",
+     "אדריכלות ניאו-קלאסית"
+    ],
+    "la": 38.8973,
+    "ln": -77.0063,
+    "w": "https://www.unionstationdc.com/"
+   },
+   {
+    "e": "📍",
+    "n": "רכבת Amtrak לניו יורק",
+    "c": "חוויה ייחודית",
+    "d": "—",
+    "q": "Amtrak Acela train Northeast",
+    "r": "4.3",
+    "h": "",
+    "info": "מ-Union Station ב-DC ל-Penn Station ב-NYC. **Acela** - מהירה ויקרה (~150$). **Northeast Regional** - זול יותר (~60$).",
+    "tips": [
+     "Acela - רכבת מהירה (180 קמ\"ש)",
+     "Northeast Regional - אופציה זולה",
+     "WiFi חינמי בכל הרכבות"
+    ],
+    "la": 38.8973,
+    "ln": -77.0063,
+    "w": "https://www.amtrak.com/"
+   }
+  ]
+ }
+];
+
+/* ===== נתוני ברים (אמיתי, מתוך החוברת) ===== */
+var BARS={
+  houston:[
+    {e:'⚽',n:'Pitch 25',tags:'EaDo · 4.4★',rec:'הכי מומלץ',q:'Pitch 25 EaDo Houston',d:'בבעלות שחקן הכדורגל לשעבר Brian Ching. מגרש כדורגל במקום, 50+ בירות, מסכי ענק.'},
+    {e:'🍺',n:'Phoenix on Westheimer',tags:'Westheimer · 4.5★',rec:'פאב בריטי',q:'Phoenix on Westheimer Houston',d:'פאב בריטי קטן ושמח, האווירה הכי "פאב כדורגל אירופי" ביוסטון.'},
+    {e:'🍻',n:'Social Beer Garden HTX',tags:'Midtown · גן בירה',rec:'אווירה משפחתית',q:'Social Beer Garden HTX Midtown Houston',d:'גן בירה גדול עם המון מסכים, ספסלים ואוכל מפודטראקים.'},
+    {e:'🎉',n:'Discovery Green — FIFA Fan Fest',tags:'Downtown · חינמי',rec:'אירוע רשמי',fest:true,q:'Discovery Green Houston',d:'ה-Fan Festival הרשמי של פיפ"א. מסך ענק חיצוני, מוזיקה חיה ואוהדים מכל העולם.'}
+  ],
+  atlanta:[
+    {e:'⚽',n:'The Brewhouse Cafe',tags:'Little Five Points · 4.3★',rec:'הכי מומלץ',q:'The Brewhouse Cafe Atlanta',d:'הבר הכדורגלני המוביל באטלנטה. אווירת פאב, fish and chips מעולים.'},
+    {e:'🍺',n:'Wicked Wolf Atlanta',tags:'Midtown · 4.6★',rec:'תוסס',q:'Wicked Wolf Atlanta Midtown',d:'בר ספורט גדול במידטאון, מסכים בכל פינה, אווירה צעירה.'},
+    {e:'📺',n:'Sports & Social Atlanta',tags:'The Battery · 4.0★',rec:'מסך ענק',q:'Sports Social Atlanta Battery',d:'בר ספורט עם מסך רצפה-לתקרה, ליד אצטדיון הבייסבול.'},
+    {e:'🎉',n:'Centennial Park — FIFA Fan Fest',tags:'Downtown · חינמי',rec:'אירוע רשמי',fest:true,q:'Centennial Olympic Park Atlanta',d:'ה-FIFA Fan Festival הרשמי באטלנטה. מסכי ענק, מוזיקה חיה ואוכל בינלאומי.'}
+  ],
+  dc:[
+    {e:'⚽',n:"Tom's Watch Bar — Navy Yard",tags:'Navy Yard · 4.8★',rec:'הכי מומלץ',q:'Toms Watch Bar Navy Yard DC',d:'דירוג מטורף 4.8 מ-2,700+ ביקורות. מסכי ענק בכל פינה.'},
+    {e:'🍺',n:"BUDDY'S DC",tags:'Columbia Heights · 4.5★',rec:'מקומי אותנטי',q:'BUDDYS DC Columbia Heights',d:'בר ספורט קטן ואותנטי. אווירה משפחתית ואוכל דרומי.'},
+    {e:'🏙️',n:'Public Bar Live',tags:'Dupont Circle · 4.0★',rec:'3 קומות',q:'Public Bar Live Dupont Circle',d:'3 קומות, כל אחת עם וייב שונה. מסכים בכל מקום.'},
+    {e:'📍',n:'Penn Quarter Sports Tavern',tags:'Penn Quarter · 4.3★',rec:'מרכזי',q:'Penn Quarter Sports Tavern DC',d:'בלב הדאון-טאון, ליד הנשיונל מול.'}
+  ]
+};
+function barCardHTML(b){
+  var Q=encodeURIComponent(b.q);
+  var acts=
+    '<a class="da-act waze" target="_blank" href="https://waze.com/ul?q='+Q+'">'+
+      '<span class="ac-ic"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="10" r="1.4"/><circle cx="15" cy="10" r="1.4"/><path d="M12 3a8 8 0 00-8 8c0 .9.2 1.6.2 2.4C4 15 3 16 3 16h7a5 5 0 005-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><span>Waze</span></a>'+
+    '<a class="da-act gmaps" target="_blank" href="https://www.google.com/maps/search/?api=1&query='+Q+'">'+
+      '<span class="ac-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span>מפות</span></a>'+
+    '<a class="da-act web" target="_blank" href="https://www.google.com/search?q='+Q+'">'+
+      '<span class="ac-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"/></svg></span><span>מידע</span></a>';
+  return '<div class="bar-card'+(b.fest?' fest':'')+'">'+
+    '<div class="bc-top"><div class="bc-ic">'+b.e+'</div>'+
+    '<div class="bc-h"><div class="bc-name">'+b.n+'</div><div class="bc-tags">'+b.tags+'</div></div>'+
+    '<span class="bc-rec">'+b.rec+'</span></div>'+
+    '<div class="bc-desc">'+b.d+'</div>'+
+    '<div class="bc-acts">'+acts+'</div></div>';
+}
+function barsListHTML(cityKey){ return (BARS[cityKey]||[]).map(barCardHTML).join(''); }
+
+/* רינדור מסך הברים (גרסה א') + סינון */
+(function(){
+  var box=document.getElementById('bars-list'); if(!box) return;
+  function render(f){ box.innerHTML=barsListHTML(f); }
+  render('houston');
+  window.showBars=function(f){
+    document.querySelectorAll('#bars-filter .df-chip').forEach(function(x){x.classList.toggle('active',x.dataset.f===f);});
+    render(f);
+  };
+  document.querySelectorAll('#bars-filter .df-chip').forEach(function(c){
+    c.addEventListener('click',function(){
+      document.querySelectorAll('#bars-filter .df-chip').forEach(function(x){x.classList.remove('active');});
+      c.classList.add('active'); render(c.dataset.f);
+    });
+  });
+})();
+
+(function(){
+  var box=document.getElementById('days-list'); if(!box) return;
+  function attHTML(a){
+    var tips=(a.tips||[]).map(function(t){return '<li>'+t+'</li>';}).join('');
+    var meta=[]; if(a.r) meta.push('<span class="da-rate">★ '+a.r+'</span>'); meta.push(a.c);
+    var Q=encodeURIComponent(a.n);
+    var webHref=a.w?a.w:('https://www.google.com/search?q='+Q+'%20official%20site');
+    var acts=
+      '<a class="da-act waze" target="_blank" href="https://waze.com/ul?q='+Q+'">'+
+        '<span class="ac-ic"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="10" r="1.4"/><circle cx="15" cy="10" r="1.4"/><path d="M12 3a8 8 0 00-8 8c0 .9.2 1.6.2 2.4C4 15 3 16 3 16h7a5 5 0 005-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M12 3a8 8 0 018 8 8 8 0 01-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><span>Waze</span></a>'+
+      '<a class="da-act gmaps" target="_blank" href="https://www.google.com/maps/search/?api=1&query='+Q+'">'+
+        '<span class="ac-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span>מפות</span></a>'+
+      '<a class="da-act photos" target="_blank" href="https://www.google.com/search?tbm=isch&q='+Q+'">'+
+        '<span class="ac-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="8.5" cy="10" r="1.6"/><path d="M21 16l-5-5L5 19"/></svg></span><span>תמונות</span></a>'+
+      '<a class="da-act web" target="_blank" href="'+webHref+'">'+
+        '<span class="ac-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"/></svg></span><span>אתר</span></a>';
+    return '<div class="day-att" data-q="'+(a.q||'')+'">'+
+      '<div class="da-row"><div class="da-ic">'+a.e+'</div>'+
+      '<div class="da-info"><b>'+a.n+'</b><div class="da-meta">'+meta.join(' · ')+'</div></div>'+
+      (a.d&&a.d!=='—'?'<div class="da-dist">'+a.d+'</div>':'')+
+      '<svg class="da-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>'+
+      '<div class="da-detail"><div class="da-detail-in">'+
+      '<div class="da-img empty"></div>'+
+      (a.info?'<div class="da-desc">'+a.info.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')+'</div>':'')+
+      (a.h?'<div class="da-hours"><span class="hr-dot"></span>'+a.h+'</div>':'')+
+      (tips?'<div class="da-tips"><div class="tp-h">מה חובה לראות</div><ul>'+tips+'</ul></div>':'')+
+      '<div class="da-acts">'+acts+'</div>'+
+      '</div></div></div>';
+  }
+  function render(filter){
+    box.innerHTML='';
+    var list=DAYS.filter(function(d){return filter==='all'||d.city===filter;});
+    var tIdx=(typeof tripTodayIdx==='function')?tripTodayIdx():-1;
+    list.forEach(function(d,i){
+      var isToday=DAYS.indexOf(d)===tIdx;
+      box.insertAdjacentHTML('beforeend',
+        '<div class="day-block'+(isToday?' today':'')+'"><div class="day-node"></div>'+
+        '<div class="day-head"><span class="dh-n">'+d.n+(isToday?'<span class="today-badge">היום</span>':'')+'</span>'+
+        '<span class="dh-date">'+d.date+'</span>'+
+        '<span class="dh-wx" data-wxcity="'+d.city+'"></span>'+
+        '<span class="dh-city">'+d.cityL+' · '+d.area+'</span></div>'+
+        d.atts.map(attHTML).join('')+'</div>');
+      /* גרסה ב' — בלוק "ערב בעיר" בסוף כל עיר (אם יש לה ברים) */
+      var next=list[i+1];
+      var cityEnds=!next || next.city!==d.city;
+      if(cityEnds && BARS[d.city]){
+        box.insertAdjacentHTML('beforeend',
+          '<div class="evening-block">'+
+          '<div class="evening-head"><span class="eh-line"></span>🍻 ערב ב'+d.cityL+'<span class="eh-line"></span></div>'+
+          barsListHTML(d.city)+'</div>');
+      }
+    });
+    if(typeof fillDayWeather==='function') fillDayWeather();
+  }
+  render('all');
+  /* חשיפה לניווט ממסך הבית: סינון לפי עיר */
+  window.showItinerary=function(f){
+    document.querySelectorAll('#day-filter .df-chip').forEach(function(x){x.classList.toggle('active',x.dataset.f===f);});
+    render(f);
+  };
+  /* פתיחה/סגירה + טעינת תמונה בלחיצה ראשונה */
+  box.addEventListener('click',function(e){
+    if(e.target.closest('.da-act')) return; /* כפתורי פעולה — קישור רגיל, לא לסגור */
+    var att=e.target.closest('.day-att'); if(!att) return;
+    var open=att.classList.toggle('open');
+    if(open && !att.dataset.loaded){
+      att.dataset.loaded='1';
+      var q=att.dataset.q, imgEl=att.querySelector('.da-img');
+      if(q && imgEl){ wikiImg(q).then(function(src){
+        if(src){ var im=new Image(); im.onload=function(){ imgEl.style.backgroundImage='url("'+src+'")'; imgEl.classList.remove('empty'); }; im.src=src; }
+        else { imgEl.classList.remove('empty'); imgEl.style.background='linear-gradient(135deg,#3b5bfe,#8a6cff)'; }
+      }); }
+    }
+  });
+  document.querySelectorAll('#day-filter .df-chip').forEach(function(c){
+    c.addEventListener('click',function(){
+      document.querySelectorAll('#day-filter .df-chip').forEach(function(x){x.classList.remove('active');});
+      c.classList.add('active'); render(c.dataset.f);
+    });
+  });
+})();
+
+/* החלפת טאבים — מעבר בין מסכים */
+var TAB_SCREEN={'בית':'screen-home','מסלול':'screen-trip','מפה':'screen-map','משחקים':'screen-matches'};
+function goTab(label){
+  var target=TAB_SCREEN[label]; if(!target) return;
+  document.querySelectorAll('.tab').forEach(function(x){x.classList.toggle('active',x.textContent.trim()===label);});
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var el=document.getElementById(target); if(el){ el.classList.add('active'); el.scrollTop=0; }
+  if(target==='screen-map') initMap();
+}
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click',function(){ goTab(t.textContent.trim()); });
+});
+
+/* לחיצה על עיר במסך הבית → מסך מסלול מסונן לאותה עיר */
+document.querySelectorAll('.city-card').forEach(function(card){
+  card.addEventListener('click',function(){
+    if(window.showItinerary) window.showItinerary(card.dataset.city);
+    goTab('מסלול');
+  });
+});
+
+/* פתיחת מסך שאינו טאב (כמו מסך הברים) — מבטל הדגשת טאבים */
+function openScreen(id){
+  document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var el=document.getElementById(id); if(el){ el.classList.add('active'); el.scrollTop=0; }
+}
+
+/* קיצורי דרך במסך הבית */
+document.querySelectorAll('#screen-home .q-tile').forEach(function(tile){
+  tile.addEventListener('click',function(){
+    var label=(tile.querySelector('span')||{}).textContent||'';
+    if(label==='ערים'){ goTab('מסלול'); }
+    else if(label==='מפת המסע'){ goTab('מפה'); }
+    else if(label==='ברים'){ openScreen('screen-bars'); }
+    else if(label==='משחקים'){ goTab('משחקים'); }
+  });
+});
+
+/* ===== מפה (Leaflet) — אטרקציות + מלון + אצטדיון ===== */
+var MAPDATA={
+  houston:{center:[29.74,-95.37],zoom:11,hotel:[29.795,-95.41,'Pool House (Heights)'],stad:[29.6847,-95.4107,'NRG Stadium'],atts:[
+    [29.7661,-95.3646,'POST Houston'],[29.7643,-95.3674,'Downtown Aquarium'],[29.7628,-95.3625,'Market Square Park'],
+    [29.5518,-95.0982,'Space Center'],[29.7589,-95.3924,'Buffalo Bayou Park'],[29.7935,-95.3761,'Pinkerton\'s BBQ']]},
+  atlanta:{center:[33.755,-84.39],zoom:12,stad:[33.7554,-84.4008,'Mercedes-Benz Stadium'],atts:[
+    [33.7627,-84.3925,'World of Coca-Cola'],[33.7634,-84.3951,'Georgia Aquarium'],[33.7726,-84.3654,'Ponce City Market'],[33.7851,-84.3739,'Piedmont Park']]},
+  dc:{center:[38.89,-77.02],zoom:13,atts:[
+    [38.8893,-77.0502,'Lincoln Memorial'],[38.8899,-77.0091,'US Capitol'],[38.8913,-77.0261,'Smithsonian'],[38.8977,-77.0365,'White House']]},
+  ny:{center:[40.74,-73.98],zoom:12,atts:[
+    [40.6892,-74.0445,'Statue of Liberty'],[40.7829,-73.9654,'Central Park'],[40.758,-73.9855,'Times Square']]}
+};
+/* מילוי אטרקציות המפה מכל נתוני DAYS — כל 102 האטרקציות האמיתיות עם קואורדינטות.
+   שומר על center/zoom/hotel/stad הקיימים, ומחליף רק את רשימת הנקודות. */
+(function(){
+  if(typeof DAYS==='undefined') return;
+  var by={}, seen={};
+  DAYS.forEach(function(d){
+    if(!by[d.city]) by[d.city]=[];
+    d.atts.forEach(function(a){
+      if(typeof a.la!=='number'||typeof a.ln!=='number') return;
+      var k=d.city+'|'+a.n; if(seen[k]) return; seen[k]=1;
+      by[d.city].push([a.la,a.ln,a.n,a.e||'📍']);
+    });
+  });
+  Object.keys(by).forEach(function(k){ if(MAPDATA[k] && by[k].length) MAPDATA[k].atts=by[k]; });
+})();
+var _map=null, _layer=null, _mapReady=false;
+function pinIcon(cls,emoji){
+  return L.divIcon({className:'',html:'<div class="map-pin '+cls+'"><span>'+emoji+'</span></div>',iconSize:[34,34],iconAnchor:[17,34],popupAnchor:[0,-32]});
+}
+function drawCity(key){
+  if(_layer){ _map.removeLayer(_layer); } _layer=L.layerGroup().addTo(_map);
+  if(key==='all'){
+    var cities={houston:['🏙️','יוסטון'],atlanta:['🍑','אטלנטה'],dc:['🏛️','וושינגטון'],ny:['🗽','ניו יורק']};
+    var b=[]; Object.keys(cities).forEach(function(k){var c=MAPDATA[k].center;L.marker(c,{icon:pinIcon('city',cities[k][0])}).bindPopup('<b>'+cities[k][1]+'</b>').addTo(_layer);b.push(c);});
+    _map.fitBounds(b,{padding:[40,40]}); return;
+  }
+  var d=MAPDATA[key];
+  (d.atts||[]).forEach(function(a){L.marker([a[0],a[1]],{icon:pinIcon('att',a[3]||'📍')}).bindPopup('<b>'+a[2]+'</b>').addTo(_layer);});
+  if(d.stad) L.marker([d.stad[0],d.stad[1]],{icon:pinIcon('stad','⚽')}).bindPopup('<b>'+d.stad[2]+'</b>').addTo(_layer);
+  if(d.hotel) L.marker([d.hotel[0],d.hotel[1]],{icon:pinIcon('hotel','🏨')}).bindPopup('<b>'+d.hotel[2]+'</b>').addTo(_layer);
+  _map.setView(d.center,d.zoom);
+}
+function initMap(){
+  if(!_mapReady){
+    _map=L.map('map',{zoomControl:true,attributionControl:false}).setView(MAPDATA.houston.center,11);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(_map);
+    _mapReady=true; drawCity('houston');
+  }
+  setTimeout(function(){ if(_map) _map.invalidateSize(); },120);
+}
+document.querySelectorAll('#map-filter .df-chip').forEach(function(c){
+  c.addEventListener('click',function(){
+    document.querySelectorAll('#map-filter .df-chip').forEach(function(x){x.classList.remove('active');});
+    c.classList.add('active'); if(_mapReady) drawCity(c.dataset.f);
+  });
+});
+
+/* ===== מסך משחקים — משחקים בולטים בכל יום (נתונים אמיתיים מהחוברת) ===== */
+var MATCHES=[
+  {date:'25/06',day:'חמישי',city:'יוסטון · נחיתה',m:[
+    {t:'15:00',teams:'Ecuador vs Germany',v:'ניו יורק',tier:'בית'},
+    {t:'18:00',teams:'Japan vs Sweden',v:'דאלאס',tier:'בית'},
+    {t:'21:00',teams:'Türkiye vs USA',v:'לוס אנג׳לס',tier:'בית',big:1}]},
+  {date:'26/06',day:'שישי',city:'יוסטון',note:'⚽ משחק קבוצות ב-NRG יוסטון — אופציה לכרטיסים נוספים',m:[
+    {t:'14:00',teams:'Norway vs France',v:'בוסטון',tier:'בית',big:1},
+    {t:'19:00',teams:'Cape Verde vs Saudi Arabia',v:'NRG Stadium יוסטון',tier:'בית',here:1},
+    {t:'22:00',teams:'New Zealand vs Belgium',v:'ונקובר',tier:'בית'}]},
+  {date:'27/06',day:'שבת',city:'יוסטון',m:[
+    {t:'16:00',teams:'Panama vs England',v:'ניו יורק',tier:'בית'},
+    {t:'18:30',teams:'Colombia vs Portugal',v:'מיאמי',tier:'בית',big:1},
+    {t:'21:00',teams:'Jordan vs Argentina',v:'דאלאס',tier:'בית',big:1}]},
+  {date:'28/06',day:'ראשון',city:'יוסטון',note:'הימים האחרונים של הבתים — שמיניות הגמר מתחילות',m:[
+    {t:'14:00',teams:'מנצחת בית A vs סגנית בית B',v:'לוס אנג׳לס',tier:'R32'}]},
+  {date:'29/06',day:'שני',city:'יוסטון → אטלנטה',note:'🎯 המשחק שלנו ב-NRG Stadium ב-13:00',m:[
+    {t:'12:00',teams:'מנצחת C vs סגנית F',v:'NRG Stadium יוסטון',tier:'1/8',ours:1},
+    {t:'15:30',teams:'מנצחת E vs 3rd A/B/C/D/F',v:'בוסטון',tier:'1/8'},
+    {t:'20:00',teams:'מנצחת F vs סגנית C',v:'מונטריי, מקסיקו',tier:'1/8'}]},
+  {date:'30/06',day:'שלישי',city:'בדרך לאטלנטה',m:[
+    {t:'13:00',teams:'סגנית E vs סגנית I',v:'דאלאס',tier:'1/8'},
+    {t:'17:00',teams:'מנצחת I vs 3rd C/D/F/G/H',v:'ניו יורק',tier:'1/8',big:1},
+    {t:'21:00',teams:'מנצחת A vs 3rd',v:'מקסיקו סיטי',tier:'1/8'}]},
+  {date:'01/07',day:'רביעי',city:'אטלנטה → וושינגטון',note:'🎯 המשחק שלנו ב-Mercedes-Benz ב-12:00',m:[
+    {t:'12:00',teams:'מנצחת L vs 3rd E/H/I/J/K',v:'Mercedes-Benz אטלנטה',tier:'1/8',ours:1},
+    {t:'16:00',teams:'מנצחת D vs 3rd B/E/F/I/J',v:'סיאטל',tier:'1/8'},
+    {t:'20:00',teams:'מנצחת G vs 3rd',v:'לוס אנג׳לס',tier:'1/8'}]},
+  {date:'02/07',day:'חמישי',city:'וושינגטון',m:[
+    {t:'12:00',teams:'מנצחת H vs סגנית J',v:'מיאמי',tier:'1/8'},
+    {t:'20:00',teams:'מנצחת B vs 3rd',v:'TBD',tier:'1/8'}]},
+  {date:'03/07',day:'שישי',city:'וושינגטון → ניו יורק',m:[
+    {t:'12:00',teams:'מנצחת K vs 3rd',v:'אטלנטה',tier:'1/8'},
+    {t:'20:00',teams:'מנצחת J vs סגנית H',v:'TBD',tier:'1/8'}]},
+  {date:'04/07',day:'שבת',city:'ניו יורק',note:'🇺🇸 4 ביולי — יום העצמאות האמריקאי!',m:[
+    {t:'12:00',teams:'רבע גמר (W73 vs W75)',v:'TBD',tier:'1/4',big:1},
+    {t:'16:00',teams:'רבע גמר',v:'TBD',tier:'1/4',big:1}]},
+  {date:'05/07',day:'ראשון',city:'ניו יורק',m:[
+    {t:'12:00',teams:'רבע גמר',v:'TBD',tier:'1/4',big:1},
+    {t:'16:00',teams:'רבע גמר',v:'TBD',tier:'1/4',big:1}]}
+];
+(function(){
+  var box=document.getElementById('matches-list'); if(!box) return;
+  MATCHES.forEach(function(d){
+    var rows=d.m.map(function(g){
+      var cls='mtch'+(g.ours?' ours':'')+(g.big&&!g.ours?' big':'');
+      var ko=(g.tier!=='בית');
+      return '<div class="'+cls+'">'+
+        '<div class="mt-time"><b>'+g.t+'</b><span>'+(g.ours?'המשחק שלנו':'מקומי')+'</span></div>'+
+        '<div class="mt-info"><div class="mt-teams">'+g.teams+'</div>'+
+        '<div class="mt-venue">📍 '+g.v+' <span class="mt-tier'+(ko?' ko':'')+'">'+g.tier+'</span></div></div>'+
+        (g.ours?'<span class="mt-flag">⚽ כרטיס</span>':(g.here?'<span class="mt-flag">בעירכם</span>':''))+
+        '</div>';
+    }).join('');
+    box.insertAdjacentHTML('beforeend',
+      '<div class="mday"><div class="mday-head">'+
+      '<span class="md-date">'+d.date+'</span><span class="md-day">'+d.day+'</span>'+
+      '<span class="md-city">'+d.city+'</span></div>'+
+      (d.note?'<div class="mday-note">'+d.note+'</div>':'')+
+      rows+'</div>');
+  });
+})();
+
+/* ===========================================================
+   מצב "היום" — מיקום היום הנוכחי בתוך הטיול
+   הטיול: 25/06/2026 (יום 1) עד 05/07/2026 (יום 11)
+   =========================================================== */
+var TRIP_START=new Date(2026,5,25); /* חודש 5 = יוני (0-based) */
+function tripTodayIdx(){
+  var t=new Date(); t.setHours(0,0,0,0);
+  var s=new Date(TRIP_START); s.setHours(0,0,0,0);
+  var idx=Math.round((t-s)/86400000);
+  return (idx>=0 && idx<DAYS.length)?idx:-1;
+}
+function daysUntilTrip(){
+  var t=new Date(); t.setHours(0,0,0,0);
+  var s=new Date(TRIP_START); s.setHours(0,0,0,0);
+  return Math.round((s-t)/86400000);
+}
+/* בכניסה: אם אנחנו בתוך ימי הטיול — קופצים אוטומטית למסך המסלול על היום הנוכחי */
+function applyTodayMode(){
+  var idx=tripTodayIdx();
+  /* עדכון ספירת המשחק הבא בפס העליון */
+  var cd=document.getElementById('hero-cd');
+  if(cd){
+    var dMatch1=Math.round((new Date(2026,5,29)-new Date().setHours(0,0,0,0))/86400000);
+    cd.textContent=(dMatch1>0?dMatch1:(dMatch1===0?'0':'—'));
+  }
+  /* רענון עמודת "אסור לפספס" לפי עיר היום הנוכחי */
+  if(typeof renderFeat==='function') renderFeat();
+  if(idx>=0){
+    /* בתוך הטיול — פותחים את המסלול וגוללים אל היום */
+    goTab('מסלול');
+    setTimeout(function(){
+      var blocks=document.querySelectorAll('#days-list .day-block');
+      var el=document.querySelector('#days-list .day-block.today')||blocks[idx];
+      if(el && el.scrollIntoView) el.scrollIntoView({behavior:'smooth',block:'center'});
+    },200);
+  }
+}
+
+/* ===========================================================
+   מתג 3 גרסאות — מקורי / מודרני / אפליקציה
+   "אפליקציה" = הקובץ הזה. מקורי/מודרני = האתר החי (index.html),
+   שומרים את הבחירה ב-localStorage שה-index קורא בטעינה.
+   =========================================================== */
+function switchVersion(v){
+  if(v==='app') return; /* כבר כאן */
+  try{ localStorage.setItem('mundial_theme', v==='vintage'?'vintage':'lookbook'); }catch(e){}
+  /* אם רצים בתוך חלון מבודד (iframe) באתר הראשי — מבקשים ממנו להחליף תמה
+     ולסגור את החלון, במקום לנווט (שהיה מקנן את index בתוך עצמו). */
+  if(window.parent && window.parent!==window){
+    try{ window.parent.postMessage({type:'mundial-switch', theme:(v==='vintage'?'vintage':'lookbook')}, '*'); return; }catch(e){}
+  }
+  location.href='index.html';
+}
+
+/* ===========================================================
+   מסך פתיחה — זהה לאתר החי (אותם סרטונים וספירה לאחור)
+   =========================================================== */
+function splashCountText(days){
+  if(days>1)  return 'עוד '+days+' ימים';
+  if(days===1) return 'מחר!';
+  if(days===0) return 'היום!';
+  return null;
+}
+function splashDaysUntil(y,m,d){
+  var today=new Date(); today.setHours(0,0,0,0);
+  var target=new Date(y,m,d); target.setHours(0,0,0,0);
+  return Math.round((target-today)/86400000);
+}
+function initSplash(){
+  /* אם נכנסנו דרך מתג-גרסאות (#nosplash) — מדלגים על מסך הפתיחה.
+     כבר בתוך החוברת, אין צורך להראות אותו שוב. */
+  if(location.hash.indexOf('nosplash')>=0){
+    var sp=document.getElementById('splash-screen');
+    if(sp) sp.parentNode && sp.parentNode.removeChild(sp);
+    applyTodayMode();
+    /* בהשהיה קצרה — אחרי שהפונקציה הוגדרה בסוף הסקריפט */
+    setTimeout(function(){ if(window.startVerHint) window.startVerHint(); },0);
+    return;
+  }
+  var events=[
+    {id:'splash-flight', d:[2026,5,25]},
+    {id:'splash-match1', d:[2026,5,29]},
+    {id:'splash-match2', d:[2026,6,1]}
+  ];
+  events.forEach(function(e){
+    var el=document.getElementById(e.id); if(!el) return;
+    var days=splashDaysUntil(e.d[0],e.d[1],e.d[2]);
+    var text=splashCountText(days);
+    if(text){ el.textContent=text; if(days<=1) el.classList.add('today-text'); }
+    else { var it=el.closest('.splash-item'); if(it) it.style.opacity='0.4'; el.textContent='עבר'; }
+  });
+  var splash=document.getElementById('splash-screen');
+  var video=document.getElementById('splash-video');
+  var revealed=false;
+  function reveal(){ if(revealed) return; revealed=true; if(splash) splash.classList.add('revealed'); }
+  if(video){
+    var last=parseInt(localStorage.getItem('mundial_splash_vid')||'0',10);
+    var i=last===1?2:1;
+    try{ localStorage.setItem('mundial_splash_vid',String(i)); }catch(e){}
+    video.src='videos/splash-'+i+'.mp4';
+    video.addEventListener('ended',reveal);
+    video.addEventListener('error',function(){ setTimeout(reveal,300); });
+    var p=video.play(); if(p&&p.catch) p.catch(function(){});
+    setTimeout(reveal,6500);
+  } else { reveal(); }
+}
+function hideSplash(){
+  var splash=document.getElementById('splash-screen');
+  if(!splash) return;
+  splash.classList.add('hiding');
+  setTimeout(function(){ splash.remove(); },600);
+  /* אחרי שהפתיחה נעלמת — מפעילים מצב "היום" + הנחיית האצבע */
+  applyTodayMode();
+  if(window.startVerHint) window.startVerHint();
+}
+initSplash();
+renderFeat(); /* רינדור ראשוני של עמודת "אסור לפספס" לפי העיר הנוכחית */
+
+/* הנחיית "אפשר לחזור לגרסה המוכרת" — מתחילה לספור רק אחרי שמסך הפתיחה נעלם,
+   כדי שהמשתמש יראה את האצבע 7 שניות מלאות בתוך האפליקציה (ולא מאחורי הספלאש). */
+(function(){
+  var hint=document.getElementById('verHint');
+  if(!hint) return;
+  var t=null;
+  function dismiss(){ hint.classList.add('hide'); if(t){ clearTimeout(t); t=null; } }
+  window.startVerHint=function(){
+    hint.classList.remove('hide');
+    if(t) clearTimeout(t);
+    t=setTimeout(dismiss,7000);
+  };
+  var sw=document.querySelector('.ver-switch');
+  if(sw) sw.addEventListener('click',dismiss);
+})();
+</script>
+</body>
+</html>
