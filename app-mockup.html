@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Mundial 2026 — App Mockup</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -794,6 +794,37 @@ body{
 .da-act.web .ac-ic{background:#b06a3f!important;}
 /* תג פסטיבל מכתום בוהק → ברונזה רך */
 .bar-card.fest .bc-rec{background:#b06a3f!important;}
+
+/* ===========================================================
+   📱 מצב מסך-מלא לנייד אמיתי
+   במחשב מציגים "מסגרת טלפון" יפה (פינות+נוץ'+שעון מזויף).
+   באייפון אמיתי זה "טלפון בתוך טלפון" — אז ממלאים את כל המסך:
+   מסירים מסגרת/פינות/נוץ'/שעון מזויף, ומוסיפים ריווח בטוח (safe-area).
+   =========================================================== */
+@media (max-width:520px){
+  html,body{height:100%;}
+  body{
+    padding:0!important;
+    display:block!important;
+    background:#eef2f7!important;   /* בלי שוליים כהים מסביב */
+    animation:none!important;
+  }
+  .phone{
+    width:100%!important;
+    max-width:none!important;
+    height:100vh!important;
+    height:100dvh!important;        /* גובה אמיתי בספארי (בלי קפיצות סרגל) */
+    max-height:none!important;
+    border-radius:0!important;
+    box-shadow:none!important;       /* מסיר את טבעת המסגרת הכהה */
+  }
+  .notch{display:none!important;}    /* לאייפון יש נוץ' משלו */
+  .statusbar{display:none!important;}/* לאייפון יש שעון/סוללה אמיתיים */
+  /* ריווח עליון בטוח מתחת לשעון האמיתי של המכשיר */
+  .screen{padding-top:calc(env(safe-area-inset-top) + 8px)!important;}
+  /* סרגל הניווט התחתון — מעל מחוון הבית */
+  .tabbar{bottom:calc(14px + env(safe-area-inset-bottom))!important;}
+}
 </style>
 </head>
 <body>

@@ -2028,9 +2028,9 @@ html.theme-lookbook .card-details { padding: 0 22px 20px; }
   <h1>חוברת המסלול שלכם</h1>
   <div class="subtitle">25 ביוני – 5 ביולי 2026 · יוסטון → אטלנטה → וושינגטון → ניו יורק</div>
   <div class="theme-switcher">
-    <button class="theme-btn active-theme" data-theme="lookbook" onclick="setTheme('lookbook')" title="מודרני · מגזין"><span>מודרני</span></button>
-    <button class="theme-btn"              data-theme="vintage" onclick="setTheme('vintage')" title="מקורי · וינטג'"><span>מקורי</span></button>
-    <button class="theme-btn"              data-theme="app"     onclick="openApp(true)" title="אפליקציה · נייד"><span>אפליקציה</span></button>
+    <button class="theme-btn active-theme" data-theme="lookbook" onclick="chooseTheme('lookbook')" title="מודרני · מגזין"><span>מודרני</span></button>
+    <button class="theme-btn"              data-theme="vintage" onclick="chooseTheme('vintage')" title="מקורי · וינטג'"><span>מקורי</span></button>
+    <button class="theme-btn"              data-theme="app"     onclick="openApp(true, true)" title="אפליקציה · נייד"><span>אפליקציה</span></button>
   </div>
   <div class="divider"></div>
 </header>
@@ -5877,7 +5877,7 @@ function setTheme(theme) {
 // ===== חלון מבודד לאפליקציה (iframe) =====
 // "אפליקציה" טוענת את app-mockup.html בתוך חלון מבודד באותו עמוד —
 // אותה כתובת, מעבר במקום, בלי לגעת בקוד/בעיצוב של האתר הראשי.
-function openApp(skipSplash) {
+function openApp(skipSplash, fromUser) {
   const wrap = document.getElementById('app-frame-wrap');
   const frame = document.getElementById('app-frame');
   if (!wrap || !frame) return;
@@ -5887,7 +5887,13 @@ function openApp(skipSplash) {
   }
   wrap.classList.add('show');
   document.body.style.overflow = 'hidden';
-  try { localStorage.setItem('mundial_theme', 'app'); } catch (e) {}
+  // שומרים "בחירה מפורשת" רק כשהמשתמש לחץ בעצמו — לא בפתיחה האוטומטית
+  if (fromUser) { try { localStorage.setItem('mundial_pref', 'app'); } catch (e) {} }
+}
+// בחירת תמה מפורשת ע"י המשתמש (כפתורי המתג העליונים) — שומרת העדפה
+function chooseTheme(theme) {
+  setTheme(theme);
+  try { localStorage.setItem('mundial_pref', theme); } catch (e) {}
 }
 function closeApp() {
   const wrap = document.getElementById('app-frame-wrap');
@@ -5901,14 +5907,19 @@ window.addEventListener('message', function(ev){
   const m = ev && ev.data;
   if (m && m.type === 'mundial-switch') {
     closeApp();
-    setTheme(m.theme === 'vintage' ? 'vintage' : 'lookbook');
+    const t = (m.theme === 'vintage' ? 'vintage' : 'lookbook');
+    setTheme(t);
+    // המעבר מתוך האפליקציה הוא בחירה מפורשת — שומרים אותה
+    try { localStorage.setItem('mundial_pref', t); } catch (e) {}
   }
 });
 
 // ברירת מחדל: האפליקציה (אלא אם המשתמש בחר בעבר "מקורי"/"מודרני").
 // כניסה ראשונה (אין זיכרון) => אפליקציה. כך מבקרים חדשים נחשפים אליה קודם.
-let savedTheme = localStorage.getItem('mundial_theme');
-if (!savedTheme || savedTheme === 'app') {
+// קוראים את "הבחירה המפורשת" בלבד (mundial_pref), לא את המצב הנוכחי —
+// כך פתיחה אוטומטית של מודרני "מתחת" לאפליקציה לא נחשבת כבחירה.
+let pref = localStorage.getItem('mundial_pref');
+if (!pref || pref === 'app') {
   setTheme('lookbook');  // התמה שמתחת לאפליקציה — מה שרואים אם סוגרים אותה
   hideSplash();          // ספלאש האתר מיותר: לאפליקציה יש מסך פתיחה משלה
   // הפתיחה האוטומטית חייבת לחכות שה-iframe יהיה קיים ב-DOM
@@ -5918,7 +5929,7 @@ if (!savedTheme || savedTheme === 'app') {
     openApp(false);      // פתיחה אוטומטית עם מסך הפתיחה (כניסה ראשונה)
   }
 } else {
-  setTheme(savedTheme);  // המשתמש בחר אתר ראשי — מציגים אותו עם ספלאש רגיל
+  setTheme(pref);        // המשתמש בחר אתר ראשי — מציגים אותו עם ספלאש רגיל
 }
 
 // טעינת תמונת רקע ל-Hero (תמת Lookbook) — נופל בחזרה לגרדיאנט אם נכשל
