@@ -3763,9 +3763,9 @@ function initSplash(){
   var revealed=false;
   function reveal(){ if(revealed) return; revealed=true; if(splash) splash.classList.add('revealed'); }
   if(video){
-    var last=parseInt(localStorage.getItem('mundial_splash_vid')||'0',10);
+    var last=parseInt(localStorage.getItem('mundial_app_splash_vid')||'0',10);
     var i=last===1?2:1;
-    try{ localStorage.setItem('mundial_splash_vid',String(i)); }catch(e){}
+    try{ localStorage.setItem('mundial_app_splash_vid',String(i)); }catch(e){}
     video.src='videos/splash-'+i+'.mp4';
     video.addEventListener('ended',reveal);
     video.addEventListener('error',function(){ setTimeout(reveal,300); });
