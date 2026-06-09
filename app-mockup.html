@@ -416,6 +416,13 @@ body{
   transition:all .14s;
 }
 .df-chip.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 8px 16px -8px rgba(59,91,254,.7);}
+/* שורת הנושאים — שורה שנייה צמודה לשורת הערים */
+.theme-filter{margin-top:-10px;margin-bottom:16px;}
+/* תצוגה מרוכזת לפי נושא */
+.theme-head{display:flex;align-items:center;gap:8px;font-family:inherit;font-weight:800;font-size:16px;color:var(--ink);margin:2px 0 14px;}
+.theme-count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;}
+.theme-block{display:flex;flex-direction:column;gap:10px;}
+.theme-empty{text-align:center;color:var(--ink-2);font-size:14px;line-height:1.7;padding:40px 20px;}
 
 /* ציר זמן של ימים */
 .day-block{position:relative;padding-right:34px;margin-bottom:8px;}
@@ -655,8 +662,10 @@ body{
   position:absolute; bottom:24px; left:24px; z-index:3;
   background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.45); color:#fff;
   font-size:13px; padding:8px 18px; border-radius:20px; cursor:pointer; font-family:inherit;
-  opacity:0; pointer-events:none; transition:color .2s,border-color .2s,background .2s;
+  opacity:0; pointer-events:none; transition:opacity .4s ease,color .2s,border-color .2s,background .2s;
 }
+/* כפתור הדילוג מופיע כבר אחרי שנייה — לא צריך לחכות לסוף הסרטון */
+#splash-screen.show-skip .splash-skip{ opacity:1; pointer-events:auto; }
 #splash-screen.revealed .splash-skip{ animation:splashFade .5s ease forwards; pointer-events:auto; }
 .splash-skip:hover{ background:rgba(0,0,0,.55); border-color:rgba(255,255,255,.9); }
 
@@ -1054,6 +1063,16 @@ body{
       <button class="df-chip" data-f="atlanta">אטלנטה</button>
       <button class="df-chip" data-f="dc">וושינגטון</button>
       <button class="df-chip" data-f="ny">ניו יורק</button>
+    </div>
+    <!-- סינון לפי נושא — שורת צ'יפים שנייה. בוחרים נושא וכל האטרקציות שלו מופיעות מרוכזות -->
+    <div class="day-filter theme-filter" id="theme-filter">
+      <button class="df-chip active" data-t="all">הכל</button>
+      <button class="df-chip" data-t="food">🍖 אוכל</button>
+      <button class="df-chip" data-t="shopping">🛍️ קניות</button>
+      <button class="df-chip" data-t="museum">🏛️ מוזיאונים</button>
+      <button class="df-chip" data-t="bar">🍺 ברים</button>
+      <button class="df-chip" data-t="park">🌳 פארקים</button>
+      <button class="df-chip" data-t="sport">⚽ ספורט</button>
     </div>
     <div id="days-list"></div>
   </div><!-- /screen-trip -->
@@ -3453,10 +3472,48 @@ function barsListHTML(cityKey){ return (BARS[cityKey]||[]).map(barCardHTML).join
       '<div class="da-acts">'+acts+'</div>'+
       '</div></div></div>';
   }
-  function render(filter){
+  /* ===== סיווג אטרקציות לפי נושא =====
+     נגזר אוטומטית משדה c של כל אטרקציה (למשל "קניות · מותגים").
+     כל מילת-מפתח ממופה לנושא ראשי. אטרקציה יכולה להשתייך לכמה נושאים. */
+  var THEME_KW={
+    food:['אוכל','BBQ','Tex-Mex','ויטנאמי','דרומי','ארוחת בוקר'],
+    shopping:['קניות','אאוטלט','מותגים','יוקרה'],
+    museum:['מוזיאון','היסטוריה','אנדרטה'],
+    bar:['בר ספורט','בירה','בר','ערב'],
+    park:['פארק','טבע'],
+    sport:['משחק כדורגל','אצטדיון','ספורט']
+  };
+  var THEME_LABEL={food:'🍖 אוכל',shopping:'🛍️ קניות',museum:'🏛️ מוזיאונים והיסטוריה',bar:'🍺 ברים וערב',park:'🌳 פארקים וטבע',sport:'⚽ ספורט וכדורגל'};
+  function attHasTheme(a,theme){
+    var c=a.c||''; var kws=THEME_KW[theme]||[];
+    for(var k=0;k<kws.length;k++){ if(c.indexOf(kws[k])>=0) return true; }
+    return false;
+  }
+  var curCity='all', curTheme='all';
+  function render(){
     box.innerHTML='';
-    var list=DAYS.filter(function(d){return filter==='all'||d.city===filter;});
+    var list=DAYS.filter(function(d){return curCity==='all'||d.city===curCity;});
     var tIdx=(typeof tripTodayIdx==='function')?tripTodayIdx():-1;
+    /* מצב נושא — רשימה מרוכזת אחת של כל האטרקציות בנושא, ממוינת לפי דירוג */
+    if(curTheme!=='all'){
+      var seen={}, items=[];
+      list.forEach(function(d){ d.atts.forEach(function(a){
+        if(seen[a.n] || !attHasTheme(a,curTheme)) return;
+        seen[a.n]=1; items.push(a);
+      }); });
+      items.sort(function(x,y){ return (parseFloat(y.r)||0)-(parseFloat(x.r)||0); });
+      var cityName=curCity==='all'?'בכל הערים':({houston:'ביוסטון',atlanta:'באטלנטה',dc:'בוושינגטון',ny:'בניו יורק'}[curCity]||'');
+      if(!items.length){
+        box.innerHTML='<div class="theme-empty">אין אטרקציות בנושא '+(THEME_LABEL[curTheme]||'')+' '+cityName+'.<br>נסה עיר אחרת או נושא אחר.</div>';
+        return;
+      }
+      box.insertAdjacentHTML('beforeend',
+        '<div class="theme-head">'+(THEME_LABEL[curTheme]||'')+' '+cityName+
+        ' <span class="theme-count">'+items.length+'</span></div>'+
+        '<div class="theme-block">'+items.map(attHTML).join('')+'</div>');
+      return;
+    }
+    /* מצב רגיל — ציר זמן של ימים */
     list.forEach(function(d,i){
       var isToday=DAYS.indexOf(d)===tIdx;
       box.insertAdjacentHTML('beforeend',
@@ -3478,11 +3535,12 @@ function barsListHTML(cityKey){ return (BARS[cityKey]||[]).map(barCardHTML).join
     });
     if(typeof fillDayWeather==='function') fillDayWeather();
   }
-  render('all');
+  render();
   /* חשיפה לניווט ממסך הבית: סינון לפי עיר */
   window.showItinerary=function(f){
+    curCity=f;
     document.querySelectorAll('#day-filter .df-chip').forEach(function(x){x.classList.toggle('active',x.dataset.f===f);});
-    render(f);
+    render();
   };
   /* פתיחה/סגירה + טעינת תמונה בלחיצה ראשונה */
   box.addEventListener('click',function(e){
@@ -3501,7 +3559,14 @@ function barsListHTML(cityKey){ return (BARS[cityKey]||[]).map(barCardHTML).join
   document.querySelectorAll('#day-filter .df-chip').forEach(function(c){
     c.addEventListener('click',function(){
       document.querySelectorAll('#day-filter .df-chip').forEach(function(x){x.classList.remove('active');});
-      c.classList.add('active'); render(c.dataset.f);
+      c.classList.add('active'); curCity=c.dataset.f; render();
+    });
+  });
+  /* צ'יפים של נושא — סינון לפי קטגוריה */
+  document.querySelectorAll('#theme-filter .df-chip').forEach(function(c){
+    c.addEventListener('click',function(){
+      document.querySelectorAll('#theme-filter .df-chip').forEach(function(x){x.classList.remove('active');});
+      c.classList.add('active'); curTheme=c.dataset.t; render();
     });
   });
 })();
@@ -3770,6 +3835,8 @@ function initSplash(){
     video.addEventListener('ended',reveal);
     video.addEventListener('error',function(){ setTimeout(reveal,300); });
     var p=video.play(); if(p&&p.catch) p.catch(function(){});
+    /* כפתור "דלג" מופיע כבר אחרי שנייה — לא צריך לחכות לסוף הסרטון */
+    setTimeout(function(){ if(splash) splash.classList.add('show-skip'); }, 1000);
     setTimeout(reveal,6500);
   } else { reveal(); }
 }
